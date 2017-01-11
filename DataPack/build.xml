@@ -38,6 +38,8 @@
       <fileset dir="${basedir}/sql">
         <include name="*.*"/>
         <include name="custom/*.*"/>
+		<include name="game/*.*"/>
+		<include name="login/*.*"/>
       </fileset>
     </sync>
     <sync todir="${build.dist.tools}">
