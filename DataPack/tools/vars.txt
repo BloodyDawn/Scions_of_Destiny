@@ -1,0 +1,14 @@
+@echo off 
+set config_version=2 
+set cmode=c
+set safe_mode=1 
+set lsuser=root
+set lspass=
+set lsdb=l2jdb
+set lshost=localhost 
+set gsuser=root
+set gspass=
+set gsdb=l2jdb
+set gshost=localhost
+set logdir=.
+set backup=.
