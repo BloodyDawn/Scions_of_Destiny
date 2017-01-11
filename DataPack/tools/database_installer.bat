@@ -1,29 +1,12 @@
 @echo off
-REM ##############################################
-REM ## L2JDP Database Installer - (by DrLecter) ##
-REM ##############################################
-REM ## Interactive script setup -  (by TanelTM) ##
-REM ##############################################
-REM Copyright (C) 2007 L2J DataPack
-REM This program is free software; you can redistribute it and/or modify
-REM it under the terms of the GNU General Public License as published by
-REM the Free Software Foundation; either version 2 of the License, or (at
-REM your option) any later version.
-REM
-REM This program is distributed in the hope that it will be useful, but
-REM WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-REM or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
-REM for more details.
-REM
-REM You should have received a copy of the GNU General Public License along
-REM with this program; if not, write to the Free Software Foundation, Inc.,
-REM 675 Mass Ave, Cambridge, MA 02139, USA. Or contact the Official L2J
-REM DataPack Project at http://www.l2jdp.com, http://forum.l2jdp.com or
-REM #l2j-datapack @ irc://irc.freenode.net
+chcp 866>nul
+REM New database_installer v1.0
+REM Script by Zomb1eKiller
 
 set config_file=vars.txt
 set config_version=0
 
+set workdir="%cd%"
 set full=0
 set stage=0
 set logging=0
@@ -34,16 +17,26 @@ set logdir=.
 set safe_mode=1
 set cmode=c
 set fresh_setup=0
-
-:loadconfig
-title L2Jserver DP installer - Reading configuration from file...
+echo language settings
+echo -----------------------
+echo.
+echo Select Your Language:
+echo.
+echo 1. English
+echo 2. Russian (Русский)
+echo.
+set /P language="Language number: "
+echo.
 cls
+:loadconfig
+cls
+title Database Installer - Reading Configuration from File...
 if not exist %config_file% goto configure
 ren %config_file% vars.bat
 call vars.bat
 ren vars.bat %config_file%
 call :colors 17
-if /i %config_version% == 1 goto ls_section
+if /i %config_version% == 2 goto ls_db_ok
 set upgrade_mode=2
 echo It seems to be the first time you run this version of
 echo database_installer but I found a settings file already.
@@ -51,24 +44,24 @@ echo I'll hopefully ask this questions just once.
 echo.
 echo Configuration upgrade options:
 echo.
-echo (1) Import and continue: I'll read your old settings and
-echo    continue execution, but since no new settings will be
-echo    saved, you'll see this menu again next time.
+echo 1 Import and continue: I'll read your old settings and
+echo     continue execution, but since no new settings will be
+echo     saved, you'll see this menu again next time.
 echo.
-echo (2) Import and configure: This tool has some new options
-echo    available, you choose the values that fit your needs
-echo    using former settings as a base.
+echo 2 Import and configure: This tool has some new available
+echo     options, you choose the values that fit your needs
+echo     using former settings as a base.
 echo.
-echo (3) Ignose stored settings: I'll let you configure me
-echo    with a fresh set of default values as a base.
+echo 3 Ignose stored settings: I'll let you configure me
+echo     with a fresh set of default values as a base.
 echo.
-echo (4) View saved settings: See the contents of the config
-echo    file.
+echo 4 View saved settings: See the contents of the config
+echo     file.
 echo.
-echo (5) Quit: Did you come here by mistake?
+echo 5 Quit: Did you came here by mistake?
 echo.
 set /P upgrade_mode="Type a number, press Enter (default is '%upgrade_mode%'): "
-if %upgrade_mode%==1 goto ls_section
+if %upgrade_mode%==1 goto ls_db_ok
 if %upgrade_mode%==2 goto configure
 if %upgrade_mode%==3 goto configure
 if %upgrade_mode%==4 (cls&type %config_file%&pause&goto loadconfig)
@@ -77,119 +70,85 @@ goto loadconfig
 
 :colors
 if /i "%cmode%"=="n" (
-if not "%1"=="17" (     color F ) else ( color )
+if not "%1"=="17" (	color F	) else ( color )
 ) else ( color %1 )
 goto :eof
 
 :configure
-call :colors 17
-title L2Jserver DP installer - Setup
 cls
-set config_version=1
+call :colors 17
+title Database Installer - Setup
+set config_version=2
 if NOT %upgrade_mode% == 2 (
 set fresh_setup=1
-set mysqlBinPath=%ProgramFiles%\MySQL\MySQL Server 5.5\bin
 set lsuser=root
 set lspass=
 set lsdb=l2jdb
 set lshost=localhost
+set cbuser=root
+set cbpass=
+set cbdb=l2jdb
+set cbhost=localhost
 set gsuser=root
 set gspass=
 set gsdb=l2jdb
 set gshost=localhost
-
 set cmode=c
 set backup=.
 set logdir=.
 )
-set mysqlPath=%mysqlBinPath%\mysql.exe
-echo New settings will be created for this tool to run in
-echo your computer, so I need to ask you few questions.
-echo.
-echo 1-MySql Binaries
-echo --------------------
-echo In order to perform my tasks, I need the path for commands
-echo such as 'mysql' and 'mysqldump'. Both executables are
-echo usually stored in the same place.
-echo.
-if "%mysqlBinPath%" == "" (
-set mysqlBinPath=use path
-echo I can't determine if the binaries are available with your
-echo default settings.
-) else (
-echo I can try to find out if the current setting actually works...
-echo.
-echo %mysqlPath%
-)
-if not "%mysqlBinPath%" == "use path" call :binaryfind
-echo.
-path|find "MySQL">NUL
-if %errorlevel% == 0 (
-echo I found MySQL is in your PATH, this will be used by default.
-echo If you want to use something different, change 'use path' for
-echo something else.
-set mysqlBinPath=use path
-) else (
-echo Look, I can't find "MYSQL" in your PATH environment variable.
-echo It would be good if you go and find out where "mysql.exe" and
-echo "mysqldump.exe" are.
-echo.
-echo If you have no idea about the meaning of words such as MYSQL
-echo or PATH, you'd better close this window, and consider googling
-echo and reading about it. Setup and host an L2J server requires a
-echo minimum of technical skills.
-)
-echo.
-echo Write the path to your MySQL binaries (no trailing slash needed):
-set /P mysqlBinPath="(default %mysqlBinPath%): "
 cls
+if %language% == 2 (
 echo.
-echo 2-LoginServer settings
-echo --------------------
-echo I will connect to the MySQL server you specify, and setup a
-echo Loginserver database there, most people use a single MySQL
-echo server and database for both Login and Gameserver tables.
+echo Настройки Логин Сервера
+echo -----------------------
+echo.
+set /P lsuser="MySQL Пользователь (стандартно '%lsuser%'): "
+set /P lspass="Пароль (стандартно '%lspass%'): "
+set /P lsdb="БазаДанных (стандартно '%lsdb%'): "
+set /P lshost="Адрес (хост)(стандартно '%lshost%'): "
+echo.
+) else (
+echo.
+echo Login Server settings
+echo -----------------------
 echo.
 set /P lsuser="MySQL Username (default is '%lsuser%'): "
-set /P lspass="Password (will be shown as you type, default '%lspass%'): "
+set /P lspass="Password (default is '%lspass%'): "
 set /P lsdb="Database (default is '%lsdb%'): "
 set /P lshost="Host (default is '%lshost%'): "
+echo.)
+cls
+if %language% == 2 (
 echo.
-echo 3-GameServer settings
-echo --------------------
+echo Настройки Гейм Сервера
+echo ----------------------
+echo.
+set /P gsuser="MySQL Пользователь (стандартно '%gsuser%'): "
+set /P gspass="Пароль (стандартно '%gspass%'): "
+set /P gsdb="БазаДанных (стандартно '%gsdb%'): "
+set /P gshost="Адрес (хост)(стандартно '%gshost%'): "
+echo. 
+) else (
+echo.
+echo Game Server settings
+echo ----------------------
+echo.
 set /P gsuser="User (default is '%gsuser%'): "
 set /P gspass="Pass (default is '%gspass%'): "
 set /P gsdb="Database (default is '%gsdb%'): "
 set /P gshost="Host (default is '%gshost%'): "
-echo.
-echo 4-Misc. settings
-echo --------------------
-set /P cmode="Color mode (c)olor or (n)on-color, default %cmode% : "
-set /P backup="Path for your backups (default '%backup%'): "
-set /P logdir="Path for your logs (default '%logdir%'): "
-:safe1
-set safemode=y
-set /P safemode="Debugging messages and increase verbosity a lil bit (y/n, default '%safemode%'): "
-if /i %safemode%==y (set safe_mode=1&goto safe2)
-if /i %safemode%==n (set safe_mode=0&goto safe2)
-goto safe1
+echo. )
+cls
+goto safe2
+
 :safe2
+cls
 echo.
-if "%mysqlBinPath%" == "use path" (
-set mysqlBinPath=
-set mysqldumpPath=mysqldump
-set mysqlPath=mysql
-) else (
-set mysqldumpPath=%mysqlBinPath%\mysqldump.exe
-set mysqlPath=%mysqlBinPath%\mysql.exe
-)
 echo @echo off > %config_file%
 echo set config_version=%config_version% >> %config_file%
 echo set cmode=%cmode%>> %config_file%
 echo set safe_mode=%safe_mode% >> %config_file%
-echo set mysqlPath=%mysqlPath%>> %config_file%
-echo set mysqlBinPath=%mysqlBinPath%>> %config_file%
-echo set mysqldumpPath=%mysqldumpPath%>> %config_file%
 echo set lsuser=%lsuser%>> %config_file%
 echo set lspass=%lspass%>> %config_file%
 echo set lsdb=%lsdb%>> %config_file%
@@ -201,472 +160,506 @@ echo set gshost=%gshost%>> %config_file%
 echo set logdir=%logdir%>> %config_file%
 echo set backup=%backup%>> %config_file%
 echo.
+if %language% == 2 (
+echo Установка скрипта завершена, ваши настройки сохранены
+echo в файле '%config_file%'. Внимание: ваши пароли сохранены
+echo Как чистый текст.
+echo.
+) else (
 echo Script setup complete, your settings were saved in the
 echo '%config_file%' file. Remember: your passwords are stored
 echo as clear text.
 echo.
-echo press any key to continue...
-pause> nul
+)
+pause
 goto loadconfig
 
-:ls_section
-cls
-call :colors 17
-set cmdline=
-set stage=1
-title L2Jserver DP installer - Login Server database setup
-echo.
-echo Trying to make a backup of your loginserver database.
-set cmdline="%mysqldumpPath%" --add-drop-table -h %lshost% -u %lsuser% --password=%lspass% %lsdb% ^> "%backup%\loginserver_backup.sql" 2^> NUL
-%cmdline%
-if %ERRORLEVEL% == 0 goto lsdbok
-REM if %safe_mode% == 1 goto omfg
 :ls_err1
-call :colors 47
-title L2Jserver DP installer - Login Server database setup ERROR!!!
 cls
-echo.
-echo Backup attempt failed! A possible reason for this to 
-echo happen, is that your DB doesn't exist yet. I could 
-echo try to create %lsdb% for you, or maybe you prefer to
-echo proceed with the GameServer part of this tool.
-echo.
-:ls_ask1
 set lsdbprompt=y
+call :colors 47
+title Database Installer - Login Server DataBase Backup ERROR!
+echo.
+if %language% == 2 (
+echo Ошибка при backup! Возможно базы данных не существует?
+echo Я попытаюсь создать базу данных %lsdb% для вас.
+echo.
+echo Создавать базу данных логин сервера:
+echo.
+echo y Да
+echo.
+echo n Нет
+echo.
+echo r Перенастройка
+echo.
+echo q Выход
+echo.
+) else (
+echo Backup attempt failed! A possible reason for this to
+echo happen, is that your DB doesn't exist yet. I could
+echo try to create %lsdb% for you.
+echo.
 echo ATTEMPT TO CREATE LOGINSERVER DATABASE:
 echo.
-echo (y)es
+echo y Yes
 echo.
-echo (n)o
+echo n No
 echo.
-echo (r)econfigure
+echo r Reconfigure
 echo.
-echo (q)uit
+echo q Quit
 echo.
-set /p lsdbprompt= Choose (default yes):
-if /i %lsdbprompt%==y goto lsdbcreate
-if /i %lsdbprompt%==n goto gs_backup
+)
+set /p lsdbprompt=Choose (default yes):
+if /i %lsdbprompt%==y goto ls_db_create
+if /i %lsdbprompt%==n goto cs_backup
 if /i %lsdbprompt%==r goto configure
 if /i %lsdbprompt%==q goto end
-goto ls_ask1
+goto ls_err1
 
-:omfg
+:ls_db_create
 cls
-call :colors 57
-title L2Jserver DP installer - potential PICNIC detected at stage %stage%
-echo.
-echo There was some problem while executing:
-echo.
-echo "%cmdline%"
-echo.
-echo I'd suggest you to look for correct values and try this
-echo script again later. But maybe you'd prefer to go on now.
-echo.
-if %stage% == 1 set label=ls_err1
-if %stage% == 2 set label=ls_err2
-if %stage% == 3 set label=gs_backup
-if %stage% == 4 set label=gs_err1
-if %stage% == 5 set label=gs_err2
-if %stage% == 6 set label=horrible_end
-if %stage% == 7 set label=horrible_end
-:omfgask1
-set omfgprompt=q
-echo (c)ontinue running the script
-echo.
-echo (r)econfigure
-echo.
-echo (q)uit now
-echo.
-set /p omfgprompt= Choose (default quit):
-if  /i %omfgprompt%==c goto %label%
-if  /i %omfgprompt%==r goto configure
-if  /i %omfgprompt%==q goto horrible_end
-goto omfgask1
-
-:lsdbcreate
 call :colors 17
 set cmdline=
 set stage=2
-title L2Jserver DP installer - Login Server database setup - DB Creation
+title Database Installer - Login Server DataBase Creation
 echo.
-echo Trying to create a Login Server database...
-set cmdline="%mysqlPath%" -h %lshost% -u %lsuser% --password=%lspass% -e "CREATE DATABASE %lsdb%" 2^> NUL
+if %language% == 2 (
+echo Пытаюсь создать базу данных логин сервера.
+) else (
+echo Trying to create a Login Server DataBase.
+)
+set cmdline=mysql.exe -h %lshost% -u %lsuser% --password=%lspass% -e "CREATE DATABASE %lsdb%" 2^> NUL
 %cmdline%
-if %ERRORLEVEL% == 0 goto logininstall
+if %ERRORLEVEL% == 0 goto ls_db_ok
 if %safe_mode% == 1 goto omfg
+
 :ls_err2
-call :colors 47
-title L2Jserver DP installer - Login Server database setup - DB Creation error
 cls
-echo An error occured while trying to create a database for 
+set omfgprompt=q
+call :colors 47
+title Database Installer - Login Server DataBase Creation ERROR!
+echo.
+if %language% == 2 (
+echo Произошла ошибка при создании базы данных для вашего
+echo логин сервера.
+echo.
+echo Возможные причины:
+echo 1-Вы ввели не верные данные. Проверьте логин, пароль и т.д.
+echo 2-Пользователь %lsuser% не имеет привилегий для
+echo создания базы данных. Проверьте ваши привилегии.
+echo 3-База данных уже существует...?
+echo.
+echo c Продолжить
+echo.
+echo r Перенастройка
+echo.
+echo q Выход
+echo.
+) else (
+echo An error occured while trying to create a database for
 echo your login server.
 echo.
 echo Possible reasons:
 echo 1-You provided innacurate info , check user, password, etc.
-echo 2-User %lsuser% don't have enough privileges for 
+echo 2-User %lsuser% don't have enough privileges for
 echo database creation. Check your MySQL privileges.
 echo 3-Database exists already...?
 echo.
-echo Unless you're sure that the pending actions of this tool 
+echo Unless you're sure that the pending actions of this tool
 echo could work, i'd suggest you to look for correct values
 echo and try this script again later.
 echo.
-:ls_ask2
-set omfgprompt=q
-echo (c)ontinue running
+echo c Continue running
 echo.
-echo (r)econfigure
+echo r Reconfigure
 echo.
-echo (q)uit now
-echo.
-set /p omfgprompt= Choose (default quit):
-if /i %omfgprompt%==c goto gs_backup
-if /i %omfgprompt%==q goto horrible_end
+echo q Quit now
+echo.)
+set /p omfgprompt=Choose (default quit):
+if /i %omfgprompt%==c goto cs_backup
 if /i %omfgprompt%==r goto configure
-goto ls_ask2
+if /i %omfgprompt%==q goto end
+goto ls_err2
 
-:lsdbok
+:ls_db_ok
+cls
+set loginprompt=u
 call :colors 17
-title L2Jserver DP installer - Login Server database setup - WARNING!!!
+title Database Installer - Login Server DataBase WARNING!
 echo.
-:asklogin
-if %fresh_setup%==0 (
-set loginprompt=s
-set msg=default skip
+if %language% == 2 (
+echo Тип установки Базы Данных логин сервера:
+echo.
+echo f Полная: Все данные в базе данных будут стерты
+echo.
+echo u Обновление: Запись поверх данных.
+echo.
+echo s Пропустить: Перейти к установке гейм севрера
+echo.
+echo r Перенастройка: Вы можете изменить логин, пароль,
+echo     базу данных и начать заного с новыми данными
+echo.
+echo q Выход
+echo.
 ) else (
-set loginprompt=x
-set msg=no default for fresh install
-)
 echo LOGINSERVER DATABASE install type:
 echo.
-echo (f)ull: I will destroy data in your `accounts` and 
-echo    and `gameserver` tables.
+echo f Full: WARNING! I'll destroy ALL of your existing login
+echo     data.
 echo.
-echo (s)kip: I'll take you to the gameserver database
-echo    installation and upgrade options.
+echo u Upgrade: I'll do my best to preserve all login data.
 echo.
-echo (r)econfigure: You'll be able to redefine MySQL path,
-echo    user and database information and start over with
-echo    those fresh values.
+echo s Skip: I'll take you to the game server database
+echo     installation and upgrade options.
 echo.
-echo (q)uit
+echo r Reconfigure: You'll be able to redefine MySQL path,
+echo     user and database information and start over with
+echo     those fresh values.
 echo.
-set /p loginprompt= Choose (%msg%) :
-if /i %loginprompt%==f goto logininstall
-if /i %loginprompt%==s goto gs_backup
+echo q Quit
+echo.
+)
+set /p loginprompt=Choose (default upgrade):
+if /i %loginprompt%==f goto ls_cleanup
+if /i %loginprompt%==u goto ls_upgrade
+if /i %loginprompt%==s goto gs_db_ok
 if /i %loginprompt%==r goto configure
 if /i %loginprompt%==q goto end
-goto asklogin
+goto ls_db_ok
 
-:logininstall
-set stage=3
+:ls_cleanup
 call :colors 17
 set cmdline=
-title L2Jserver DP installer - Login Server database setup - Full install
-echo Deleting loginserver tables for new content.
-set cmdline="%mysqlPath%" -h %lshost% -u %lsuser% --password=%lspass% -D %lsdb% ^< login_install.sql 2^> NUL
+title Database Installer - Login Server DataBase Full Install
+echo.
+if %language% == 2 (
+echo Удаляю старые таблицы...
+) else (
+echo Deleting Login Server tables for new content.
+)
+set cmdline=mysql.exe -h %lshost% -u %lsuser% --password=%lspass% -D %lsdb% ^< ls_cleanup.sql 2^> NUL
 %cmdline%
 if not %ERRORLEVEL% == 0 goto omfg
 set full=1
-goto gs_backup
+echo.
+if %language% == 2 (
+echo Таблицы успешно удалены.
+) else (
+echo Login Server tables has been deleted.
+)
+goto ls_install
 
-:gs_backup
-call :colors 17
+:ls_upgrade
+cls
+echo.
+if %language% == 2 (
+echo Обновление базы данных логин сервера
+) else (
+echo Upgrading structure of Login Server tables.)
+echo.
+echo @echo off> temp.bat
+if exist ls_errors.log del ls_errors.log
+for %%i in (..\sql\login\updates\*.sql) do echo mysql.exe -h %lshost% -u %lsuser% --password=%lspass% -D %lsdb% --force ^< %%i 2^>^> ls_errors.log >> temp.bat
+call temp.bat> nul
+del temp.bat
+move ls_errors.log %workdir%
+goto ls_install
+
+:ls_install
+cls
 set cmdline=
-if %full% == 1 goto fullinstall
-set stage=4
-title L2Jserver DP installer - Game server database setup
-cls
+if %full% == 1 (
+title Database Installer - Login Server DataBase Installing...
 echo.
-echo Making a backup of the original gameserver database.
-set cmdline="%mysqldumpPath%" --add-drop-table -h %gshost% -u %gsuser% --password=%gspass% %gsdb% ^> "%backup%\gameserver_backup.sql" 2^> NUL
-%cmdline%
-if %ERRORLEVEL% == 0 goto gsdbok
-if %safe_mode% == 1 goto omfg
+if %language% == 2 (
+echo Установка базы данных логин сервера.
+) else (
+echo Installing new Login Server content.)
+echo.
+) else (
+title Database Installer - Login Server DataBase Upgrading...
+echo.
+if %language% == 2 (
+echo Обновление базы данных логин сервера.
+) else (
+echo Upgrading Login Server content.)
+echo.
+)
+if %logging% == 0 set output=NUL
+set dest=ls
+for %%i in (..\sql\login\*.sql) do call :dump %%i
+
+echo done...
+echo.
+goto gs_db_ok
+
 :gs_err1
-call :colors 47
-title L2Jserver DP installer - Game Server database setup - Backup failed!
 cls
-echo.
-echo Backup attempt failed! A possible reason for this to happen,
-echo is that your DB doesn't exist yet. I could try to create 
-echo %gsdb% for you, but maybe you prefer me to continue with 
-echo last part of the script.
-echo.
-:askgsdb
 set gsdbprompt=y
-echo ATTEMPT TO CREATE GAMESERVER DATABASE?
+call :colors 47
+title Database Installer - Game Server DataBase Backup ERROR!
 echo.
-echo (y)es
+if %language% == 2 (
+echo Ошибка при backup! Возможно базы данных не существует?
+echo Я попытаюсь создать базу данных %lsdb% для вас.
 echo.
-echo (n)o
+echo Создать новую базу данных:
 echo.
-echo (r)econfigure
+echo y Да
 echo.
-echo (q)uit
+echo n Нет
 echo.
-set /p gsdbprompt= Choose (default yes):
-if /i %gsdbprompt%==y goto gsdbcreate
-if /i %gsdbprompt%==n goto horrible_end
+echo r Перенастройка
+echo.
+echo q Выход
+echo.
+) else (
+echo Backup attempt failed! A possible reason for this to
+echo happen, is that your DB doesn't exist yet. I could
+echo try to create %gsdb% for you, but maybe you prefer to
+echo continue with last part of the script.
+echo.
+echo ATTEMPT TO CREATE GAME SERVER DATABASE?
+echo.
+echo y Yes
+echo.
+echo n No
+echo.
+echo r Reconfigure
+echo.
+echo q Quit
+echo.)
+set /p gsdbprompt=Choose (default yes):
+if /i %gsdbprompt%==y goto gs_db_create
+if /i %gsdbprompt%==n goto eof
 if /i %gsdbprompt%==r goto configure
 if /i %gsdbprompt%==q goto end
-goto askgsdb
+goto gs_err1
 
-:gsdbcreate
+:gs_db_create
+cls
 call :colors 17
-set stage=5
+set stage=6
 set cmdline=
-title L2Jserver DP installer - Game Server database setup - DB Creation
-cls
-echo Trying to create Game Server database...
-set cmdline="%mysqlPath%" -h %gshost% -u %gsuser% --password=%gspass% -e "CREATE DATABASE %gsdb%" 2^> NUL
-%cmdline%
-if %ERRORLEVEL% == 0 goto fullinstall
-if %safe_mode% == 1 goto omfg
-:gs_err2
-call :colors 47
-title L2Jserver DP installer - Game Server database setup - DB Creation failed!
-cls
+title Database Installer - Game Server DataBase Creation
 echo.
-echo An error occured while trying to create a database for 
-echo your game server.
+if %language% == 2 (
+echo Пытаюсь создать базу данных гейм сервера)
+else (
+echo Trying to create a Game Server DataBase..
+)
+set cmdline=mysql.exe -h %gshost% -u %gsuser% --password=%gspass% -e "CREATE DATABASE %gsdb%" 2^> NUL
+%cmdline%
+if %ERRORLEVEL% == 0 goto gs_db_ok
+if %safe_mode% == 1 goto omfg
+
+:gs_err2
+cls
+set omfgprompt=q
+call :colors 47
+title Database Installer - Game Server DataBase Creation ERROR!
+echo.
+if %language% == 2 (
+echo Произошла ошибка при создании базы данных для вашего
+echo гейм сервера.
+echo.
+echo Возможные причины:
+echo 1-Вы ввели не верные данные. Проверьте логин, пароль и т.д.
+echo 2-Пользователь %gsuser% не имеет привилегий для
+echo создания базы данных. Проверьте ваши привилегии.
+echo 3-База данных уже существует...?
+echo.
+echo r Перенастройка
+echo.
+echo q Выход
+echo.
+) else (
+echo An error occured while trying to create a database for
+echo your Game Server.
 echo.
 echo Possible reasons:
 echo 1-You provided innacurate info, check username, pass, etc.
-echo 2-User %gsuser% don't have enough privileges for 
+echo 2-User %gsuser% don't have enough privileges for
 echo database creation.
 echo 3-Database exists already...?
 echo.
 echo I'd suggest you to look for correct values and try this
 echo script again later. But you can try to reconfigure it now.
 echo.
-:askgsdbcreate
-set omfgprompt=q
-echo (r)estart script with fresh configuration values
+echo r Reconfigure
 echo.
-echo (q)uit now
+echo q Quit now
 echo.
-set /p omfgprompt=  Choose (default quit):
+)
+set /p omfgprompt=Choose (default quit):
 if /i %omfgprompt%==r goto configure
-if /i %omfgprompt%==q goto horrible_end
-goto askgsdbcreate
+if /i %omfgprompt%==q goto end
+goto gs_err2
 
-:gsdbok
-call :colors 17
-title L2Jserver DP installer - Game Server database setup - WARNING!!!
+:gs_db_ok
 cls
-echo.
-:asktype
 set installtype=u
-echo GAMESERVER DATABASE install:
-echo.
-echo (f)ull: WARNING! I'll destroy ALL of your existing character
-echo    data (i really mean it: items, pets.. ALL)
-echo.
-echo (u)pgrade: I'll do my best to preserve all of your character
-echo    data.
-echo.
-echo (s)kip: We'll get into the last set of questions (cummulative
-echo    updates, custom stuff...)
-echo.
-echo (q)uit
-echo.
-set /p installtype= Choose (default upgrade):
-if /i %installtype%==f goto fullinstall
-if /i %installtype%==u goto upgradeinstall
-if /i %installtype%==s goto custom
-if /i %installtype%==q goto end
-goto asktype
-
-:fullinstall
 call :colors 17
-set stage=6
+title Database Installer - Game Server DataBase WARNING!
+echo.
+if %language% == 2 (
+echo Установка базы данных гейм сервера:
+echo.
+echo f Полная: Внимание! Я уничтожу все данные
+echo.
+echo u Обновление.
+echo.
+echo q Выход
+echo.
+) else (
+echo GAME SERVER DATABASE install:
+echo.
+echo f Full: WARNING! I'll destroy ALL of your existing character
+echo     data (i really mean it: items, pets.. ALL)
+echo.
+echo u Upgrade: I'll do my best to preserve all of your character
+echo     data.
+echo.
+echo q Quit
+)
+set /p installtype=Choose (default upgrade):
+if /i %installtype%==f goto gs_cleanup
+if /i %installtype%==u goto gs_upgrade
+if /i %installtype%==q goto end
+goto gs_db_ok
+
+:gs_cleanup
+call :colors 17
 set cmdline=
-title L2Jserver DP installer - Game Server database setup - Full install
-echo Deleting all gameserver tables for new content...
-set cmdline="%mysqlPath%" -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% ^< full_install.sql 2^> NUL
+title Database Installer - Game Server DataBase Full Install
+echo.
+if %language% == 2 (
+echo Удаляю все таблицы...
+) else (
+echo Deleting all Game Server tables for new content.
+)
+set cmdline=mysql.exe -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% ^< gs_cleanup.sql 2^> NUL
 %cmdline%
 if not %ERRORLEVEL% == 0 goto omfg
 set full=1
 echo.
-echo Game Server tables were deleted.
-goto upgradeinstall
+if %language% == 2 (
+echo Таблицы удалены.
+) else (
+echo Game Server tables has been deleted.
+)
+goto gs_install
 
-:upgradeinstall
-set stage=6
+:gs_upgrade
+cls
+echo.
+if %language% == 2 (
+echo Обновляю таблицы гейм сервера.
+) else (
+echo Upgrading structure of Game Server tables (this could take awhile, be patient).)
+echo.
+echo @echo off> temp.bat
+if exist gs_errors.log del gs_errors.log
+for %%i in (..\sql\game\updates\*.sql) do echo mysql.exe -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% --force ^< %%i 2^>^> gs_errors.log >> temp.bat
+call temp.bat> nul
+del temp.bat
+move gs_errors.log %workdir%
+goto gs_install
+
+:gs_install
+cls
 set cmdline=
 if %full% == 1 (
-title L2Jserver DP installer - Game Server database setup - Installing...
-echo Installing new gameserver content.
+title Database Installer - Game Server DataBase Installing...
+echo.
+if %language% == 2 (
+echo Установка новых таблиц...
 ) else (
-title L2Jserver DP installer - Game Server database setup - Upgrading...
-echo Upgrading gameserver content.
+echo Installing new Game Server content.)
+echo.
+) else (
+title Database Installer - Game Server DataBase Upgrading...
+echo.
+if %language% == 2 (
+echo Обновление таблиц...
+) else (
+echo Upgrading Game Server content.)
+echo.
 )
 if %logging% == 0 set output=NUL
-set dest=ls
-for %%i in (
-accounts.sql
-gameservers.sql
-) do call :dump %%i
 set dest=gs
-for %%i in (
-account_data.sql
-armor.sql
-armorsets.sql
-auction.sql
-auction_bid.sql
-auction_watch.sql
-auto_announcements.sql
-auto_chat.sql
-auto_chat_text.sql
-castle.sql
-castle_door.sql
-castle_doorupgrade.sql
-castle_functions.sql
-castle_manor_procure.sql
-castle_manor_production.sql
-castle_siege_guards.sql
-char_templates.sql
-character_friends.sql
-character_hennas.sql
-character_macroses.sql
-character_offline_trade.sql
-character_offline_trade_items.sql
-character_quests.sql
-character_recipebook.sql
-character_recommends.sql
-character_shortcuts.sql
-character_skills.sql
-character_skills_save.sql
-character_subclasses.sql
-characters.sql
-clan_data.sql
-clan_wars.sql
-clanhall.sql
-clanhall_functions.sql
-class_list.sql
-dimensional_rift.sql
-droplist.sql
-enchant_skill_trees.sql
-etcitem.sql
-fish.sql
-fishing_skill_trees.sql
-forums.sql
-four_sepulchers_spawnlist.sql
-games.sql
-global_tasks.sql
-grandboss_data.sql
-grandboss_list.sql
-helper_buff_list.sql
-henna.sql
-henna_trees.sql
-heroes.sql
-items.sql
-itemsonground.sql
-locations.sql
-lvlupgain.sql
-mapregion.sql
-merchant_areas_list.sql
-merchant_buylists.sql
-merchant_lease.sql
-merchant_shopids.sql
-merchants.sql
-minions.sql
-npc.sql
-npc_buffer.sql
-pets.sql
-pets_stats.sql
-posts.sql
-npcskills.sql
-olympiad_nobles.sql
-quest_global_data.sql
-raidboss_spawnlist.sql
-random_spawn.sql
-random_spawn_loc.sql
-seven_signs.sql
-seven_signs_festival.sql
-seven_signs_status.sql
-siege_clans.sql
-skill_learn.sql
-skill_spellbooks.sql
-skill_trees.sql
-spawnlist.sql
-teleport.sql
-topic.sql
-walker_routes.sql
-weapon.sql
-zone_vertices.sql
-) do call :dump %%i
+for %%i in (..\sql\game\*.sql) do call :dump %%i
+
 echo done...
 echo.
-goto custom
+goto end
 
 :dump
 set cmdline=
 if /i %full% == 1 (set action=Installing) else (set action=Upgrading)
 echo %action% %1>>"%output%"
 echo %action% %~nx1
-if "%dest%"=="ls" set cmdline="%mysqlPath%" -h %lshost% -u %lsuser% --password=%lspass% -D %lsdb% ^< ..\sql\%1 2^>^>"%output%"
-if "%dest%"=="gs" set cmdline="%mysqlPath%" -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% ^< ..\sql\%1 2^>^>"%output%"
+if "%dest%"=="ls" set cmdline=mysql.exe -h %lshost% -u %lsuser% --password=%lspass% -D %lsdb% ^< %1 2^>^>"%output%"
+if "%dest%"=="cb" set cmdline=mysql.exe-h %cbhost% -u %cbuser% --password=%cbpass% -D %cbdb% ^< %1 2^>^>"%output%"
+if "%dest%"=="gs" set cmdline=mysql.exe -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% ^< %1 2^>^>"%output%"
 %cmdline%
 if %logging%==0 if NOT %ERRORLEVEL%==0 call :omfg2 %1
 goto :eof
 
-:custom
-echo.
-set cstprompt=n
-set /p cstprompt=Install custom gameserver DB tables: (Y) yes or (N) no?
-if /i %cstprompt%==y goto cstinstall
-if /i %cstprompt%==n goto end
-
-:cstinstall
-echo Installing custom content.
-cd ..\sql\custom\
-echo @echo off> temp.bat
-if exist errors.txt del errors.txt
-for %%i in (*.sql) do echo "%mysqlPath%" -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% ^< %%i 2^>^> custom_errors.txt >> temp.bat
-call temp.bat> nul
-del temp.bat
-move custom_errors.txt %workdir%
-goto end
-
 :omfg2
 cls
+set ntpebcak=c
 call :colors 47
-title L2Jserver DP installer - potential database issue at stage %stage%
+title Database Installer - Potential DataBase Issue at stage %stage%
 echo.
+if %language% == 2 (
+echo Проблема при выполнении команды :
+echo mysql.exe -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb%
+echo.
+echo в файле %~nx1
+echo.
+echo Что вы хотите сделать?
+echo.
+echo l Логировать: Я создам лог файл с ошибкойи продолжу
+echo.
+echo c Продолжить: Сделать вид что ничего не было :)
+echo.
+echo r Перенастройка
+echo.
+echo q Выход
+echo.
+) else (
 echo Something caused an error while executing instruction :
-echo %mysqlPath% -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb%
+echo mysql.exe -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb%
 echo.
 echo with file %~nx1
 echo.
-echo What should we do now?
+echo What we should do now?
 echo.
-:askomfg2
-set ntpebcak=c
-echo (l)og it: I will create a log for this file, then continue
-echo    with the rest of the list in non-logging mode.
+echo l Log it: I will create a log for this file, then continue
+echo     with the rest of the list in non-logging mode.
 echo.
-echo (c)ontinue: Let's pretend that nothing happened and continue with
-echo    the rest of the list.
+echo c Continue: Let's pretend that nothing happened and continue with
+echo     the rest of the list.
 echo.
-echo (r)econfigure: Perhaps these errors were caused by a typo.
-echo    you can restart from scratch and redefine paths, databases
-echo    and user info again.
+echo r Reconfigure: Perhaps these errors were caused by a typo.
+echo     you can restart from scratch and redefine paths, databases
+echo     and user info again.
 echo.
-echo (q)uit now
-echo.
-set /p ntpebcak= Choose (default continue):
-if  /i %ntpebcak%==c (call :colors 17 & goto :eof)
-if  /i %ntpebcak%==l (call :logginon %1 & goto :eof)
-if  /i %ntpebcak%==r (call :configure & exit)
-if  /i %ntpebcak%==q (call :horrible_end & exit)
-goto askomfg2
+echo q Quit now
+echo.)
+set /p ntpebcak=Choose (default continue):
+if /i %ntpebcak%==c (call :colors 17 & goto :eof)
+if /i %ntpebcak%==l (call :logginon %1 & goto :eof)
+if /i %ntpebcak%==r (call :configure & exit)
+if /i %ntpebcak%==q (call :end)
+goto omfg2
 
 :logginon
 cls
 call :colors 17
-title L2Jserver DP installer - Game Server database setup - Logging options turned on
+title Database Installer - Game Server Logging Options turned on
 set logging=1
 if %full% == 1 (
   set output=%logdir%\install-%~nx1.log
@@ -674,7 +667,21 @@ if %full% == 1 (
   set output=%logdir%\upgrade-%~nx1.log
 )
 echo.
-echo Depending on your request, i'll create a log file for your reading pleasure.
+if %language% == 2 (
+echo По вашему запросу я создам LOG файл.
+echo.
+echo Я назову его %output%
+echo.
+echo Если у вас существует такой файл, удалите его иначе ничего не произойдет.
+echo.
+pause
+set cmdline=mysql.exe -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% ^<..\sql\%1 2^>^>"%output%"
+date /t >"%output%"
+time /t >>"%output%"
+%cmdline%
+echo Лог файл создан, продолжаю прошлую операцию...
+) else (
+echo Per your request, i'll create a log file for your reading pleasure.
 echo.
 echo I'll call it %output%
 echo.
@@ -682,67 +689,79 @@ echo If you already have such a file and would like to keep a copy.
 echo go now and read it or back it up, because it's not going to be rotated
 echo or anything, instead i'll just overwrite it.
 echo.
-echo When you're done or if you don't mind, press any key to start.
-pause>NUL
-set cmdline="%mysqlPath%" -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% ^<..\sql\%1 2^>^>"%output%"
+pause
+set cmdline=mysql.exe -h %gshost% -u %gsuser% --password=%gspass% -D %gsdb% ^<..\sql\%1 2^>^>"%output%"
 date /t >"%output%"
 time /t >>"%output%"
 %cmdline%
 echo Log file created, resuming normal operations...
+)
 call :colors 17
 set logging=0
 set output=NUL
 goto :eof
 
-:binaryfind
-if EXIST "%mysqlBinPath%" (echo Found) else (echo Not Found)
-goto :eof
-
-:horrible_end
-call :colors 47
-title L2Jserver DP installer - Oops!
+:omfg
+set omfgprompt=q
+call :colors 57
 cls
-echo This wasn't a clean run, but don't worry.
-echo You can get help and support at L2Jserver Forum.
+title Database Installer - Potential PICNIC detected at stage %stage%
 echo.
-echo I'll try to gather some version-related information that you
-echo may find useful when asking for support :
+if %language% == 2 (
+echo Проблема при выполнении команды:
 echo.
-echo Datapack revision reported by 'SVN version':
-svnversion -n 2>NUL
+echo "%cmdline%"
 echo.
-if %ERRORLEVEL% == 9009 (
-echo   SVN commandline tools not found!
-echo   Please download and install a copy from :
-echo   http://subversion.tigris.org/servlets/ProjectDocumentList?folderID=91
+echo Проверьте данные, возможно они не верны и 
+echo загрузите скрипт позже.
+if %stage% == 1 set label=ls_err1
+if %stage% == 2 set label=ls_err2
+if %stage% == 3 set label=cs_err1
+if %stage% == 4 set label=cs_err2
+if %stage% == 5 set label=gs_err1
+if %stage% == 6 set label=gs_err2
+echo.
+echo c Продолжить выполнение скрипта
+echo.
+echo r Перенастройка
+echo.
+echo q Выход
+echo.
+) else (
+echo There was some problem while executing:
+echo.
+echo "%cmdline%"
+echo.
+echo I'd suggest you to look for correct values and try this
+echo script again later. But maybe you'd prefer to go on now.
+if %stage% == 1 set label=ls_err1
+if %stage% == 2 set label=ls_err2
+if %stage% == 3 set label=cs_err1
+if %stage% == 4 set label=cs_err2
+if %stage% == 5 set label=gs_err1
+if %stage% == 6 set label=gs_err2
+echo.
+echo c Continue running the script
+echo.
+echo r Reconfigure
+echo.
+echo q Quit now
 echo.
 )
-set dpvf="..\config\l2jdp-version.properties"
-echo Datapack revision reported by properties file :
-if NOT EXIST %dpvf% (
-echo   Your %dpvf% file is missing!
-echo   Use eclipse/ant to build one from your DP SVN copy.
-echo   With it we'll be able to help you better.
-) else (
-type %dpvf% | find "version" 2> NUL
-if not %ERRORLEVEL% == 0 (
-echo   An error occured while trying to read
-echo   your %dpvf% file!
-echo   Make sure you keep it up to date
-echo   and in the correct place.
-echo %ERRORLEVEL%
-))
-echo.
-rem del %config_file%
-pause
-goto end
+
+set /p omfgprompt=Choose (default quit):
+if /i %omfgprompt%==c goto %label%
+if /i %omfgprompt%==r goto configure
+if /i %omfgprompt%==q goto end
+goto omfg
 
 :end
 call :colors 17
-title L2Jserver DP installer - Script execution finished
+title Database Installer - Finished installation
 cls
 echo.
-echo Thanks for using L2Jserver, a project based on mother L2JServer Project.
+echo Database Installer - Finished installation
+echo.
+echo 2011-2012 Festina Dev. Team
 echo.
 pause
-color
