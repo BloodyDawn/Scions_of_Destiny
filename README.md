@@ -1,1 +1,1 @@
-# Scions_of_Destiny
+# Emulator Scions of Destiny
