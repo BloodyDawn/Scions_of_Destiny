@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry including="**/*.java" excluding="**/.svn/*|.svn" kind="src" path="data/scripts"/>
+        <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GameServer"/>
+        <classpathentry kind="lib" path="/GameServer/lib/javolution-5.5.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
