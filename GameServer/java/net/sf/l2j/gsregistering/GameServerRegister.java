@@ -31,70 +31,81 @@ import net.sf.l2j.loginserver.GameServerTable;
 
 public class GameServerRegister
 {
-    private static String _choice;
-    private static GameServerTable gsTable;
+	private static String _choice;
 
-    public static void main(String[] args) throws IOException
-    {
-        Server.SERVER_MODE = Server.MODE_LOGINSERVER;
-        Config.load();
-        gsTable = new GameServerTable();
-        System.out.println("Welcome to L2Jserver GameServer Registration.");
-        System.out.println("Enter The id of the server you want to register or type help to get a list of ids:");
+	public static void main(String[] args) throws IOException
+	{
+		Server.SERVER_MODE = Server.MODE_LOGINSERVER;
+		Config.load();
 
-        try (InputStreamReader ir = new InputStreamReader(System.in);
-            LineNumberReader _in = new LineNumberReader(ir))
-        {
-            while(true)
-            {
-                System.out.println("Your choice:");
-                _choice = _in.readLine();
+		try
+		{
+			GameServerTable.load();
+		}
+		catch (Exception e)
+		{
+			System.out.println("FATAL: Failed loading GameServerTable. Reason: " + e.getMessage());
+			e.printStackTrace();
+			System.exit(1);
+		}
 
-                if (_choice.equalsIgnoreCase("help"))
-                {
-                    for (Map.Entry<Integer, String> entry : gsTable.serverNames.entrySet())
-                    {
-                        System.out.println("Server: id:"+entry.getKey()+" - "+entry.getValue());
-                    }
-                    System.out.println("You can also see servername.xml");
-                }
-                else
-                {
-                    try
-                    {
-                        int id = new Integer(_choice).intValue();
-                        if (id > gsTable.serverNames.size())
-                        {
-                            System.out.println("ID is too high (max is "+(gsTable.serverNames.size())+")");
-                            continue;
-                        }
+		GameServerTable gameServerTable = GameServerTable.getInstance();
+		System.out.println("Welcome to L2JLisvus GameServer Registration.");
+		System.out.println("Enter The id of the server you want to register or type help to get a list of ids:");
 
-                        if (id < 1)
-                        {
-                            System.out.println("ID must be a number above 0.");
-                            continue;
-                        }
-                        else
-                        {
-                            if (gsTable.isIDfree(id))
-                            {
-                                byte[] hex = LoginServerThread.generateHex(16);
-                                gsTable.createServer(gsTable.new GameServer(hex, id));
-                                Config.saveHexid(new BigInteger(hex).toString(16),"hexid.txt");
-                                System.out.println("Server Registered hexid saved to 'hexid.txt'");
-                                System.out.println("Put this file in the /config folder of your gameserver.");
-                                System.exit(0);
-                            }
-                            else
-                                System.out.println("This id is not free!");
-                        }
-                    }
-                    catch (NumberFormatException nfe)
-                    {
-                        System.out.println("Please, type a number or 'help'.");
-                    }
-                }
-            }
-        }
-    }
+		try (InputStreamReader ir = new InputStreamReader(System.in);
+			LineNumberReader _in = new LineNumberReader(ir))
+		{
+			while (true)
+			{
+				System.out.println("Your choice:");
+				_choice = _in.readLine();
+
+				if (_choice.equalsIgnoreCase("help"))
+				{
+					for (Map.Entry<Integer, String> entry : gameServerTable.serverNames.entrySet())
+					{
+						System.out.println("Server: id:" + entry.getKey() + " - " + entry.getValue());
+					}
+					System.out.println("You can also see servername.xml");
+				}
+				else
+				{
+					try
+					{
+						int id = new Integer(_choice).intValue();
+						if (id > gameServerTable.serverNames.size())
+						{
+							System.out.println("ID is too high (max is " + (gameServerTable.serverNames.size()) + ")");
+							continue;
+						}
+
+						if (id < 1)
+						{
+							System.out.println("ID must be a number above 0.");
+							continue;
+						}
+						
+						if (gameServerTable.isIDfree(id))
+						{
+							byte[] hex = LoginServerThread.generateHex(16);
+							gameServerTable.createServer(gameServerTable.new GameServer(hex, id));
+							Config.saveHexid(new BigInteger(hex).toString(16), "hexid.txt");
+							System.out.println("Server Registered hexid saved to 'hexid.txt'");
+							System.out.println("Put this file in the /config folder of your gameserver.");
+							System.exit(0);
+						}
+						else
+						{
+							System.out.println("This id is not free!");
+						}
+					}
+					catch (NumberFormatException nfe)
+					{
+						System.out.println("Please, type a number or 'help'.");
+					}
+				}
+			}
+		}
+	}
 }

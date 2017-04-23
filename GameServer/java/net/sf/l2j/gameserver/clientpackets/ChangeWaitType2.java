@@ -18,10 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
-import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -31,85 +27,79 @@ import net.sf.l2j.gameserver.serverpackets.ChairSit;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.4.3 $ $Date: 2005/03/27 15:29:30 $
  */
-public class ChangeWaitType2 extends ClientBasePacket
+public class ChangeWaitType2 extends L2GameClientPacket
 {
-    private static final String _C__1D_CHANGEWAITTYPE2 = "[C] 1D ChangeWaitType2";
-
-    private final boolean _typeStand;
-
-    /**
-     * packet type id 0x1d
-     * 
-     * sample
-     * 
-     * 1d
-     * 01 00 00 00 // type (0 = sit, 1 = stand)
-     * 
-     * format:		cd
-     * @param decrypt
-     */
-    public ChangeWaitType2(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _typeStand = (readD() == 1);
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (getClient() != null && player != null)
+	private static final String _C__1D_CHANGEWAITTYPE2 = "[C] 1D ChangeWaitType2";
+	
+	private boolean _typeStand;
+	
+	@Override
+	protected void readImpl()
 	{
-            if (player.isOutOfControl())
-            {
-                player.sendPacket(new ActionFailed());
-                return;
-            }
-
-            if (player.getMountType() != 0)
-                return;
-
-            L2Object target = player.getTarget();
-
-            if (target != null && !player.isSitting() && !_typeStand
-                    && target instanceof L2StaticObjectInstance
-                    && ((L2StaticObjectInstance)target).getType() == 1
-                    && CastleManager.getInstance().getCastle(target) != null
-                    && player.isInsideRadius(target, L2StaticObjectInstance.INTERACTION_DISTANCE, false, false))
-            {
-                ChairSit cs = new ChairSit(player,((L2StaticObjectInstance)target).getStaticObjectId());
-                player.sitDown();
-                player.broadcastPacket(cs);
-            }
-
-	    if (_typeStand)
-	        player.standUp();
-	    else
-            {
-                if (!player.isPendingSitting())
-                {
-                    if (player.isMoving())
-                        player.setIsPendingSitting(true);
-                    else
-                    {
-                        if (player.isAttackingDisabled() || player.isImmobilized() || player.isCastingNow())
-                            return;
-
-                        player.sitDown();
-                    }
-                }
-            }
+		_typeStand = (readD() == 1);
 	}
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__1D_CHANGEWAITTYPE2;
-    }
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if ((getClient() != null) && (player != null))
+		{
+			if (player.isOutOfControl())
+			{
+				player.sendPacket(new ActionFailed());
+				return;
+			}
+			
+			if (player.getMountType() != 0)
+			{
+				return;
+			}
+			
+			L2Object target = player.getTarget();
+			
+			if ((target != null) && !player.isSitting() && !_typeStand && (target instanceof L2StaticObjectInstance) && (((L2StaticObjectInstance) target).getType() == 1) && (CastleManager.getInstance().getCastle(target) != null) && player.isInsideRadius(target, L2StaticObjectInstance.INTERACTION_DISTANCE, false, false))
+			{
+				ChairSit cs = new ChairSit(player, ((L2StaticObjectInstance) target).getStaticObjectId());
+				player.sitDown();
+				player.broadcastPacket(cs);
+			}
+			
+			if (_typeStand)
+			{
+				player.standUp();
+			}
+			else
+			{
+				if (!player.isPendingSitting())
+				{
+					if (player.isMoving())
+					{
+						player.setIsPendingSitting(true);
+					}
+					else
+					{
+						if (player.isAttackingDisabled() || player.isImmobilized() || player.isCastingNow())
+						{
+							return;
+						}
+						
+						player.sitDown();
+					}
+				}
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__1D_CHANGEWAITTYPE2;
+	}
 }

@@ -18,80 +18,69 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.LoginServerThread;
 import net.sf.l2j.gameserver.LoginServerThread.SessionKey;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.9.2.3.2.4 $ $Date: 2005/03/27 15:29:30 $
  */
-public class AuthLogin extends ClientBasePacket
+public class AuthLogin extends L2GameClientPacket
 {
-    private static final String _C__08_AUTHLOGIN = "[C] 08 AuthLogin";
-    private static Logger _log = Logger.getLogger(AuthLogin.class.getName());
+	private static final String _C__08_AUTHLOGIN = "[C] 08 AuthLogin";
+	private static Logger _log = Logger.getLogger(AuthLogin.class.getName());
 
-    // loginName + keys must match what the loginserver used.  
-    private final String _loginName;
-    private int _playKey1;
-    private int _playKey2;
-    private int _loginKey1;
-    private int _loginKey2;
+	// loginName + keys must match what the loginserver used.
+	private String _loginName;
+	private int _playKey1;
+	private int _playKey2;
+	private int _loginKey1;
+	private int _loginKey2;
 
-    /**
-     * @param decrypt
-     */
-    public AuthLogin(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
+	@Override
+	protected void readImpl()
+	{
+		_loginName = readS().toLowerCase();
+		_playKey2 = readD();
+		_playKey1 = readD();
+		_loginKey1 = readD();
+		_loginKey2 = readD();
+	}
 
-        _loginName = readS().toLowerCase();
-        _playKey2 = readD();
-        _playKey1 = readD();
-        _loginKey1 = readD();
-        _loginKey2 = readD();
-    }
+	@Override
+	public void runImpl()
+	{
+		if (!getClient().isProtocolOk())
+		{
+			return;
+		}
+		
+		SessionKey key = new SessionKey(_loginKey1, _loginKey2, _playKey1, _playKey2);
+		if (Config.DEBUG)
+		{
+			_log.info("user:" + _loginName);
+			_log.info("key:" + key);
+		}
 
-    @Override
-    public void runImpl()
-    {
-        if (!getClient().isProtocolOk())
-            return;
+		// avoid potential exploits
+		if (getClient().getAccountName() == null)
+		{
+			getClient().setAccountName(_loginName);
+			LoginServerThread.getInstance().addGameServerLogin(_loginName, getClient());
+			LoginServerThread.getInstance().addWaitingClientAndSendRequest(_loginName, getClient(), key);
+		}
+	}
 
-        // Exploit Prevention
-        if (LoginServerThread.getInstance().getAccountInGameServer(_loginName))
-        {
-            _log.warning("Double login attempt by account " + _loginName);
-            getConnection().close(true);
-            return;
-        }
-
-        SessionKey key = new SessionKey(_loginKey1, _loginKey2, _playKey1, _playKey2);
-        if (Config.DEBUG)
-        {
-            _log.info("user:" + _loginName);
-            _log.info("key:" + key);
-        }
-
-        // avoid potential exploits
-        if (getClient().getLoginName() == null)
-        {
-            getClient().setLoginName(_loginName);
-            LoginServerThread.getInstance().addGameServerLogin(_loginName, getClient());
-            LoginServerThread.getInstance().addWaitingClientAndSendRequest(_loginName, getClient(), key);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__08_AUTHLOGIN;
-    }
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__08_AUTHLOGIN;
+	}
 }

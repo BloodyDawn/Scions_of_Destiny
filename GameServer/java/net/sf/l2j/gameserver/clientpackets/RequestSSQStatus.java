@@ -18,50 +18,49 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.SevenSigns;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.SSQStatus;
 
 /**
- * Seven Signs Record Update Request
- * 
- * packet type id 0xc7
- * format: cc
- * 
+ * Seven Signs Record Update Request packet type id 0xc7 format: cc
  * @author Tempy
  */
-public class RequestSSQStatus extends ClientBasePacket
+public class RequestSSQStatus extends L2GameClientPacket
 {
 	private static final String _C__C7_RequestSSQStatus = "[C] C7 RequestSSQStatus";
-	
+
 	private int _page;
-	
-	public RequestSSQStatus(ByteBuffer buf, ClientThread client)
+
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_page = readC();
 	}
-
-        @Override
+	
+	@Override
 	public void runImpl()
 	{
-		L2PcInstance activeChar = getClient().getActiveChar(); 
+		L2PcInstance activeChar = getClient().getActiveChar();
 		if (activeChar == null)
-		    return;
+		{
+			return;
+		}
 		
-        if ((SevenSigns.getInstance().isSealValidationPeriod() || SevenSigns.getInstance().isCompResultsPeriod()) && _page == 4)
-            return;
-
+		if ((SevenSigns.getInstance().isSealValidationPeriod() || SevenSigns.getInstance().isCompResultsPeriod()) && (_page == 4))
+		{
+			return;
+		}
+		
 		SSQStatus ssqs = new SSQStatus(activeChar, _page);
 		activeChar.sendPacket(ssqs);
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__C7_RequestSSQStatus;

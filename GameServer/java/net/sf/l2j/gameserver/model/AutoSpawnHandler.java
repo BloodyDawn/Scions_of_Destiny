@@ -539,9 +539,17 @@ public class AutoSpawnHandler
             try
             {
                 AutoSpawnInstance spawnInst = _registeredSpawns.get(_objectId);
+                if (spawnInst == null)
+				{
+					_log.info("AutoSpawnHandler: No spawn registered for object ID = " + _objectId + ".");
+					return;
+				}
 
                 for (L2NpcInstance npcInst : spawnInst.getNPCInstanceList()) 
                 {
+                	if (npcInst == null)
+                		continue;
+
                     npcInst.deleteMe();
                     spawnInst.removeNpcInstance(npcInst);
 

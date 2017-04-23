@@ -27,66 +27,70 @@ import net.sf.l2j.gameserver.skills.Formulas;
 
 /**
  * Class handling the Mana damage skill
- *
  * @author slyce
  */
 public class ManaDam implements ISkillHandler
 {
-    private static SkillType[] _skillIds =
-    {
-        SkillType.MANADAM
-    };
+	private static SkillType[] _skillIds =
+	{
+		SkillType.MANADAM
+	};
 
-    /**
-     * 
-     * @see net.sf.l2j.gameserver.handler.ISkillHandler#useSkill(net.sf.l2j.gameserver.model.L2Character, net.sf.l2j.gameserver.model.L2Skill, net.sf.l2j.gameserver.model.L2Object[])
-     */
-    public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets)
-    {
-        if (activeChar.isAlikeDead())
-            return;
+	/**
+	 * @see net.sf.l2j.gameserver.handler.ISkillHandler#useSkill(net.sf.l2j.gameserver.model.L2Character, net.sf.l2j.gameserver.model.L2Skill, net.sf.l2j.gameserver.model.L2Object[], boolean)
+	 */
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		if (activeChar.isAlikeDead())
+		{
+			return;
+		}
 
-        boolean ss = false;
-        boolean bss = false;
+		boolean ss = false;
+		boolean bss = false;
 
-        if (activeChar instanceof L2NpcInstance)
-        {
-            ss = ((L2NpcInstance)activeChar).isUsingShot(true);
-            bss = ((L2NpcInstance)activeChar).isUsingShot(false);
-        }
+		if (activeChar instanceof L2NpcInstance)
+		{
+			ss = ((L2NpcInstance) activeChar).isUsingShot(true);
+			bss = ((L2NpcInstance) activeChar).isUsingShot(false);
+		}
 
-        for (int index = 0; index < targets.length; index++)
-        {
-            L2Character target = (L2Character)targets[index];
-            if (target.isInvul())
-                return;
+		for (L2Object target2 : targets)
+		{
+			L2Character target = (L2Character) target2;
+			if (target.isInvul())
+			{
+				return;
+			}
 
-            double damage = Formulas.getInstance().calcManaDam(activeChar, target, skill, ss, bss);
-            if (damage > 0)
-            {
-                double mp = (damage > target.getCurrentMp() ? target.getCurrentMp() : damage);
-                target.reduceCurrentMp(mp);
+			double damage = Formulas.getInstance().calcManaDam(activeChar, target, skill, ss, bss);
+			if (damage > 0)
+			{
+				double mp = (damage > target.getCurrentMp() ? target.getCurrentMp() : damage);
+				target.reduceCurrentMp(mp);
 
-                if (target instanceof L2PcInstance)
-                {
-                    StatusUpdate sump = new StatusUpdate(target.getObjectId());
-                    sump.addAttribute(StatusUpdate.CUR_MP, (int) target.getCurrentMp());
-                    // [L2J_JP EDIT START - TSL]
-                    target.sendPacket(sump);
+				if (target instanceof L2PcInstance)
+				{
+					StatusUpdate sump = new StatusUpdate(target.getObjectId());
+					sump.addAttribute(StatusUpdate.CUR_MP, (int) target.getCurrentMp());
+					// [L2J_JP EDIT START - TSL]
+					target.sendPacket(sump);
 
-                    SystemMessage sm = new SystemMessage(SystemMessage.S2_MP_HAS_BEEN_DRAINED_BY_S1);
-                    sm.addString(activeChar.getName());
-                    sm.addNumber((int) mp);
-                    target.sendPacket(sm);
-                }
-            }
+					SystemMessage sm = new SystemMessage(SystemMessage.S2_MP_HAS_BEEN_DRAINED_BY_S1);
+					sm.addString(activeChar.getName());
+					sm.addNumber((int) mp);
+					target.sendPacket(sm);
+				}
+			}
 
-            // [L2J_JP EDIT END - TSL]
-        }
-    }
+			// [L2J_JP EDIT END - TSL]
+		}
+	}
 
-    public SkillType[] getSkillIds()
-    {
-        return _skillIds;
-    }
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return _skillIds;
+	}
 }

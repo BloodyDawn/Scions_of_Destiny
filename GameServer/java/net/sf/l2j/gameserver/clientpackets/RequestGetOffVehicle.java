@@ -18,9 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.serverpackets.GetOffVehicle;
@@ -28,60 +25,60 @@ import net.sf.l2j.gameserver.serverpackets.StopMoveInVehicle;
 
 /**
  * @author Maktakien
- *
  */
-public class RequestGetOffVehicle extends ClientBasePacket
+public class RequestGetOffVehicle extends L2GameClientPacket
 {
-    private int _boatId, _x, _y, _z;
-
-    /**
-     * @param buf
-     * @param client
-     */
-    public RequestGetOffVehicle(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _boatId  = readD();
-        _x  = readD();
-        _y  = readD();
-        _z  = readD();
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
-     */
-    @Override
-    public void runImpl()
-    {	
-        final L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        if (!activeChar.isInBoat() || activeChar.getBoat().getObjectId() != _boatId
-                || !activeChar.isInsideRadius(_x, _y, _z, 1000, true, false))
-        {
-            sendPacket(new ActionFailed());
-            return;
-        }
-
-        if (activeChar.getBoat().isMoving())
-            activeChar.broadcastPacket(new StopMoveInVehicle(activeChar, _boatId));
-
-        activeChar.setBoat(null);
-        activeChar.setInBoatPosition(null);
-        sendPacket(new ActionFailed());
-        activeChar.broadcastPacket(new GetOffVehicle(activeChar.getObjectId(), _boatId, _x, _y, _z));
-        activeChar.setXYZ(_x, _y, _z);
-        activeChar.revalidateZone(true);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        // TODO Auto-generated method stub
-        return "[S] 5d GetOffVehicle";
-    }
+	private int _boatId, _x, _y, _z;
+	
+	@Override
+	protected void readImpl()
+	{
+		_boatId = readD();
+		_x = readD();
+		_y = readD();
+		_z = readD();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
+	 */
+	@Override
+	public void runImpl()
+	{
+		final L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (!activeChar.isInBoat() || (activeChar.getBoat().getObjectId() != _boatId) || !activeChar.isInsideRadius(_x, _y, _z, 1000, true, false))
+		{
+			sendPacket(new ActionFailed());
+			return;
+		}
+		
+		if (activeChar.getBoat().isMoving())
+		{
+			activeChar.broadcastPacket(new StopMoveInVehicle(activeChar, _boatId));
+		}
+		
+		activeChar.setBoat(null);
+		activeChar.setInBoatPosition(null);
+		sendPacket(new ActionFailed());
+		activeChar.broadcastPacket(new GetOffVehicle(activeChar.getObjectId(), _boatId, _x, _y, _z));
+		activeChar.setXYZ(_x, _y, _z);
+		activeChar.revalidateZone(true);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		// TODO Auto-generated method stub
+		return "[S] 5d GetOffVehicle";
+	}
 }

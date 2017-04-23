@@ -18,58 +18,66 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.AskJoinPledge;
 
 /**
  * This class ...
- *
  * @version $Revision: 1.3.4.4 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestJoinPledge extends ClientBasePacket
+public class RequestJoinPledge extends L2GameClientPacket
 {
-    private static final String _C__24_REQUESTJOINPLEDGE = "[C] 24 RequestJoinPledge";
-    static Logger _log = Logger.getLogger(RequestJoinPledge.class.getName());
-
-    private final int _target;
-
-    public RequestJoinPledge(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _target = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        if (!(L2World.getInstance().findObject(_target) instanceof L2PcInstance))
-            return;
-
-        L2PcInstance newMember = (L2PcInstance) L2World.getInstance().findObject(_target);
-
-        if (!activeChar.getClan().CheckClanJoinCondition(activeChar, newMember))
-            return;
-
-        if (!activeChar.getRequest().setRequest(newMember, this))
-            return;
-
-        newMember.sendPacket(new AskJoinPledge(activeChar.getObjectId(), activeChar.getClan().getName()));
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__24_REQUESTJOINPLEDGE;
-    }
+	private static final String _C__24_REQUESTJOINPLEDGE = "[C] 24 RequestJoinPledge";
+	static Logger _log = Logger.getLogger(RequestJoinPledge.class.getName());
+	
+	private int _target;
+	
+	@Override
+	protected void readImpl()
+	{
+		_target = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (!(L2World.getInstance().findObject(_target) instanceof L2PcInstance))
+		{
+			return;
+		}
+		
+		L2PcInstance newMember = (L2PcInstance) L2World.getInstance().findObject(_target);
+		
+		if (!activeChar.getClan().CheckClanJoinCondition(activeChar, newMember))
+		{
+			return;
+		}
+		
+		if (!activeChar.getRequest().setRequest(newMember, this))
+		{
+			return;
+		}
+		
+		newMember.sendPacket(new AskJoinPledge(activeChar.getObjectId(), activeChar.getClan().getName()));
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__24_REQUESTJOINPLEDGE;
+	}
 }

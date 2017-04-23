@@ -22,20 +22,23 @@ package net.sf.l2j.gameserver.serverpackets;
  * This class ...
  * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class LeaveWorld extends ServerBasePacket
+public class LeaveWorld extends L2GameServerPacket
 {
-    private static final String _S__96_LEAVEWORLD = "[S] 7e LeaveWorld";
-
-    final void writeImpl()
-    {
-        writeC(0x7e);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__96_LEAVEWORLD;
-    }
+	private static final String _S__96_LEAVEWORLD = "[S] 7e LeaveWorld";
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x7e);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__96_LEAVEWORLD;
+	}
 }

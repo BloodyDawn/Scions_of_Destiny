@@ -19,34 +19,33 @@
 package net.sf.l2j.gameserver.serverpackets;
 
 /**
- * sample
- *
- * format
- * d
- * 
+ * sample format d
  * @version $Revision: 1.1.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class ShowCalculator extends ServerBasePacket
+public class ShowCalculator extends L2GameServerPacket
 {
-    private static final String _S__DC_SHOWCALCULATOR = "[S] dc ShowCalculator";
-    private int _calculatorId;
-
-    public ShowCalculator(int calculatorId)
-    {
-        _calculatorId = calculatorId;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xdc);
-        writeD(_calculatorId);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__DC_SHOWCALCULATOR;
-    }
+	private static final String _S__DC_SHOWCALCULATOR = "[S] dc ShowCalculator";
+	private final int _calculatorId;
+	
+	public ShowCalculator(int calculatorId)
+	{
+		_calculatorId = calculatorId;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xdc);
+		writeD(_calculatorId);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__DC_SHOWCALCULATOR;
+	}
 }

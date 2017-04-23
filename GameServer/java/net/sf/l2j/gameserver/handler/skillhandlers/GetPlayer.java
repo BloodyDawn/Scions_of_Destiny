@@ -16,10 +16,9 @@
  *
  * http://www.gnu.org/copyleft/gpl.html
  */
-package net.sf.l2j.gameserver.handler.skillhandlers; 
+package net.sf.l2j.gameserver.handler.skillhandlers;
 
 import net.sf.l2j.gameserver.handler.ISkillHandler;
-import net.sf.l2j.gameserver.model.L2Attackable;
 import net.sf.l2j.gameserver.model.L2Character;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
@@ -33,56 +32,62 @@ import net.sf.l2j.util.Rnd;
  */
 public class GetPlayer implements ISkillHandler
 {
-    private static final SkillType[] SKILL_IDS =
-    {
-        SkillType.GET_PLAYER
-    };
+	private static final SkillType[] SKILL_IDS =
+	{
+		SkillType.GET_PLAYER
+	};
 
-    /**
-     * 
-     * @see net.sf.l2j.gameserver.handler.ISkillHandler#useSkill(net.sf.l2j.gameserver.model.actor.L2Character, net.sf.l2j.gameserver.model.L2Skill, net.sf.l2j.gameserver.model.L2Object[])
-     */
-    public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets)
-    {
-        if (activeChar.isAlikeDead())
-            return;
+	/**
+	 * @see net.sf.l2j.gameserver.handler.ISkillHandler#useSkill(L2Character, L2Skill, L2Object[], boolean)
+	 */
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		if (activeChar.isAlikeDead())
+		{
+			return;
+		}
 
-        for (L2Object target : targets)
-        {
-            if (target instanceof L2PcInstance)
-            {
-                L2PcInstance trg = (L2PcInstance) target;
-                if (trg.isAlikeDead() || trg.isTeleporting() || trg.inOfflineMode())
-                    continue;
+		for (L2Object target : targets)
+		{
+			if (target instanceof L2PcInstance)
+			{
+				L2PcInstance trg = (L2PcInstance) target;
+				if (trg.isAlikeDead() || trg.isTeleporting() || trg.inOfflineMode())
+				{
+					continue;
+				}
 
-                // Stop movement
-                trg.stopMove(null);
-                trg.abortAttack();
-                trg.abortCast();
+				// Stop movement
+				trg.stopMove(null);
+				trg.abortAttack();
+				trg.abortCast();
 
-                trg.setIsTeleporting(true);
-                trg.setIsSummoned(true);
-                trg.setTarget(null);
+				trg.setIsTeleporting(true);
+				trg.setIsSummoned(true);
+				trg.setTarget(null);
 
-                int x = activeChar.getX() + Rnd.get(-10, 10);
-                int y = activeChar.getY() + Rnd.get(-10, 10);
-                int z = activeChar.getZ();
+				int x = activeChar.getX() + Rnd.get(-10, 10);
+				int y = activeChar.getY() + Rnd.get(-10, 10);
+				int z = activeChar.getZ();
 
-                trg.broadcastPacket(new TeleportToLocation(trg, x, y, z));
-                trg.setXYZ(x, y, z);
+				trg.broadcastPacket(new TeleportToLocation(trg, x, y, z));
+				trg.setXYZ(x, y, z);
 
-                if (trg.getWorldRegion() != null)
-                    trg.getWorldRegion().revalidateZones(trg);
-            }
-        }
-    }
+				if (trg.getWorldRegion() != null)
+				{
+					trg.getWorldRegion().revalidateZones(trg);
+				}
+			}
+		}
+	}
 
-    /**
-     * 
-     * @see net.sf.l2j.gameserver.handler.ISkillHandler#getSkillIds()
-     */
-    public SkillType[] getSkillIds()
-    {
-        return SKILL_IDS;
-    }
+	/**
+	 * @see net.sf.l2j.gameserver.handler.ISkillHandler#getSkillIds()
+	 */
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return SKILL_IDS;
+	}
 }

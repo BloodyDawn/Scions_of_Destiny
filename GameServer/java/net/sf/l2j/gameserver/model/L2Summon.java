@@ -19,7 +19,7 @@
 package net.sf.l2j.gameserver.model;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
+import net.sf.l2j.gameserver.L2GameClient;
 import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.ai.L2CharacterAI;
@@ -218,7 +218,7 @@ public abstract class L2Summon extends L2PlayableInstance
         }
     }
 
-    public void onActionShift(ClientThread client)
+    public void onActionShift(L2GameClient client)
     {
         // Get the L2PcInstance corresponding to the thread
         L2PcInstance player = client.getActiveChar();

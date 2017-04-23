@@ -24,65 +24,70 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.3.2.6 $ $Date: 2005/03/27 15:29:57 $
  */
-public class PrivateStoreListSell extends ServerBasePacket
+public class PrivateStoreListSell extends L2GameServerPacket
 {
-    private static final String _S__B4_PRIVATESTORELISTSELL = "[S] 9b PrivateStoreListSell";
-    private L2PcInstance _storePlayer;
-    private L2PcInstance _player;
-    private int _playerAdena;
-    private boolean _packageSale;
-    private TradeList.TradeItem[] _items;
-
-    // player's private shop
-    public PrivateStoreListSell(L2PcInstance player, L2PcInstance storePlayer)
-    {
-        _player = player;
-        _storePlayer = storePlayer;
-        _playerAdena = _player.getAdena();
-        _items = _storePlayer.getSellList().getItems();
-        _packageSale = _storePlayer.getSellList().isPackaged();
-    }
-
-    // lease shop
-    public PrivateStoreListSell(L2PcInstance player, L2MerchantInstance storeMerchant)
-    {
-        _player = player;
-        _playerAdena = _player.getAdena();
-        _items = _storePlayer.getSellList().getItems();
-        _packageSale = _storePlayer.getSellList().isPackaged();
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x9b);
-        writeD(_storePlayer.getObjectId());
-        writeD(_packageSale ? 1 : 0);
-        writeD(_playerAdena);
-
-        writeD(_items.length);
-        for (TradeList.TradeItem item : _items)
-        {
-            writeD(item.getItem().getType2());
-            writeD(item.getObjectId());
-            writeD(item.getItem().getItemId());
-            writeD(item.getCount());
-            writeH(0x00);
-	    writeH(item.getEnchant());
-            writeH(item.getCustomType2());
-            writeD(item.getItem().getBodyPart());
-            writeD(item.getPrice()); //your price
-            writeD(item.getItem().getReferencePrice()); //store price
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__B4_PRIVATESTORELISTSELL;
-    }
+	private static final String _S__B4_PRIVATESTORELISTSELL = "[S] 9b PrivateStoreListSell";
+	private L2PcInstance _storePlayer;
+	private final L2PcInstance _player;
+	private final int _playerAdena;
+	
+	private final boolean _packageSale;
+	private final TradeList.TradeItem[] _items;
+	
+	// player's private shop
+	public PrivateStoreListSell(L2PcInstance player, L2PcInstance storePlayer)
+	{
+		_player = player;
+		_storePlayer = storePlayer;
+		_playerAdena = _player.getAdena();
+		_items = _storePlayer.getSellList().getItems();
+		
+		_packageSale = _storePlayer.getSellList().isPackaged();
+	}
+	
+	// lease shop
+	public PrivateStoreListSell(L2PcInstance player, L2MerchantInstance storeMerchant)
+	{
+		_player = player;
+		_playerAdena = _player.getAdena();
+		_items = _storePlayer.getSellList().getItems();
+		
+		_packageSale = _storePlayer.getSellList().isPackaged();
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x9b);
+		writeD(_storePlayer.getObjectId());
+		writeD(_packageSale ? 1 : 0);
+		writeD(_playerAdena);
+		
+		writeD(_items.length);
+		for (TradeList.TradeItem item : _items)
+		{
+			writeD(item.getItem().getType2());
+			writeD(item.getObjectId());
+			writeD(item.getItem().getItemId());
+			writeD(item.getCount());
+			writeH(0x00);
+			writeH(item.getEnchant());
+			writeH(item.getCustomType2());
+			writeD(item.getItem().getBodyPart());
+			writeD(item.getPrice()); // your price
+			writeD(item.getItem().getReferencePrice()); // store price
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__B4_PRIVATESTORELISTSELL;
+	}
 }

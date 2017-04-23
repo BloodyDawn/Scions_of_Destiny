@@ -18,27 +18,29 @@
  */
 package net.sf.l2j.gameserver.serverpackets;
 
-public class PetDelete extends ServerBasePacket
+public class PetDelete extends L2GameServerPacket
 {
-    private static final String _S__CF_PETDELETE = "[S] b6 PetDelete";
-    private int _petType;
-    private int _petObjId;
-
-    public PetDelete(int petType, int petObjId)
-    {
-        _petType = petType;
-        _petObjId = petObjId;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xb6);
-        writeD(_petType);
-        writeD(_petObjId);
-    }
-
-    public String getType()
-    {
-        return _S__CF_PETDELETE;
-    }
+	private static final String _S__CF_PETDELETE = "[S] b6 PetDelete";
+	private final int _petType;
+	private final int _petObjId;
+	
+	public PetDelete(int petType, int petObjId)
+	{
+		_petType = petType;
+		_petObjId = petObjId;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xb6);
+		writeD(_petType);
+		writeD(_petObjId);
+	}
+	
+	@Override
+	public String getType()
+	{
+		return _S__CF_PETDELETE;
+	}
 }

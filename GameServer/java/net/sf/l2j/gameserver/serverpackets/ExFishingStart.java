@@ -23,43 +23,46 @@ import net.sf.l2j.gameserver.model.L2Character;
 /**
  * Format (ch)ddddd
  * @author -Wooden-
- *
  */
-public class ExFishingStart extends ServerBasePacket
+public class ExFishingStart extends L2GameServerPacket
 {
-    private static final String _S__FE_13_EXFISHINGSTART = "[S] FE:13 ExFishingStart";
-    private L2Character _character;
-    private int _x,_y,_z,_fishType;	
-
-    public ExFishingStart(L2Character character, int fishType, int x, int y,int z)
-    {
-        _character = character;
-        _fishType = fishType;
-        _x = x;
-        _y = y;
-        _z = z;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    final void writeImpl()
-    {
-        writeC(0xfe);
-        writeH(0x13);
-        writeD(_character.getObjectId());
-        writeD(_fishType); // fish type
-        writeD(_x); // x poison
-        writeD(_y); // y poison
-        writeD(_z); // z poison
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        return _S__FE_13_EXFISHINGSTART;
-    }
+	private static final String _S__FE_13_EXFISHINGSTART = "[S] FE:13 ExFishingStart";
+	private final L2Character _character;
+	private final int _x, _y, _z, _fishType;
+	
+	public ExFishingStart(L2Character character, int fishType, int x, int y, int z)
+	{
+		_character = character;
+		
+		_fishType = fishType;
+		_x = x;
+		_y = y;
+		_z = z;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xfe);
+		writeH(0x13);
+		writeD(_character.getObjectId());
+		writeD(_fishType); // fish type
+		writeD(_x); // x poison
+		writeD(_y); // y poison
+		writeD(_z); // z poison
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__FE_13_EXFISHINGSTART;
+	}
 }

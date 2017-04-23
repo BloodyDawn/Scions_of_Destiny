@@ -45,58 +45,65 @@ import net.sf.l2j.gameserver.model.entity.Castle;
  * d = (UNKNOW) Siege Time Select Related
  * @author KenM
  */
-public class SiegeInfo extends ServerBasePacket
+public class SiegeInfo extends L2GameServerPacket
 {
-    private static final String _S__C9_SIEGEINFO = "[S] c9 SiegeInfo";
-    private static Logger _log = Logger.getLogger(SiegeInfo.class.getName());
-    private Castle _Castle;
-
-    public SiegeInfo(Castle castle)
-    {
-        _Castle = castle;
-    }
-
-    final void writeImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        writeC(0xc9);
-        writeD(_Castle.getCastleId());
-        writeD(((_Castle.getOwnerId() == activeChar.getClanId()) && (activeChar.isClanLeader())) ? 0x07 : 0x00);        
-        writeD(_Castle.getOwnerId());
-        if (_Castle.getOwnerId() > 0)
-        {
-            L2Clan owner = ClanTable.getInstance().getClan(_Castle.getOwnerId());
-            if (owner != null)
-            {
-                writeS(owner.getName());        // Clan Name
-                writeS(owner.getLeaderName());  // Clan Leader Name
-                writeD(owner.getAllyId());      // Ally ID
-                writeS(owner.getAllyName());    // Ally Name
-            }
-            else
-                _log.warning("Null owner for castle: " + _Castle.getName());
-        }
-        else
-        {
-            writeS("NPC");  // Clan Name
-            writeS("");     // Clan Leader Name
-            writeD(0);      // Ally ID
-            writeS("");     // Ally Name
-        }
-
-        writeD((int) (Calendar.getInstance().getTimeInMillis()/1000));
-        writeD((int) (_Castle.getSiege().getSiegeDate().getTimeInMillis()/1000));
-        writeD(0x00); //number of choices?
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__C9_SIEGEINFO;
-    }
+	private static final String _S__C9_SIEGEINFO = "[S] c9 SiegeInfo";
+	private static Logger _log = Logger.getLogger(SiegeInfo.class.getName());
+	private final Castle _Castle;
+	
+	public SiegeInfo(Castle castle)
+	{
+		_Castle = castle;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		writeC(0xc9);
+		writeD(_Castle.getCastleId());
+		writeD(((_Castle.getOwnerId() == activeChar.getClanId()) && (activeChar.isClanLeader())) ? 0x07 : 0x00);
+		writeD(_Castle.getOwnerId());
+		if (_Castle.getOwnerId() > 0)
+		{
+			L2Clan owner = ClanTable.getInstance().getClan(_Castle.getOwnerId());
+			if (owner != null)
+			{
+				writeS(owner.getName()); // Clan Name
+				writeS(owner.getLeaderName()); // Clan Leader Name
+				writeD(owner.getAllyId()); // Ally ID
+				writeS(owner.getAllyName()); // Ally Name
+			}
+			else
+			{
+				_log.warning("Null owner for castle: " + _Castle.getName());
+			}
+		}
+		else
+		{
+			writeS("NPC"); // Clan Name
+			writeS(""); // Clan Leader Name
+			writeD(0); // Ally ID
+			writeS(""); // Ally Name
+		}
+		
+		writeD((int) (Calendar.getInstance().getTimeInMillis() / 1000));
+		writeD((int) (_Castle.getSiege().getSiegeDate().getTimeInMillis() / 1000));
+		writeD(0x00); // number of choices?
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__C9_SIEGEINFO;
+	}
 }

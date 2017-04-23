@@ -18,12 +18,10 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.Olympiad;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.communitybbs.CommunityBoard;
@@ -42,157 +40,209 @@ import net.sf.l2j.gameserver.serverpackets.NpcHtmlMessage;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.12.4.5 $ $Date: 2005/04/11 10:06:11 $
  */
-public class RequestBypassToServer extends ClientBasePacket
+public class RequestBypassToServer extends L2GameClientPacket
 {
-    private static final String _C__21_REQUESTBYPASSTOSERVER = "[C] 21 RequestBypassToServer";
-    private static Logger _log = Logger.getLogger(RequestBypassToServer.class.getName());
-
-    // S
-    private final String _command;
-
-    /**
-     * @param decrypt
-     */
-    public RequestBypassToServer(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _command = readS();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        if (!getClient().getFloodProtectors().getServerBypass().tryPerformAction(_command))
-            return;
-
-        try
-        {
-            if (_command.startsWith("admin_"))
-            {
-                if (Config.ALT_PRIVILEGES_ADMIN && !AdminCommandHandler.getInstance().checkPrivileges(activeChar, _command))
-                {
-                    _log.info("<GM>" + activeChar + " does not have sufficient privileges for command '" + _command + "'.");
-                    return;
-                }
-
-                IAdminCommandHandler ach = AdminCommandHandler.getInstance().getAdminCommandHandler(_command);
-                if (ach != null)
-                    ach.useAdminCommand(_command, activeChar);
-                else
-                    _log.warning("No handler registered for bypass '"+_command+"'");
-            }
-            else if (_command.equals("come_here") && activeChar.getAccessLevel() >= Config.GM_ACCESSLEVEL)
-            {
-                comeHere(activeChar);
-            }
-            else if (_command.startsWith("player_help "))
-            {
-                playerHelp(activeChar, _command.substring(12));
-            }
-            else if (_command.startsWith("npc_"))
-            {
-                if (!activeChar.validateBypass(_command))
-                    return;
-
-                int endOfId = _command.indexOf('_', 5);
-                String id;
-                if (endOfId > 0)
-                    id = _command.substring(4, endOfId);
-                else
-                    id = _command.substring(4);
-                try
-                {
-                    L2Object object = L2World.getInstance().findObject(Integer.parseInt(id));
-                    if (_command.substring(endOfId+1).startsWith("event_participate"))
-                        L2Event.inscribePlayer(activeChar);
-                    else if (object != null && object instanceof L2NpcInstance && endOfId > 0 && activeChar.isInsideRadius(object, L2NpcInstance.INTERACTION_DISTANCE, false, false))
-
-                        ((L2NpcInstance) object).onBypassFeedback(activeChar, _command.substring(endOfId+1));
-                    activeChar.sendPacket(new ActionFailed());
-                }
-                catch (NumberFormatException nfe) {}
-            }
-            else if (_command.equals("menu_select?ask=-16&reply=1"))  // Draw a Symbol
-            {
-                L2Object object = activeChar.getTarget();
-                if (object instanceof L2NpcInstance)
-                    ((L2NpcInstance)object).onBypassFeedback(activeChar, _command);
-            }
-            else if (_command.equals("menu_select?ask=-16&reply=2"))
-            {
-                L2Object object = activeChar.getTarget();
-                if (object instanceof L2NpcInstance)
-                    ((L2NpcInstance)object).onBypassFeedback(activeChar, _command);
-            }
-            else if (_command.startsWith("manor_menu_select?"))
-            {
-                L2Object object = activeChar.getLastFolkNPC();
-                if ((object instanceof L2ManorManagerInstance || object instanceof L2CastleChamberlainInstance) && activeChar.isInsideRadius(object, L2NpcInstance.INTERACTION_DISTANCE, false, false))
-                    ((L2NpcInstance) object).onBypassFeedback(activeChar, _command);
-            }
-            else if (_command.startsWith("bbs_"))
-                CommunityBoard.getInstance().handleCommands(getClient(), _command);
-            else if (_command.startsWith("_bbs"))
-                CommunityBoard.getInstance().handleCommands(getClient(), _command);
-            else if (_command.startsWith("Quest "))
-            {
-                if (!activeChar.validateBypass(_command))
-                    return;
-
-                L2PcInstance player = getClient().getActiveChar();
-                String p = _command.substring(6).trim();
-                int idx = p.indexOf(' ');
-                if (idx < 0)
-                    player.processQuestEvent(p, "");
-                else
-                    player.processQuestEvent(p.substring(0, idx), p.substring(idx).trim());
-            }
-            else if (_command.startsWith("OlympiadArenaChange"))
-                Olympiad.getInstance().bypassChangeArena(_command, activeChar);
-        }
-        catch (Exception e)
-        {
-            _log.log(Level.WARNING, "Bad RequestBypassToServer: ", e);
-        }
-    }
-
-    /**
-     * @param client
-     */
-    private void comeHere(L2PcInstance activeChar) 
-    {
-        L2Object obj = activeChar.getTarget();
-        if (obj instanceof L2NpcInstance)
-        {
-            L2NpcInstance temp = (L2NpcInstance) obj;
-            temp.setTarget(activeChar);
-            temp.getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, new L2CharPosition(activeChar.getX(),activeChar.getY(), activeChar.getZ(), 0 ));
-        }
-    }
-
-    private void playerHelp(L2PcInstance activeChar, String path)
-    {
-        if (path.indexOf("..") != -1)
-            return;
-
-        String filename = "data/html/help/"+path;
-        NpcHtmlMessage html = new NpcHtmlMessage(1);
-        html.setFile(filename);
-        activeChar.sendPacket(html);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__21_REQUESTBYPASSTOSERVER;
-    }
+	private static final String _C__21_REQUESTBYPASSTOSERVER = "[C] 21 RequestBypassToServer";
+	private static Logger _log = Logger.getLogger(RequestBypassToServer.class.getName());
+	
+	// S
+	private String _command;
+	
+	@Override
+	protected void readImpl()
+	{
+		_command = readS();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (!getClient().getFloodProtectors().getServerBypass().tryPerformAction(_command))
+		{
+			return;
+		}
+		
+		try
+		{
+			if (_command.startsWith("admin_"))
+			{
+				
+				if (Config.ALT_PRIVILEGES_ADMIN && !AdminCommandHandler.getInstance().checkPrivileges(activeChar, _command))
+				
+				{
+					
+					_log.info("<GM>" + activeChar + " does not have sufficient privileges for command '" + _command + "'.");
+					
+					return;
+					
+				}
+				
+				IAdminCommandHandler ach = AdminCommandHandler.getInstance().getAdminCommandHandler(_command);
+				if (ach != null)
+				{
+					ach.useAdminCommand(_command, activeChar);
+				}
+				else
+				{
+					_log.warning("No handler registered for bypass '" + _command + "'");
+				}
+			}
+			else if (_command.equals("come_here") && (activeChar.getAccessLevel() >= Config.GM_ACCESSLEVEL))
+			{
+				comeHere(activeChar);
+			}
+			else if (_command.startsWith("player_help "))
+			{
+				playerHelp(activeChar, _command.substring(12));
+			}
+			else if (_command.startsWith("npc_"))
+			{
+				if (!activeChar.validateBypass(_command))
+				{
+					return;
+				}
+				
+				int endOfId = _command.indexOf('_', 5);
+				String id;
+				if (endOfId > 0)
+				{
+					id = _command.substring(4, endOfId);
+				}
+				else
+				{
+					id = _command.substring(4);
+				}
+				
+				try
+				
+				{
+					L2Object object = L2World.getInstance().findObject(Integer.parseInt(id));
+					if (_command.substring(endOfId + 1).startsWith("event_participate"))
+					{
+						L2Event.inscribePlayer(activeChar);
+					}
+					else if ((object != null) && (object instanceof L2NpcInstance) && (endOfId > 0) && activeChar.isInsideRadius(object, L2NpcInstance.INTERACTION_DISTANCE, false, false))
+					{
+						((L2NpcInstance) object).onBypassFeedback(activeChar, _command.substring(endOfId + 1));
+					}
+					
+					activeChar.sendPacket(new ActionFailed());
+					
+				}
+				
+				catch (NumberFormatException nfe)
+				{
+				}
+			}
+			
+			else if (_command.equals("menu_select?ask=-16&reply=1")) // Draw a Symbol
+			{
+				L2Object object = activeChar.getTarget();
+				if (object instanceof L2NpcInstance)
+				{
+					((L2NpcInstance) object).onBypassFeedback(activeChar, _command);
+				}
+				
+			}
+			else if (_command.equals("menu_select?ask=-16&reply=2"))
+			{
+				L2Object object = activeChar.getTarget();
+				if (object instanceof L2NpcInstance)
+				{
+					((L2NpcInstance) object).onBypassFeedback(activeChar, _command);
+				}
+				
+			}
+			else if (_command.startsWith("manor_menu_select?"))
+			{
+				L2Object object = activeChar.getLastFolkNPC();
+				if (((object instanceof L2ManorManagerInstance) || (object instanceof L2CastleChamberlainInstance)) && activeChar.isInsideRadius(object, L2NpcInstance.INTERACTION_DISTANCE, false, false))
+				{
+					((L2NpcInstance) object).onBypassFeedback(activeChar, _command);
+				}
+			}
+			else if (_command.startsWith("bbs_"))
+			{
+				CommunityBoard.getInstance().handleCommands(getClient(), _command);
+			}
+			else if (_command.startsWith("_bbs"))
+			{
+				CommunityBoard.getInstance().handleCommands(getClient(), _command);
+			}
+			else if (_command.startsWith("Quest "))
+			{
+				if (!activeChar.validateBypass(_command))
+				{
+					return;
+				}
+				
+				L2PcInstance player = getClient().getActiveChar();
+				String p = _command.substring(6).trim();
+				int idx = p.indexOf(' ');
+				if (idx < 0)
+				{
+					player.processQuestEvent(p, "");
+				}
+				else
+				{
+					player.processQuestEvent(p.substring(0, idx), p.substring(idx).trim());
+				}
+			}
+			else if (_command.startsWith("OlympiadArenaChange"))
+			{
+				Olympiad.getInstance().bypassChangeArena(_command, activeChar);
+			}
+		}
+		catch (Exception e)
+		{
+			_log.log(Level.WARNING, "Bad RequestBypassToServer: ", e);
+		}
+	}
+	
+	/**
+	 * @param client
+	 */
+	private void comeHere(L2PcInstance activeChar)
+	{
+		L2Object obj = activeChar.getTarget();
+		if (obj instanceof L2NpcInstance)
+		{
+			L2NpcInstance temp = (L2NpcInstance) obj;
+			temp.setTarget(activeChar);
+			temp.getAI().setIntention(CtrlIntention.AI_INTENTION_MOVE_TO, new L2CharPosition(activeChar.getX(), activeChar.getY(), activeChar.getZ(), 0));
+		}
+	}
+	
+	private void playerHelp(L2PcInstance activeChar, String path)
+	{
+		
+		if (path.indexOf("..") != -1)
+		{
+			return;
+		}
+		
+		String filename = "data/html/help/" + path;
+		NpcHtmlMessage html = new NpcHtmlMessage(1);
+		html.setFile(filename);
+		activeChar.sendPacket(html);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__21_REQUESTBYPASSTOSERVER;
+	}
 }

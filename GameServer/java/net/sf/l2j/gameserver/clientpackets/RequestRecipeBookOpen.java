@@ -18,53 +18,52 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.RecipeController;
 
-public class RequestRecipeBookOpen extends ClientBasePacket 
+public class RequestRecipeBookOpen extends L2GameClientPacket
 {
-    private static final String _C__AC_REQUESTRECIPEBOOKOPEN = "[C] AC RequestRecipeBookOpen";
-    private static Logger _log = Logger.getLogger(RequestRecipeBookOpen.class.getName());
-
-    private final boolean isDwarvenCraft;
-
-    /**
-     * packet type id 0xac
-     * packet format rev656  cd
-     * @param decrypt
-     */
-    public RequestRecipeBookOpen(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        isDwarvenCraft = (readD() == 0);
-        if (Config.DEBUG)
-            _log.info("RequestRecipeBookOpen : " + (isDwarvenCraft ? "dwarvenCraft" : "commonCraft"));
-    }
-
-    @Override
-    public void runImpl()
-    {
-	if (getClient().getActiveChar() == null)
-            return;
-
-        if (getClient().getActiveChar().getPrivateStoreType() != 0)
-        {
-            getClient().getActiveChar().sendMessage("Cannot use recipe book while trading.");
-            return;
-        }
-
-        RecipeController.getInstance().requestBookOpen(getClient().getActiveChar(), isDwarvenCraft);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType() 
-    {
-        return _C__AC_REQUESTRECIPEBOOKOPEN;
-    }
+	private static final String _C__AC_REQUESTRECIPEBOOKOPEN = "[C] AC RequestRecipeBookOpen";
+	private static Logger _log = Logger.getLogger(RequestRecipeBookOpen.class.getName());
+	
+	private boolean isDwarvenCraft;
+	
+	@Override
+	protected void readImpl()
+	{
+		isDwarvenCraft = (readD() == 0);
+		if (Config.DEBUG)
+		{
+			_log.info("RequestRecipeBookOpen : " + (isDwarvenCraft ? "dwarvenCraft" : "commonCraft"));
+		}
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		if (getClient().getActiveChar() == null)
+		{
+			return;
+		}
+		
+		if (getClient().getActiveChar().getPrivateStoreType() != 0)
+		{
+			getClient().getActiveChar().sendMessage("Cannot use recipe book while trading.");
+			return;
+		}
+		
+		RecipeController.getInstance().requestBookOpen(getClient().getActiveChar(), isDwarvenCraft);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__AC_REQUESTRECIPEBOOKOPEN;
+	}
 }

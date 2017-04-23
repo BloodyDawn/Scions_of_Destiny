@@ -18,57 +18,56 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.L2Character;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestTargetCanceld extends ClientBasePacket
+public class RequestTargetCanceld extends L2GameClientPacket
 {
-    private static final String _C__37_REQUESTTARGETCANCELD = "[C] 37 RequestTargetCanceld";
-    //private static Logger _log = Logger.getLogger(RequestTargetCanceld.class.getName());
+	private static final String _C__37_REQUESTTARGETCANCELD = "[C] 37 RequestTargetCanceld";
+	// private static Logger _log = Logger.getLogger(RequestTargetCanceld.class.getName());
 
-    private final int _unselect; 
+	private int _unselect;
 
-    /**
-     * packet type id 0x37
-     * packet format rev656  ch
-     * @param rawPacket
-     */
-    public RequestTargetCanceld(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _unselect = readH();
-    }
+	@Override
+	protected void readImpl()
+	{
+		_unselect = readH();
+	}
 
-    @Override
-    public void runImpl()
-    {
-        L2Character activeChar = getClient().getActiveChar();
-        if (activeChar != null)
-        {
-            if (_unselect == 0)
-            {
-                if (activeChar.isCastingNow() && activeChar.canAbortCast())
-                    activeChar.abortCast();
-                else if (activeChar.getTarget() != null)
-                    activeChar.setTarget(null);
-            }
-            else if (activeChar.getTarget() != null)
-                activeChar.setTarget(null);
-        }
-    }
+	@Override
+	public void runImpl()
+	{
+		L2Character activeChar = getClient().getActiveChar();
+		if (activeChar != null)
+		{
+			if (_unselect == 0)
+			{
+				if (activeChar.isCastingNow() && activeChar.canAbortCast())
+				{
+					activeChar.abortCast();
+				}
+				else if (activeChar.getTarget() != null)
+				{
+					activeChar.setTarget(null);
+				}
+			}
+			else if (activeChar.getTarget() != null)
+			{
+				activeChar.setTarget(null);
+			}
+		}
+	}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__37_REQUESTTARGETCANCELD;
-    }
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__37_REQUESTTARGETCANCELD;
+	}
 }

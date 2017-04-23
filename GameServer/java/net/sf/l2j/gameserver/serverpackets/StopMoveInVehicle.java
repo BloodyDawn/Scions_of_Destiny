@@ -23,44 +23,46 @@ import net.sf.l2j.util.Point3D;
 
 /**
  * @author Maktakien
- *
  */
-public class StopMoveInVehicle extends ServerBasePacket
+public class StopMoveInVehicle extends L2GameServerPacket
 {
-    private int _charObjId;
-    private int _boatId;
-    private Point3D _pos;
-    private int _heading;
-
-    public StopMoveInVehicle(L2PcInstance player, int boatId)
-    {
-        _charObjId = player.getObjectId();
-        _boatId = boatId;
-        _pos = player.getInBoatPosition();
-        _heading = player.getHeading();
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    final void writeImpl()
-    {		
-        writeC(0x72);
-        writeD(_charObjId);
-        writeD(_boatId);
-        writeD(_pos.getX());
-        writeD(_pos.getY());
-        writeD(_pos.getZ());
-        writeD(_heading);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        // TODO Auto-generated method stub
-        return "[S] 72 StopMoveInVehicle";
-    }
+	private final int _charObjId;
+	private final int _boatId;
+	private final Point3D _pos;
+	private final int _heading;
+	
+	public StopMoveInVehicle(L2PcInstance player, int boatId)
+	{
+		_charObjId = player.getObjectId();
+		_boatId = boatId;
+		_pos = player.getInBoatPosition();
+		_heading = player.getHeading();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x72);
+		writeD(_charObjId);
+		writeD(_boatId);
+		writeD(_pos.getX());
+		writeD(_pos.getY());
+		writeD(_pos.getZ());
+		writeD(_heading);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		// TODO Auto-generated method stub
+		return "[S] 72 StopMoveInVehicle";
+	}
 }

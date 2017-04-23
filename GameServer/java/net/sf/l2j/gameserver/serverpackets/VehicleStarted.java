@@ -20,38 +20,40 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * @author Kerberos
- *
  */
-public class VehicleStarted  extends ServerBasePacket
+public class VehicleStarted extends L2GameServerPacket
 {
-    private int _objectId;
-    private int _state;
-
-    /**
-     * @param instance
-     */
-    public VehicleStarted(int objectId, int state)
-    {
-        _objectId = objectId;
-        _state = state;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    final void writeImpl()
-    {
-        writeC(0xba);
-        writeD(_objectId);
-        writeD(_state);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        return "[S] BA VehicleStarted";
-    }
+	private final int _objectId;
+	private final int _state;
+	
+	/**
+	 * @param objectId
+	 */
+	public VehicleStarted(int objectId, int state)
+	{
+		_objectId = objectId;
+		_state = state;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xba);
+		writeD(_objectId);
+		writeD(_state);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return "[S] BA VehicleStarted";
+	}
 }

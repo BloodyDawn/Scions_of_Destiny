@@ -49,7 +49,7 @@ public class BlowFishKey extends GameServerBasePacket
 		}
 		catch(GeneralSecurityException e)
 		{
-			_log.severe("Error While encrypting blowfish key for transmision (Crypt error)");
+			_log.severe("Error While encrypting blowfish key for transmision (GameCrypt error)");
 			e.printStackTrace();
 		}
 		writeD(encrypted.length);

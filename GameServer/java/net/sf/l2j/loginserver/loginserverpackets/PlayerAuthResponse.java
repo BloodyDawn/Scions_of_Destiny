@@ -18,13 +18,10 @@
  */
 package net.sf.l2j.loginserver.loginserverpackets;
 
-import java.io.IOException;
-
 import net.sf.l2j.loginserver.serverpackets.ServerBasePacket;
 
 /**
  * @author -Wooden-
- *
  */
 public class PlayerAuthResponse extends ServerBasePacket
 {
@@ -35,11 +32,12 @@ public class PlayerAuthResponse extends ServerBasePacket
 		writeC(response ? 1 : 0);
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see net.sf.l2j.loginserver.serverpackets.ServerBasePacket#getContent()
 	 */
 	@Override
-	public byte[] getContent() throws IOException
+	public byte[] getContent()
 	{
 		return getBytes();
 	}

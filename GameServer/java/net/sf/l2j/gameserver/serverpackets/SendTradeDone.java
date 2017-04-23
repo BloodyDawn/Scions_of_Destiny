@@ -20,30 +20,32 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class SendTradeDone extends ServerBasePacket
+public class SendTradeDone extends L2GameServerPacket
 {
-    private static final String _S__32_SENDTRADEDONE = "[S] 22 SendTradeDone";
-    private int _num;
-
-    public SendTradeDone (int num)
-    {
-        _num = num;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x22);
-        writeD(_num);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__32_SENDTRADEDONE;
-    }
+	private static final String _S__32_SENDTRADEDONE = "[S] 22 SendTradeDone";
+	private final int _num;
+	
+	public SendTradeDone(int num)
+	{
+		_num = num;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x22);
+		writeD(_num);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__32_SENDTRADEDONE;
+	}
 }

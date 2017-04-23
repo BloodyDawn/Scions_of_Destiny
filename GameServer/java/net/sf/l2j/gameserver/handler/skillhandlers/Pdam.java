@@ -40,144 +40,190 @@ import net.sf.l2j.gameserver.templates.L2WeaponType;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.7.2.16 $ $Date: 2005/04/06 16:13:49 $
  */
 public class Pdam implements ISkillHandler
 {
-    // all the items ids that this handler knowns
-    private static Logger _log = Logger.getLogger(Pdam.class.getName());
+	// all the items ids that this handler knowns
+	private static Logger _log = Logger.getLogger(Pdam.class.getName());
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
-     */
-    private static SkillType[] _skillIds = { SkillType.PDAM, SkillType.FATAL };
+	private static SkillType[] _skillIds =
+	{
+		SkillType.PDAM,
+		SkillType.FATAL
+	};
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
-     */
-    public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets)
-    {
-        if (activeChar.isAlikeDead()) return;
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		if (activeChar.isAlikeDead())
+		{
+			return;
+		}
 
-        if (Config.DEBUG)
-            _log.fine("Begin Skill processing in Pdam.java " + skill.getSkillType());
+		if (Config.DEBUG)
+		{
+			_log.fine("Begin Skill processing in Pdam.java " + skill.getSkillType());
+		}
 
-        L2ItemInstance weapon = activeChar.getActiveWeaponInstance();
-        boolean soul = (weapon != null && weapon.getChargedSoulshot() == L2ItemInstance.CHARGED_SOULSHOT && weapon.getItemType() != L2WeaponType.DAGGER);
+		L2ItemInstance weapon = activeChar.getActiveWeaponInstance();
+		boolean soul = ((weapon != null) && (weapon.getChargedSoulshot() == L2ItemInstance.CHARGED_SOULSHOT) && (weapon.getItemType() != L2WeaponType.DAGGER));
 
-        for (int index = 0; index < targets.length; index++)
-        {
-            L2Character target = (L2Character) targets[index];
-            if (activeChar instanceof L2PcInstance && target instanceof L2PcInstance
-                && target.isFakeDeath())
-            {
-                target.stopFakeDeath(null);
-            }
-            else if (target.isDead()) continue;
+		for (L2Object target2 : targets)
+		{
+			L2Character target = (L2Character) target2;
 
-            boolean dual = activeChar.isUsingDualWeapon();
-            boolean shld = Formulas.getInstance().calcShldUse(activeChar, target);
-            boolean crit = false;
-            if (skill.getBaseCritRate() > 0)
-                crit = Formulas.getInstance().calcCrit(skill.getBaseCritRate() * 10 * BaseStats.STR.calcBonus(activeChar));
+			if ((activeChar instanceof L2PcInstance) && (target instanceof L2PcInstance) && target.isFakeDeath())
+			{
+				target.stopFakeDeath(null);
+			}
+			else if (target.isDead())
+			{
+				continue;
+			}
 
-            double damage = Formulas.getInstance().calcPhysDam(activeChar, target, skill, shld, false, dual, soul);
+			boolean dual = activeChar.isUsingDualWeapon();
+			boolean shld = Formulas.getInstance().calcShldUse(activeChar, target);
+			crit = false;
+			if (skill.getBaseCritRate() > 0)
+			{
+				crit = Formulas.getInstance().calcCrit(skill.getBaseCritRate() * 10 * BaseStats.STR.calcBonus(activeChar));
+			}
 
-            if (!crit && (skill.getCondition() & L2Skill.COND_CRIT) != 0)
-                damage = 0;
+			double damage = Formulas.getInstance().calcPhysDam(activeChar, target, skill, shld, false, dual, soul);
 
-            if (crit) damage *= 2;
+			if (!crit && ((skill.getCondition() & L2Skill.COND_CRIT) != 0))
+			{
+				damage = 0;
+			}
 
-            if (damage > 5000 && activeChar instanceof L2PcInstance)
-            {
-                String name = "";
-                if (target instanceof L2RaidBossInstance) name = "RaidBoss ";
-                if (target instanceof L2NpcInstance)
-                    name += target.getName() + "(" + ((L2NpcInstance) target).getTemplate().npcId
-                        + ")";
-                if (target instanceof L2PcInstance)
-                    name = target.getName() + "(" + target.getObjectId() + ") ";
-                name += target.getLevel() + " lvl";
-                Log.add(activeChar.getName() + "(" + activeChar.getObjectId() + ") "
-                    + activeChar.getLevel() + " lvl did damage " + damage + " with skill "
-                    + skill.getName() + "(" + skill.getId() + ") to " + name, "damage_pdam");
-            }
-
-            if (damage > 0)
-            {
-                activeChar.sendDamageMessage(target, (int)damage, false, crit, false);
+			if (crit)
+			{
+				damage *= 2;
+			}
 
-                if (skill.hasEffects())
-                {
-                    if (Formulas.getInstance().calcSkillSuccess(activeChar, target, skill, soul, false, false))
-                    {
-                        if (Formulas.getInstance().calculateSkillReflect(skill, activeChar, target))
-                            target = activeChar;
+			if ((damage > 5000) && (activeChar instanceof L2PcInstance))
+			{
+				String name = "";
+				if (target instanceof L2RaidBossInstance)
+				{
+					name = "RaidBoss ";
+				}
+				if (target instanceof L2NpcInstance)
+				{
+					name += target.getName() + "(" + ((L2NpcInstance) target).getTemplate().npcId + ")";
+				}
+				if (target instanceof L2PcInstance)
+				{
+					name = target.getName() + "(" + target.getObjectId() + ") ";
+				}
+				name += target.getLevel() + " lvl";
+				Log.add(activeChar.getName() + "(" + activeChar.getObjectId() + ") " + activeChar.getLevel() + " lvl did damage " + damage + " with skill " + skill.getName() + "(" + skill.getId() + ") to " + name, "damage_pdam");
+			}
 
-                        // activate attacked effects, if any
-                        target.stopEffect(skill.getId());
-                        if (target.getFirstEffect(skill.getId()) != null)
-                            target.removeEffect(target.getFirstEffect(skill.getId()));
+			if (damage > 0)
+			{
+				activeChar.sendDamageMessage(target, (int) damage, false, crit, false);
 
-                        skill.getEffects(activeChar, target);
-                    }
-                    else
-                    {
-                        SystemMessage sm = new SystemMessage(SystemMessage.S1_WAS_UNAFFECTED_BY_S2);
-                        sm.addString(target.getName());
-                        sm.addSkillName(skill.getDisplayId());
-                        activeChar.sendPacket(sm);
-                    }
-                }
+				if (skill.hasEffects())
+				{
 
-                target.reduceCurrentHp(damage, activeChar);
-            }
-            else
-                activeChar.sendPacket(new SystemMessage(SystemMessage.ATTACK_FAILED));
+					if (Formulas.getInstance().calcSkillSuccess(activeChar, target, skill, soul, false, false))
 
-            //Sonic Rage & Raging Force
-            if (skill.getMaxCharges() > 0)
-            {
-                if (activeChar instanceof L2PcInstance)
-                {
-                    if (((L2PcInstance)activeChar).getCharges() < skill.getMaxCharges())
-                        ((L2PcInstance)activeChar).addCharge(1);
-                }
-            }
+					{
+						if (Formulas.getInstance().calculateSkillReflect(skill, activeChar, target))
+						{
+							target = activeChar;
+						}
 
-            if (skill.getId() == 343)
-                Formulas.getInstance().calcLethalStrike(activeChar, target, skill.getMagicLevel());
+						// activate attacked effects, if any
+						target.stopEffect(skill.getId());
+						if (target.getFirstEffect(skill.getId()) != null)
+						{
+							target.removeEffect(target.getFirstEffect(skill.getId()));
+						}
 
-            if (skill.getId() == 348)
-            {
-                // check for other effects
-	        try
-                {
-	            ISkillHandler handler = SkillHandler.getInstance().getSkillHandler(SkillType.SPOIL);
+						skill.getEffects(activeChar, target);
 
-                    if (handler != null)
-                        handler.useSkill(activeChar, skill, targets);
-	        } 
-                catch (Exception e) {}
-            }
-
-            L2Effect effect = activeChar.getFirstEffect(skill.getId());
-            if (effect != null && effect.isSelfEffect())
-                effect.exit();
+					}
 
-            skill.getEffectsSelf(activeChar);
-        }
+					else
+					{
+						SystemMessage sm = new SystemMessage(SystemMessage.S1_WAS_UNAFFECTED_BY_S2);
+						sm.addString(target.getName());
+						sm.addSkillName(skill.getDisplayId());
+						activeChar.sendPacket(sm);
+					}
+				}
 
-        if (skill.isSuicideAttack())
-            activeChar.doDie(null);
+				target.reduceCurrentHp(damage, activeChar);
+			}
+			else
+			{
+				activeChar.sendPacket(new SystemMessage(SystemMessage.ATTACK_FAILED));
+			}
 
-        if (soul && weapon != null)
-            weapon.setChargedSoulshot(L2ItemInstance.CHARGED_NONE);
-    }
+			// Sonic Rage & Raging Force
 
-    public SkillType[] getSkillIds()
-    {
-        return _skillIds;
-    }
+			if (skill.getMaxCharges() > 0)
+			{
+
+				if (activeChar instanceof L2PcInstance)
+				{
+
+					if (((L2PcInstance) activeChar).getCharges() < skill.getMaxCharges())
+					{
+						((L2PcInstance) activeChar).addCharge(1);
+					}
+				}
+			}
+
+			if (skill.getId() == 343)
+			{
+				Formulas.getInstance().calcLethalStrike(activeChar, target, skill.getMagicLevel());
+			}
+
+			if (skill.getId() == 348)
+			{
+				// check for other effects
+				try
+				{
+					ISkillHandler handler = SkillHandler.getInstance().getSkillHandler(SkillType.SPOIL);
+
+					if (handler != null)
+					{
+						handler.useSkill(activeChar, skill, targets, crit);
+					}
+				}
+				catch (Exception e)
+				{
+				}
+			}
+
+			L2Effect effect = activeChar.getFirstEffect(skill.getId());
+			if ((effect != null) && effect.isSelfEffect())
+			{
+				effect.exit();
+			}
+
+			skill.getEffectsSelf(activeChar);
+
+		}
+
+		if (skill.isSuicideAttack())
+		{
+			activeChar.doDie(null);
+		}
+
+		if (soul && (weapon != null))
+		{
+			weapon.setChargedSoulshot(L2ItemInstance.CHARGED_NONE);
+		}
+	}
+
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return _skillIds;
+	}
 }

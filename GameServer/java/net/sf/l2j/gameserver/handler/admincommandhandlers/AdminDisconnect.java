@@ -25,59 +25,71 @@ import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- * This class handles following admin commands:
- * - character_disconnect = disconnects target player
- * 
+ * This class handles following admin commands: - character_disconnect = disconnects target player
  * @version $Revision: 1.2.4.4 $ $Date: 2005/04/11 10:06:00 $
  */
 public class AdminDisconnect implements IAdminCommandHandler
 {
-    private static String[] _adminCommands = {"admin_character_disconnect"};
-    private static final int REQUIRED_LEVEL = Config.GM_KICK;
-
-    public boolean useAdminCommand(String command, L2PcInstance activeChar)
-    {
-        if (!Config.ALT_PRIVILEGES_ADMIN)
-        {
-            if (!(checkLevel(activeChar.getAccessLevel()) && activeChar.isGM()))
-                return false;
-        }
-
-        if (command.equals("admin_character_disconnect"))
-            disconnectCharacter(activeChar);
-
-        String target = (activeChar.getTarget() != null?activeChar.getTarget().getName():"no-target");
-        GMAudit.auditGMAction(activeChar.getName(), command, target, "");
-        return true;
-    }
-
-    private void disconnectCharacter(L2PcInstance activeChar)
-    {
-        L2Object target = activeChar.getTarget();
-        L2PcInstance player = null;
-        if (target instanceof L2PcInstance)
-            player = (L2PcInstance)target;
-        else
-            return;
-
-        if (player.getObjectId() == activeChar.getObjectId())
-            activeChar.sendMessage("You cannot disconnect your own character.");
-        else
-        {
-            activeChar.sendMessage("Character " + player.getName() + " has been disconnected from server.");
-
-            // Logout Character
-            player.closeNetConnection();
-        }
-    }
-
-    public String[] getAdminCommandList()
-    {
-        return _adminCommands;
-    }
-
-    private boolean checkLevel(int level)
-    {
-        return (level >= REQUIRED_LEVEL);
-    }
+	private static String[] _adminCommands =
+	{
+		"admin_character_disconnect"
+	};
+	private static final int REQUIRED_LEVEL = Config.GM_KICK;
+	
+	@Override
+	public boolean useAdminCommand(String command, L2PcInstance activeChar)
+	{
+		if (!Config.ALT_PRIVILEGES_ADMIN)
+		{
+			if (!(checkLevel(activeChar.getAccessLevel()) && activeChar.isGM()))
+			{
+				return false;
+			}
+		}
+		
+		if (command.equals("admin_character_disconnect"))
+		{
+			disconnectCharacter(activeChar);
+		}
+		
+		String target = (activeChar.getTarget() != null ? activeChar.getTarget().getName() : "no-target");
+		GMAudit.auditGMAction(activeChar.getName(), command, target, "");
+		return true;
+	}
+	
+	private void disconnectCharacter(L2PcInstance activeChar)
+	{
+		L2Object target = activeChar.getTarget();
+		L2PcInstance player = null;
+		if (target instanceof L2PcInstance)
+		{
+			player = (L2PcInstance) target;
+		}
+		else
+		{
+			return;
+		}
+		
+		if (player.getObjectId() == activeChar.getObjectId())
+		{
+			activeChar.sendMessage("You cannot disconnect your own character.");
+		}
+		else
+		{
+			activeChar.sendMessage("Character " + player.getName() + " has been disconnected from server.");
+			
+			player.logout();
+		}
+	}
+	
+	@Override
+	public String[] getAdminCommandList()
+	{
+		return _adminCommands;
+	}
+	
+	private boolean checkLevel(int level)
+	{
+		return (level >= REQUIRED_LEVEL);
+	}
 }

@@ -21,47 +21,45 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.model.L2Object;
 
 /**
- * format  dddd
- * 
- * sample
- * 0000: 3a  69 08 10 48  02 c1 00 00  f7 56 00 00  89 ea ff    :i..H.....V.....
- * 0010: ff  0c b2 d8 61                                     ....a
- *
+ * format dddd sample 0000: 3a 69 08 10 48 02 c1 00 00 f7 56 00 00 89 ea ff :i..H.....V..... 0010: ff 0c b2 d8 61 ....a
  * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class TeleportToLocation extends ServerBasePacket
+public class TeleportToLocation extends L2GameServerPacket
 {
-    private static final String _S__38_TELEPORTTOLOCATION = "[S] 28 TeleportToLocation";
-    private int _targetId;
-    private int _x;
-    private int _y;
-    private int _z;
+	private static final String _S__38_TELEPORTTOLOCATION = "[S] 28 TeleportToLocation";
+	private final int _targetId;
+	private final int _x;
+	private final int _y;
+	private final int _z;
 
-    /**
-     * @param _characters
-     */
-    public TeleportToLocation(L2Object cha, int x, int y, int z)
-    {
-        _targetId = cha.getObjectId();
-        _x = x;
-        _y = y;
-        _z = z;
-    }
+	/**
+	 * @param cha
+	 */
+	public TeleportToLocation(L2Object cha, int x, int y, int z)
+	{
+		_targetId = cha.getObjectId();
+		_x = x;
+		_y = y;
+		_z = z;
+	}
 
-    final void writeImpl()
-    {
-        writeC(0x28);
-        writeD(_targetId);
-        writeD(_x);
-        writeD(_y);
-        writeD(_z);
-    }
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x28);
+		writeD(_targetId);
+		writeD(_x);
+		writeD(_y);
+		writeD(_z);
+	}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__38_TELEPORTTOLOCATION;
-    }
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__38_TELEPORTTOLOCATION;
+	}
 }

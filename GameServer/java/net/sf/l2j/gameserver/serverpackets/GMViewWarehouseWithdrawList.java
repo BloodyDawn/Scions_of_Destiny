@@ -22,57 +22,64 @@ import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- * Sdh(h dddhh [dhhh] d)
- * Sdh ddddd ddddd ddddd ddddd
+ * Sdh(h dddhh [dhhh] d) Sdh ddddd ddddd ddddd ddddd
  * @version $Revision: 1.1.2.1.2.4 $ $Date: 2005/03/29 23:15:10 $
  */
-public class GMViewWarehouseWithdrawList extends ServerBasePacket
-{
-    private static final String _S__95_GMViewWarehouseWithdrawList = "[S] 95 GMViewWarehouseWithdrawList";
-    private L2ItemInstance[] _items;
-    private L2PcInstance _character;
-    private int _money;
+public class GMViewWarehouseWithdrawList extends L2GameServerPacket
+{
+	
+	private static final String _S__95_GMViewWarehouseWithdrawList = "[S] 95 GMViewWarehouseWithdrawList";
+	private final L2ItemInstance[] _items;
+	private final L2PcInstance _character;
+	private final int _money;
 
-    public GMViewWarehouseWithdrawList(L2PcInstance cha)
-    {
-        _character = cha;
-        _items = _character.getWarehouse().getItems();
-        _money = cha.getAdena();
-    }
+	public GMViewWarehouseWithdrawList(L2PcInstance cha)
+	{
+		
+		_character = cha;
+		_items = _character.getWarehouse().getItems();
+		_money = cha.getAdena();
 
-    final void writeImpl()
-    {
-        writeC(0x95);
-        writeS(_character.getName());
-        writeD(_money);
-        writeH(_items.length);
+	}
 
-        for (L2ItemInstance item : _items)
-        {
-            writeH(item.getItem().getType1());
-            writeD(item.getObjectId());
-            writeD(item.getItemId());
-            writeD(item.getCount());
-            writeH(item.getItem().getType2());
-            writeH(item.getCustomType1());
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x95);
+		writeS(_character.getName());
+		writeD(_money);
+		writeH(_items.length);
 
-            if (item.isEquipable())
-            {
-                writeD(item.getItem().getBodyPart());
-                writeH(item.getEnchantLevel());
-                writeH(0x00);
-                writeH(0x00);
-            }
+		for (L2ItemInstance item : _items)
+		{
+			writeH(item.getItem().getType1());
+			writeD(item.getObjectId());
+			writeD(item.getItemId());
+			writeD(item.getCount());
+			writeH(item.getItem().getType2());
+			writeH(item.getCustomType1());
 
-            writeD(item.getObjectId());
-        }
-    }
+			if (item.isEquipable())
+			{
+				writeD(item.getItem().getBodyPart());
+				writeH(item.getEnchantLevel());
+				writeH(0x00);
+				writeH(0x00);
+			}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__95_GMViewWarehouseWithdrawList;
-    }
+			writeD(item.getObjectId());
+
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__95_GMViewWarehouseWithdrawList;
+	}
 }

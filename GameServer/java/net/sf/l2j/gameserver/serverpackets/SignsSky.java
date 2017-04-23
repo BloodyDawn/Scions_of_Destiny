@@ -21,53 +21,60 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.SevenSigns;
 
 /**
- * Changes the sky color depending on the outcome 
- * of the Seven Signs competition.
- * 
- * packet type id 0xf8
- * format: c h
- * 
+ * Changes the sky color depending on the outcome of the Seven Signs competition. packet type id 0xf8 format: c h
  * @author Tempy
  */
-public class SignsSky extends ServerBasePacket
+public class SignsSky extends L2GameServerPacket
 {
-    private static final String _S__F8_SignsSky = "[S] F8 SignsSky";
-
-    private static int _state = 0;
-
-    public SignsSky()
-    {
-        int compWinner = SevenSigns.getInstance().getCabalHighestScore();
-        
-        if (SevenSigns.getInstance().isSealValidationPeriod())
-        {
-            if (compWinner == SevenSigns.CABAL_DAWN)
-                _state = 2;
-            else if (compWinner == SevenSigns.CABAL_DUSK)
-                _state = 1;
-        }
-    }
-
-    public SignsSky(int state)
-    {
-        _state = state;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xf8);
-
-        if (_state == 2) // Dawn Sky
-            writeH(258);
-        else if (_state == 1) // Dusk Sky
-            writeH(257);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__F8_SignsSky;
-    }
+	private static final String _S__F8_SignsSky = "[S] F8 SignsSky";
+	
+	private static int _state = 0;
+	
+	public SignsSky()
+	{
+		int compWinner = SevenSigns.getInstance().getCabalHighestScore();
+		
+		if (SevenSigns.getInstance().isSealValidationPeriod())
+		{
+			if (compWinner == SevenSigns.CABAL_DAWN)
+			{
+				_state = 2;
+			}
+			else if (compWinner == SevenSigns.CABAL_DUSK)
+			{
+				_state = 1;
+			}
+		}
+	}
+	
+	public SignsSky(int state)
+	{
+		_state = state;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xf8);
+		
+		if (_state == 2)
+		{
+			writeH(258);
+		}
+		else if (_state == 1)
+		{
+			writeH(257);
+		}
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__F8_SignsSky;
+	}
 }

@@ -18,58 +18,46 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.serverpackets.StopRotation;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.4.3 $ $Date: 2005/03/27 15:29:30 $
  */
-public class FinishRotating extends ClientBasePacket
+public class FinishRotating extends L2GameClientPacket
 {
-    private static final String _C__4B_FINISHROTATING = "[C] 4B FinishRotating";
-
-    private final int _degree;
-    @SuppressWarnings("unused")
-    private final int _unknown;
-
-    /**
-     * packet type id 0x4a
-     * 
-     * sample
-     * 
-     * 4b
-     * d // unknown
-     * d // unknown
-     * 
-     * format:		cdd
-     * @param decrypt
-     */
-    public FinishRotating(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _degree = readD();
-        _unknown = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        if (getClient().getActiveChar() == null)
-            return;
-
-        StopRotation sr = new StopRotation(getClient().getActiveChar().getObjectId(), _degree, 0);
-        getClient().getActiveChar().broadcastPacket(sr);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__4B_FINISHROTATING;
-    }
+	private static final String _C__4B_FINISHROTATING = "[C] 4B FinishRotating";
+	
+	private int _degree;
+	@SuppressWarnings("unused")
+	private int _unknown;
+	
+	@Override
+	protected void readImpl()
+	{
+		_degree = readD();
+		_unknown = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		if (getClient().getActiveChar() == null)
+		{
+			return;
+		}
+		
+		StopRotation sr = new StopRotation(getClient().getActiveChar().getObjectId(), _degree, 0);
+		getClient().getActiveChar().broadcastPacket(sr);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__4B_FINISHROTATING;
+	}
 }

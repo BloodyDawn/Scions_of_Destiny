@@ -33,7 +33,7 @@ import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.L2SkillLearn;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.ActionFailed;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
@@ -526,7 +526,7 @@ public class AdminSkill implements IAdminCommandHandler
 			{
 				activeChar.setTarget(activeChar);
 		
-				MagicSkillUser msk = new MagicSkillUser(activeChar, skillid, 1, skill.getHitTime() , skill.getReuseDelay());
+				MagicSkillUse msk = new MagicSkillUse(activeChar, skillid, 1, skill.getHitTime() , skill.getReuseDelay());
 				activeChar.broadcastPacket(msk);
 				if (Config.DEBUG) _log.fine("showing self skill, id: "+skill.getId()+" named: "+skill.getName());
 			}

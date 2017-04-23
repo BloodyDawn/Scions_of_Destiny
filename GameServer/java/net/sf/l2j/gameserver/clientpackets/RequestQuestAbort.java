@@ -18,11 +18,9 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.instancemanager.QuestManager;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.quest.Quest;
@@ -32,57 +30,66 @@ import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestQuestAbort extends ClientBasePacket
+public class RequestQuestAbort extends L2GameClientPacket
 {
 	private static final String _C__64_REQUESTQUESTABORT = "[C] 64 RequestQuestAbort";
 	private static Logger _log = Logger.getLogger(RequestQuestAbort.class.getName());
-
-	private final int _QuestID;
-	/**
-	 * packet type id 0x64<p>
-	 */
-	public RequestQuestAbort(ByteBuffer buf, ClientThread client)
+	
+	private int _QuestID;
+	
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_QuestID = readD();
 	}
-
-        @Override
+	
+	@Override
 	public void runImpl()
 	{
 		L2PcInstance activeChar = getClient().getActiveChar();
 		if (activeChar == null)
-		    return;
-        
-        Quest qe = QuestManager.getInstance().getQuest(_QuestID);
-        if (qe != null)
-        {
-    		QuestState qs = activeChar.getQuestState(qe.getName());
-            if(qs != null)
-            {
-        		qs.exitQuest(true);
-        		SystemMessage sm = new SystemMessage(SystemMessage.S1_S2);
-        		sm.addString("Quest aborted.");
-                activeChar.sendPacket(sm);
-                sm = null;
-        		QuestList ql = new QuestList();
-                activeChar.sendPacket(ql);
-            } else
-            {
-                if (Config.DEBUG) _log.info("Player '"+activeChar.getName()+"' try to abort quest "+qe.getName()+" but he didn't have it started.");
-            }
-        } else
-        {
-            if (Config.DEBUG) _log.warning("Quest (id='"+_QuestID+"') not found.");
-        }
+		{
+			return;
+		}
+		
+		Quest qe = QuestManager.getInstance().getQuest(_QuestID);
+		if (qe != null)
+		{
+			QuestState qs = activeChar.getQuestState(qe.getName());
+			if (qs != null)
+			{
+				qs.exitQuest(true);
+				SystemMessage sm = new SystemMessage(SystemMessage.S1_S2);
+				sm.addString("Quest aborted.");
+				activeChar.sendPacket(sm);
+				sm = null;
+				QuestList ql = new QuestList();
+				activeChar.sendPacket(ql);
+			}
+			else
+			{
+				if (Config.DEBUG)
+				{
+					_log.info("Player '" + activeChar.getName() + "' try to abort quest " + qe.getName() + " but he didn't have it started.");
+				}
+			}
+		}
+		else
+		{
+			if (Config.DEBUG)
+			{
+				_log.warning("Quest (id='" + _QuestID + "') not found.");
+			}
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__64_REQUESTQUESTABORT;

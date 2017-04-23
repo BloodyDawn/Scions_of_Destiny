@@ -18,58 +18,56 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.PartyMatchRoom;
 import net.sf.l2j.gameserver.model.PartyMatchRoomList;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * @author Gnacik
- *
  */
-public class RequestDismissPartyRoom extends ClientBasePacket
+public class RequestDismissPartyRoom extends L2GameClientPacket
 {
-    private static final String _C__D0_02_REQUESTDISMISSPARTYROOM = "[C] D0:02 RequestDismissPartyRoom";
-
-    private int _roomId;
-    private int _data2;
-
-    /**
-     * @param buf
-     * @param client
-     */
-    public RequestDismissPartyRoom(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _roomId = readD();
-        _data2 = readD();
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
-     */
-    @Override
-    public void runImpl()
-    {
-        final L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        PartyMatchRoom _room = PartyMatchRoomList.getInstance().getRoom(_roomId);
-        if (_room == null)
-            return;
-
-        PartyMatchRoomList.getInstance().deleteRoom(_roomId);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        return _C__D0_02_REQUESTDISMISSPARTYROOM;
-    }
+	private static final String _C__D0_02_REQUESTDISMISSPARTYROOM = "[C] D0:02 RequestDismissPartyRoom";
+	
+	private int _roomId;
+	private int _data2;
+	
+	@Override
+	protected void readImpl()
+	{
+		_roomId = readD();
+		_data2 = readD();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
+	 */
+	@Override
+	public void runImpl()
+	{
+		final L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		PartyMatchRoom _room = PartyMatchRoomList.getInstance().getRoom(_roomId);
+		if (_room == null)
+		{
+			return;
+		}
+		
+		PartyMatchRoomList.getInstance().deleteRoom(_roomId);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__D0_02_REQUESTDISMISSPARTYROOM;
+	}
 }

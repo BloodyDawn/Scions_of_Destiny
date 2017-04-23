@@ -20,38 +20,40 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.4 $ $Date: 2005/03/27 15:29:57 $
  */
-public class StopRotation extends ServerBasePacket
+public class StopRotation extends L2GameServerPacket
 {
-    private static final String _S__78_STOPROTATION = "[S] 63 StopRotation";
-
-    private int _charId;
-    private int _degree;
-    private int _speed;
-
-    public StopRotation(int objectId, int degree, int speed)
-    {
-        _charId = objectId;
-        _degree = degree;
-        _speed = speed;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x63);
-        writeD(_charId);
-        writeD(_degree);
-        writeD(_speed);
-        writeC(0); // ?
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__78_STOPROTATION;
-    }
+	private static final String _S__78_STOPROTATION = "[S] 63 StopRotation";
+	
+	private final int _charId;
+	private final int _degree;
+	private final int _speed;
+	
+	public StopRotation(int objectId, int degree, int speed)
+	{
+		_charId = objectId;
+		_degree = degree;
+		_speed = speed;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x63);
+		writeD(_charId);
+		writeD(_degree);
+		writeD(_speed);
+		writeC(0); // ?
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__78_STOPROTATION;
+	}
 }

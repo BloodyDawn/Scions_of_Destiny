@@ -19,25 +19,25 @@
 package net.sf.l2j.loginserver.serverpackets;
 
 /**
- * Fromat: d
- * d: the failure reason
+ * Fromat: d d: the failure reason
  */
 public class LoginFail extends ServerBasePacket
 {
-    public static int REASON_SYSTEM_ERROR = 0x01;
-    public static int REASON_PASS_WRONG = 0x02;
-    public static int REASON_USER_OR_PASS_WRONG = 0x03;
-    public static int REASON_ACCESS_FAILED = 0x04;
-    public static int REASON_ACCOUNT_IN_USE = 0x07;
-
-    public LoginFail(int reason) 
-    {
-        writeC(0x01);
-        writeD(reason);	
-    }
-
-    public byte[] getContent()
-    {
-        return getBytes();
-    }
+	public static int REASON_SYSTEM_ERROR = 0x01;
+	public static int REASON_PASS_WRONG = 0x02;
+	public static int REASON_USER_OR_PASS_WRONG = 0x03;
+	public static int REASON_ACCESS_FAILED = 0x04;
+	public static int REASON_ACCOUNT_IN_USE = 0x07;
+	
+	public LoginFail(int reason)
+	{
+		writeC(0x01);
+		writeD(reason);
+	}
+	
+	@Override
+	public byte[] getContent()
+	{
+		return getBytes();
+	}
 }

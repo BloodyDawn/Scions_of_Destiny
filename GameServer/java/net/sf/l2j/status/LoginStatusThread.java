@@ -114,7 +114,7 @@ public class LoginStatusThread extends Thread
         if (isValidIP(client))
         {    
             telnetOutput(1, client.getInetAddress().getHostAddress()+" accepted.");
-            _print.println("Welcome To The L2Jserver Telnet Session.");
+            _print.println("Welcome To The L2JLisvus Telnet Session.");
             _print.println("Please Insert Your Password!");
             _print.print("Password: ");
             _print.flush();
@@ -138,7 +138,7 @@ public class LoginStatusThread extends Thread
                 else
                 {
                     _print.println("Password Correct!");
-                    _print.println("[L2Jserver LoginServer]");
+                    _print.println("[L2JLisvus LoginServer]");
                     _print.print("");
                     _print.flush();
                     start();

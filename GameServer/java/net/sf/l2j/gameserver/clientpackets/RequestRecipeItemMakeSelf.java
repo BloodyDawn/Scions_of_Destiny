@@ -18,68 +18,61 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.RecipeController;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- * @author Administrator
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Administrator TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code Templates
  */
-public class RequestRecipeItemMakeSelf extends ClientBasePacket 
+public class RequestRecipeItemMakeSelf extends L2GameClientPacket
 {
-    private static final String _C__AF_REQUESTRECIPEITEMMAKESELF = "[C] AF RequestRecipeItemMakeSelf";
-    //private static Logger _log = Logger.getLogger(RequestSellItem.class.getName());
-
-    private final int _id;
-
-    /**
-     * packet type id 0xac
-     * format:		cd
-     * @param decrypt
-     */
-    public RequestRecipeItemMakeSelf(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _id = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-
-            return;
-
-
-        if (!getClient().getFloodProtectors().getManufacture().tryPerformAction("RecipeMakeSelf"))
-            return;
-
-        if (activeChar.getPrivateStoreType() != 0)
-        {
-            activeChar.sendMessage("Cannot make items while trading.");
-            return;
-        }
-
-        if (activeChar.isInCraftMode())
-        {
-            activeChar.sendMessage("Currently in Craft Mode.");
-            return;
-        }
-
-        RecipeController.getInstance().requestMakeItem(activeChar, _id);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType() 
-    {
-        return _C__AF_REQUESTRECIPEITEMMAKESELF;
-    }
+	private static final String _C__AF_REQUESTRECIPEITEMMAKESELF = "[C] AF RequestRecipeItemMakeSelf";
+	// private static Logger _log = Logger.getLogger(RequestSellItem.class.getName());
+	
+	private int _id;
+	
+	@Override
+	protected void readImpl()
+	{
+		_id = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (!getClient().getFloodProtectors().getManufacture().tryPerformAction("RecipeMakeSelf"))
+		{
+			return;
+		}
+		
+		if (activeChar.getPrivateStoreType() != 0)
+		{
+			activeChar.sendMessage("Cannot make items while trading.");
+			return;
+		}
+		
+		if (activeChar.isInCraftMode())
+		{
+			activeChar.sendMessage("Currently in Craft Mode.");
+			return;
+		}
+		
+		RecipeController.getInstance().requestMakeItem(activeChar, _id);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__AF_REQUESTRECIPEITEMMAKESELF;
+	}
 }

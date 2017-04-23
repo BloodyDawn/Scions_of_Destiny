@@ -19,7 +19,7 @@
 package net.sf.l2j.gameserver.model;
 
 import net.sf.l2j.gameserver.ThreadPoolManager;
-import net.sf.l2j.gameserver.clientpackets.ClientBasePacket;
+import net.sf.l2j.gameserver.clientpackets.L2GameClientPacket;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
@@ -36,7 +36,7 @@ public class L2Request
     protected L2PcInstance _partner;
     protected boolean _isRequestor;
     protected boolean _isAnswerer;
-    protected ClientBasePacket _requestPacket;
+    protected L2GameClientPacket _requestPacket;
 
     public L2Request(L2PcInstance player)
     {
@@ -70,7 +70,7 @@ public class L2Request
     /**
      * Set the packet incomed from requestor.<BR><BR>
      */
-    private synchronized void setRequestPacket(ClientBasePacket packet)
+    private synchronized void setRequestPacket(L2GameClientPacket packet)
     {
         _requestPacket = packet;
     }
@@ -78,7 +78,7 @@ public class L2Request
     /**
      * Return the packet originally incomed from requestor.<BR><BR>
      */
-    public ClientBasePacket getRequestPacket()
+    public L2GameClientPacket getRequestPacket()
     {
         return _requestPacket;
     }
@@ -86,7 +86,7 @@ public class L2Request
     /**
      * Checks if request can be made and in success case puts both PC on request state.<BR><BR>
      */
-    public synchronized boolean setRequest(L2PcInstance partner, ClientBasePacket packet)
+    public synchronized boolean setRequest(L2PcInstance partner, L2GameClientPacket packet)
     {
         if (partner == null)
             return false;

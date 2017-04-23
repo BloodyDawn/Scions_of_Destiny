@@ -26,7 +26,7 @@ import javolution.text.TextBuilder;
 import javolution.util.FastList;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
+import net.sf.l2j.gameserver.L2GameClient;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.ai.L2CharacterAI;
@@ -381,7 +381,7 @@ public class L2DoorInstance extends L2Character
         player.sendPacket(new ActionFailed());
     }
 
-    public void onActionShift(ClientThread client) 
+    public void onActionShift(L2GameClient client) 
     {
         L2PcInstance player = client.getActiveChar();
         if (player == null) return;

@@ -18,39 +18,41 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2ClassMasterInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 
-public class RequestTutorialQuestionMark extends ClientBasePacket
+public class RequestTutorialQuestionMark extends L2GameClientPacket
 {
-    private int _number = 0;
-
-    public RequestTutorialQuestionMark(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _number = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
-
-        L2ClassMasterInstance.onTutorialQuestionMark(player, _number);
-
-        QuestState qs = player.getQuestState("255_Tutorial");
-        if (qs != null)
-            qs.getQuest().notifyEvent("QM" + _number + "", null, player);
-    }
-
-    public String getType()
-    {
-        return "[C] 7d RequestTutorialQuestionMark";
-    }
+	private int _number = 0;
+	
+	@Override
+	protected void readImpl()
+	{
+		_number = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
+		L2ClassMasterInstance.onTutorialQuestionMark(player, _number);
+		
+		QuestState qs = player.getQuestState("255_Tutorial");
+		if (qs != null)
+		{
+			qs.getQuest().notifyEvent("QM" + _number + "", null, player);
+		}
+	}
+	
+	@Override
+	public String getType()
+	{
+		return "[C] 7d RequestTutorialQuestionMark";
+	}
 }

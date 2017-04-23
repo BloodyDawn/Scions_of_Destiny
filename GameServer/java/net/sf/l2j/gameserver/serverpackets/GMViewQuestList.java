@@ -26,53 +26,57 @@ import net.sf.l2j.gameserver.model.quest.QuestState;
  * Sh (dd) h (dddd)
  * @author Tempy
  */
-public class GMViewQuestList extends ServerBasePacket
+public class GMViewQuestList extends L2GameServerPacket
 {
-    private static final String _S__AC_GMVIEWQUESTLIST = "[S] ac GMViewQuestList";
-
-    private L2PcInstance _activeChar;
-
-    public GMViewQuestList(L2PcInstance cha)
-    {
-        _activeChar = cha;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x93);
-        writeS(_activeChar.getName());
-
-        Quest[] questList = _activeChar.getAllActiveQuests();
-        if (questList.length == 0)
-        {
-            writeC(0);
-            writeH(0);
-            writeH(0);
-            return;
-        }
-
-        writeH(questList.length); // quest count
-
-        for (Quest q : questList)
-        {
-            writeD(q.getQuestIntId());
-
-            QuestState qs = _activeChar.getQuestState(q.getName());
-            if (qs == null)
-            {
-                writeD(0);
-                continue;
-            }
-
-            writeD(qs.getInt("cond"));   // stage of quest progress
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__AC_GMVIEWQUESTLIST;
-    }
+	private static final String _S__AC_GMVIEWQUESTLIST = "[S] ac GMViewQuestList";
+	
+	private final L2PcInstance _activeChar;
+	
+	public GMViewQuestList(L2PcInstance cha)
+	{
+		_activeChar = cha;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x93);
+		writeS(_activeChar.getName());
+		
+		Quest[] questList = _activeChar.getAllActiveQuests();
+		
+		if (questList.length == 0)
+		{
+			writeC(0);
+			writeH(0);
+			writeH(0);
+			return;
+		}
+		
+		writeH(questList.length); // quest count
+		
+		for (Quest q : questList)
+		{
+			writeD(q.getQuestIntId());
+			
+			QuestState qs = _activeChar.getQuestState(q.getName());
+			if (qs == null)
+			{
+				writeD(0);
+				continue;
+			}
+			
+			writeD(qs.getInt("cond")); // stage of quest progress
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__AC_GMVIEWQUESTLIST;
+	}
 }

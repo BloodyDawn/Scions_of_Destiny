@@ -18,57 +18,57 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.cache.CrestCache;
 import net.sf.l2j.gameserver.serverpackets.AllyCrest;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.4 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestAllyCrest extends ClientBasePacket
+public class RequestAllyCrest extends L2GameClientPacket
 {
 	private static final String _C__88_REQUESTALLYCREST = "[C] 88 RequestAllyCrest";
 	private static Logger _log = Logger.getLogger(RequestAllyCrest.class.getName());
-
-	private final int _crestId;
-	/**
-	 * packet type id 0x88 format: cd
-	 * 
-	 * @param rawPacket
-	 */
-	public RequestAllyCrest(ByteBuffer buf, ClientThread client)
+	
+	private int _crestId;
+	
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_crestId = readD();
 	}
-
-        @Override
+	
+	@Override
 	public void runImpl()
 	{
-		if (Config.DEBUG) _log.fine("allycrestid " + _crestId + " requested");
-
-                byte[] data = CrestCache.getInstance().getAllyCrest(_crestId);
+		if (Config.DEBUG)
+		{
+			_log.fine("allycrestid " + _crestId + " requested");
+		}
+		
+		byte[] data = CrestCache.getInstance().getAllyCrest(_crestId);
 		if (data != null)
 		{
-			AllyCrest ac = new AllyCrest(_crestId,data);
+			AllyCrest ac = new AllyCrest(_crestId, data);
 			sendPacket(ac);
 		}
 		else
 		{
 			if (Config.DEBUG)
-                                _log.fine("allycrest is missing:" + _crestId);
+			{
+				_log.fine("allycrest is missing:" + _crestId);
+			}
 		}
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__88_REQUESTALLYCREST;

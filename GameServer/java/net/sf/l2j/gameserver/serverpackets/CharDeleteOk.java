@@ -20,23 +20,25 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class CharDeleteOk extends ServerBasePacket
+public class CharDeleteOk extends L2GameServerPacket
 {
-    private static final String _S__33_CHARDELETEOK = "[S] 23 CharDeleteOk";
-
-    final void writeImpl()
-    {
-        writeC(0x23);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__33_CHARDELETEOK;
-    }
+	private static final String _S__33_CHARDELETEOK = "[S] 23 CharDeleteOk";
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x23);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__33_CHARDELETEOK;
+	}
 }

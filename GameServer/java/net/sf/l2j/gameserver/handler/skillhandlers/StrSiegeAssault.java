@@ -16,9 +16,7 @@
  *
  * http://www.gnu.org/copyleft/gpl.html
  */
-package net.sf.l2j.gameserver.handler.skillhandlers; 
-
-import java.util.logging.Logger;
+package net.sf.l2j.gameserver.handler.skillhandlers;
 
 import net.sf.l2j.gameserver.handler.ISkillHandler;
 import net.sf.l2j.gameserver.model.L2Character;
@@ -31,66 +29,82 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.skills.Formulas;
 import net.sf.l2j.gameserver.templates.L2WeaponType;
 
-/** 
- * @author _tomciaaa_ 
- * 
- */ 
-public class StrSiegeAssault implements ISkillHandler 
-{ 
-    private static Logger _log = Logger.getLogger(StrSiegeAssault.class.getName()); 
-    protected SkillType[] _skillIds = {SkillType.STRSIEGEASSAULT}; 
-
-    public void useSkill(L2Character activeChar, @SuppressWarnings("unused") L2Skill skill, @SuppressWarnings("unused") L2Object[] targets)
-    {
-
-    	if (activeChar == null || !(activeChar instanceof L2PcInstance)) return;
-
-        L2PcInstance player = (L2PcInstance)activeChar;
-
-        if (!activeChar.isRiding())
-            return;
-
-        try
-        {
-            // damage calculation
-            int damage = 0;
-                      
-            for(int index = 0;index < targets.length;index++)
-            {
-                L2Character target = (L2Character)targets[index];
-                L2ItemInstance weapon = activeChar.getActiveWeaponInstance();
-
-                if (!(target instanceof L2DoorInstance))
-                    return;
-
-                boolean dual  = activeChar.isUsingDualWeapon();
-                boolean shld = Formulas.getInstance().calcShldUse(activeChar, target);
-                boolean crit = Formulas.getInstance().calcCrit(activeChar.getCriticalHit(target, skill));
-                boolean soul = (weapon!= null && weapon.getChargedSoulshot() == L2ItemInstance.CHARGED_SOULSHOT && weapon.getItemType() != L2WeaponType.DAGGER );
-
-                damage = (int)Formulas.getInstance().calcPhysDam(activeChar, target, skill, shld, crit, dual, soul);
-                if (damage > 0)
-                {
-                    target.reduceCurrentHp(damage, activeChar);
-                    if (soul && weapon != null)
-                        weapon.setChargedSoulshot(L2ItemInstance.CHARGED_NONE);                
-
-                    activeChar.sendDamageMessage(target, damage, false, false, false);
-                }
-            }
-
-            L2ItemInstance itemToTake = player.getInventory().getItemByItemId(skill.getItemConsumeId());
-            if (!player.destroyItem("Consume", itemToTake.getObjectId(), skill.getItemConsume(), null, true))
-            	return;
-        }
-        catch (Exception e)
-        {
-            player.sendMessage("Error using siege assault:" + e);
-        }
-    } 
-    
-    public SkillType[] getSkillIds() 
-    { 
-        return _skillIds; 
-    }
+/**
+ * @author _tomciaaa_
+ */
+public class StrSiegeAssault implements ISkillHandler
+{
+	protected SkillType[] _skillIds =
+	{
+		SkillType.STRSIEGEASSAULT
+	};
+	
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		
+		if ((activeChar == null) || !(activeChar instanceof L2PcInstance))
+		{
+			return;
+		}
+		
+		L2PcInstance player = (L2PcInstance) activeChar;
+		
+		if (!activeChar.isRiding())
+		{
+			return;
+		}
+		
+		try
+		{
+			// damage calculation
+			int damage = 0;
+			
+			for (L2Object target2 : targets)
+			{
+				L2Character target = (L2Character) target2;
+				L2ItemInstance weapon = activeChar.getActiveWeaponInstance();
+				
+				if (!(target instanceof L2DoorInstance))
+				{
+					return;
+				}
+				
+				boolean dual = activeChar.isUsingDualWeapon();
+				boolean shld = Formulas.getInstance().calcShldUse(activeChar, target);
+				crit = Formulas.getInstance().calcCrit(activeChar.getCriticalHit(target, skill));
+				boolean soul = ((weapon != null) && (weapon.getChargedSoulshot() == L2ItemInstance.CHARGED_SOULSHOT) && (weapon.getItemType() != L2WeaponType.DAGGER));
+				
+				damage = (int) Formulas.getInstance().calcPhysDam(activeChar, target, skill, shld, crit, dual, soul);
+				
+				if (damage > 0)
+				{
+					target.reduceCurrentHp(damage, activeChar);
+					if (soul && (weapon != null))
+					{
+						weapon.setChargedSoulshot(L2ItemInstance.CHARGED_NONE);
+					}
+					
+					activeChar.sendDamageMessage(target, damage, false, false, false);
+				}
+				
+			}
+			
+			L2ItemInstance itemToTake = player.getInventory().getItemByItemId(skill.getItemConsumeId());
+			if (!player.destroyItem("Consume", itemToTake.getObjectId(), skill.getItemConsume(), null, true))
+			{
+				return;
+			}
+		}
+		catch (Exception e)
+		{
+			player.sendMessage("Error using siege assault:" + e);
+		}
+	}
+	
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return _skillIds;
+	}
 }

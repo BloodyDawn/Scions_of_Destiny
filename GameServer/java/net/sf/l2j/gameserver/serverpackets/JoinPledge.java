@@ -20,31 +20,33 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class JoinPledge extends ServerBasePacket
+public class JoinPledge extends L2GameServerPacket
 {
-    private static final String _S__45_JOINPLEDGE = "[S] 33 JoinPledge";
-
-    private int _pledgeId;
-
-    public JoinPledge(int pledgeId)
-    {
-        _pledgeId = pledgeId;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x33);
-        writeD(_pledgeId);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__45_JOINPLEDGE;
-    }
+	private static final String _S__45_JOINPLEDGE = "[S] 33 JoinPledge";
+	
+	private final int _pledgeId;
+	
+	public JoinPledge(int pledgeId)
+	{
+		_pledgeId = pledgeId;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x33);
+		writeD(_pledgeId);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__45_JOINPLEDGE;
+	}
 }

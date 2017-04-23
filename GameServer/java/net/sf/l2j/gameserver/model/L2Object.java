@@ -19,7 +19,7 @@
 package net.sf.l2j.gameserver.model;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
+import net.sf.l2j.gameserver.L2GameClient;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.instancemanager.ItemsOnGroundManager;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -62,7 +62,7 @@ public abstract class L2Object
         player.sendPacket(new ActionFailed());
     }
 
-    public void onActionShift(ClientThread client)
+    public void onActionShift(L2GameClient client)
     {
         client.getActiveChar().sendPacket(new ActionFailed());
     }

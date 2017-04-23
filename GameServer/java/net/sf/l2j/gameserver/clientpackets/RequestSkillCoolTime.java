@@ -18,36 +18,37 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.SkillCoolTime;
 
-public class RequestSkillCoolTime extends ClientBasePacket
+public class RequestSkillCoolTime extends L2GameClientPacket
 {
-    private String _C__9d_REQUESTSKILLCOOLTIME = "[C] 9d RequestSkillCoolTime";
-
-    public RequestSkillCoolTime(ByteBuffer data, ClientThread client)
-    {
-        super(data, client);
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        sendPacket(new SkillCoolTime(activeChar));
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__9d_REQUESTSKILLCOOLTIME;
-    }
+	private final String _C__9d_REQUESTSKILLCOOLTIME = "[C] 9d RequestSkillCoolTime";
+	
+	@Override
+	protected void readImpl()
+	{
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		sendPacket(new SkillCoolTime(activeChar));
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__9d_REQUESTSKILLCOOLTIME;
+	}
 }

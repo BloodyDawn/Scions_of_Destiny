@@ -46,7 +46,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2FestivalMonsterInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2NpcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.CreatureSay;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.templates.L2NpcTemplate;
 import net.sf.l2j.gameserver.templates.StatsSet;
 import net.sf.l2j.gameserver.util.Util;
@@ -1981,11 +1981,11 @@ public class SevenSignsFestival implements SpawnListener
             }
             
             // Make it appear as though the Witch has apparated there.
-            MagicSkillUser msu = new MagicSkillUser(_witchInst, _witchInst, 2003, 1, 1, 0);
+            MagicSkillUse msu = new MagicSkillUse(_witchInst, _witchInst, 2003, 1, 1, 0);
             _witchInst.broadcastPacket(msu);
             
             // And another one...:D
-            msu = new MagicSkillUser(_witchInst, _witchInst, 2133, 1, 1, 0);
+            msu = new MagicSkillUse(_witchInst, _witchInst, 2133, 1, 1, 0);
             _witchInst.broadcastPacket(msu);
             
             // Send a message to all participants from the witch.

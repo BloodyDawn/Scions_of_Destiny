@@ -28,65 +28,77 @@ import net.sf.l2j.gameserver.skills.Formulas;
 import net.sf.l2j.gameserver.templates.L2WeaponType;
 import net.sf.l2j.gameserver.templates.StatsSet;
 
-public class L2SkillChargeDmg extends L2Skill 
+public class L2SkillChargeDmg extends L2Skill
 {
-	final int num_charges;
-
+	final int num_charges;
+	
 	public L2SkillChargeDmg(StatsSet set)
-        {
+	{
 		super(set);
 		num_charges = set.getInteger("num_charges", getLevel());
 	}
-
+	
+	@Override
 	public boolean checkCondition(L2Character activeChar, boolean itemOrWeapon)
 	{
-                L2PcInstance player = (L2PcInstance)activeChar;
-                if (player.getCharges() < num_charges)
-                {
-                        SystemMessage sm = new SystemMessage(113);
-                        sm.addSkillName(getId());
-                        activeChar.sendPacket(sm);
-                        return false;
+		L2PcInstance player = (L2PcInstance) activeChar;
+		
+		if (player.getCharges() < num_charges)
+		{
+			SystemMessage sm = new SystemMessage(113);
+			sm.addSkillName(getId());
+			activeChar.sendPacket(sm);
+			return false;
 		}
 		return super.checkCondition(activeChar, itemOrWeapon);
-	}
-
+	}
+	
+	@Override
 	public void useSkill(L2Character caster, L2Object[] targets)
-        {
-                L2PcInstance player = (L2PcInstance)caster;
-
-		if (caster.isAlikeDead())
+	{
+		L2PcInstance player = (L2PcInstance) caster;
+		
+		if (caster.isAlikeDead())
+		{
 			return;
-
-                // Formula tested by L2Guru
-                double modifier = 0;
-                modifier = 0.8 + 0.201 * player.getCharges();
-
-                player.addCharge(-num_charges);
-
-                L2ItemInstance weapon = caster.getActiveWeaponInstance();
-                boolean soul = (weapon != null && weapon.getChargedSoulshot() == L2ItemInstance.CHARGED_SOULSHOT && weapon.getItemType() != L2WeaponType.DAGGER);
-
-                for (int index = 0;index < targets.length;index++)
-                {
-                        L2Character target = (L2Character)targets[index];
-		        if (target.isAlikeDead())
-		                continue;
-
-		        boolean shld = Formulas.getInstance().calcShldUse(caster, target);
-
-		        double damage = Formulas.getInstance().calcPhysDam(caster, target, this, shld, false, false, soul);
-
-                        if (damage > 0)
-                        {
-                                damage = damage * modifier;
-                                target.reduceCurrentHp(damage, caster);
-
-                                caster.sendDamageMessage(target, (int)damage, false, false, false);
-                        }
-                }
-
-                if (soul && weapon != null)
-                        weapon.setChargedSoulshot(L2ItemInstance.CHARGED_NONE);
+		}
+		
+		// Formula tested by L2Guru
+		double modifier = 0;
+		modifier = 0.8 + (0.201 * player.getCharges());
+		
+		player.addCharge(-num_charges);
+		
+		L2ItemInstance weapon = caster.getActiveWeaponInstance();
+		boolean soul = ((weapon != null) && (weapon.getChargedSoulshot() == L2ItemInstance.CHARGED_SOULSHOT) && (weapon.getItemType() != L2WeaponType.DAGGER));
+		
+		for (L2Object target2 : targets)
+		{
+			
+			L2Character target = (L2Character) target2;
+			if (target.isAlikeDead())
+			{
+				continue;
+			}
+			
+			boolean shld = Formulas.getInstance().calcShldUse(caster, target);
+			
+			double damage = Formulas.getInstance().calcPhysDam(caster, target, this, shld, false, false, soul);
+			
+			if (damage > 0)
+			{
+				
+				damage = damage * modifier;
+				target.reduceCurrentHp(damage, caster);
+				
+				caster.sendDamageMessage(target, (int) damage, false, false, false);
+			}
+			
+		}
+		
+		if (soul && (weapon != null))
+		{
+			weapon.setChargedSoulshot(L2ItemInstance.CHARGED_NONE);
+		}
 	}
 }

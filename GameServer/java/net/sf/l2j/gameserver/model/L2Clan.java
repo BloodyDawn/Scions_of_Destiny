@@ -38,7 +38,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.PledgeShowInfoUpdate;
 import net.sf.l2j.gameserver.serverpackets.PledgeShowMemberListAll;
 import net.sf.l2j.gameserver.serverpackets.PledgeShowMemberListDeleteAll;
-import net.sf.l2j.gameserver.serverpackets.ServerBasePacket;
+import net.sf.l2j.gameserver.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.serverpackets.UserInfo;
 import net.sf.l2j.gameserver.util.Util;
@@ -611,7 +611,7 @@ public class L2Clan
         }
     }
     
-	public void broadcastToOnlineAllyMembers(ServerBasePacket packet)
+	public void broadcastToOnlineAllyMembers(L2GameServerPacket packet)
 	{
 	    if (getAllyId()==0)
 		return;
@@ -623,7 +623,7 @@ public class L2Clan
 	    }
 	}
 	
-	public void broadcastToOnlineMembers(ServerBasePacket packet)
+	public void broadcastToOnlineMembers(L2GameServerPacket packet)
 	{
 		for (L2ClanMember member : _members.values())
 		{
@@ -636,7 +636,7 @@ public class L2Clan
 		}
 	}
 	
-	public void broadcastToOtherOnlineMembers(ServerBasePacket packet, L2PcInstance player)
+	public void broadcastToOtherOnlineMembers(L2GameServerPacket packet, L2PcInstance player)
 	{
 		for (L2ClanMember member : _members.values())
 		{

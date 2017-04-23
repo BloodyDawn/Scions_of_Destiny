@@ -22,36 +22,39 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance.TimeStamp;
 
 /**
- *
- * @author  KenM
+ * @author KenM
  */
-public class SkillCoolTime extends ServerBasePacket
+public class SkillCoolTime extends L2GameServerPacket
 {
-    private L2PcInstance _cha;
-
-    public SkillCoolTime(L2PcInstance cha)
-    {
-        _cha = cha;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xc1);
-        writeD(_cha.getReuseTimeStamps().size()); // list size
-        for (TimeStamp ts : _cha.getReuseTimeStamps())
-        {
-            writeD(ts.getSkillId());
-            writeD(_cha.getSkillLevel(ts.getSkillId()));
-            writeD((int) ts.getReuse() / 1000);
-            writeD((int) ts.getRemaining() / 1000);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return "[S] C1 SkillCoolTime";
-    }
+	private final L2PcInstance _cha;
+	
+	public SkillCoolTime(L2PcInstance cha)
+	{
+		_cha = cha;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xc1);
+		writeD(_cha.getReuseTimeStamps().size()); // list size
+		for (TimeStamp ts : _cha.getReuseTimeStamps())
+		{
+			writeD(ts.getSkillId());
+			
+			writeD(_cha.getSkillLevel(ts.getSkillId()));
+			writeD((int) ts.getReuse() / 1000);
+			writeD((int) ts.getRemaining() / 1000);
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return "[S] C1 SkillCoolTime";
+	}
 }

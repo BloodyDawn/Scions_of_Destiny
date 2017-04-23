@@ -28,173 +28,214 @@ import net.sf.l2j.gameserver.serverpackets.WareHouseWithdrawalList;
 import net.sf.l2j.gameserver.templates.L2NpcTemplate;
 
 /**
- * @author  l3x
+ * @author l3x
  */
 public class L2CastleWarehouseInstance extends L2FolkInstance
 {
-    protected static int Cond_All_False = 0;
-    protected static int Cond_Busy_Because_Of_Siege = 1;
-    protected static int Cond_Owner = 2;
-
-    /**
-     * @param template
-     */
-    public L2CastleWarehouseInstance(int objectId, L2NpcTemplate template)
-    {
-        super(objectId, template);
-    }
-
-    private void showRetrieveWindow(L2PcInstance player)
-    {
-        player.sendPacket(new ActionFailed());
-        player.setActiveWarehouse(player.getWarehouse());
-
-        if (player.getActiveWarehouse().getSize() == 0)
-        {
-            player.sendPacket(new SystemMessage(SystemMessage.NOTHING_IN_WAREHOUSE));
-            return;
-        }
-
-        if (Config.DEBUG)
-            _log.fine("Showing stored items");
-
-        player.sendPacket(new WareHouseWithdrawalList(player, WareHouseWithdrawalList.Private));
-    }
-
-    private void showDepositWindow(L2PcInstance player)
-    {
-        player.sendPacket(new ActionFailed());
-        player.setActiveWarehouse(player.getWarehouse());
-        player.tempInventoryDisable();
-
-        if (Config.DEBUG)
-            _log.fine("Showing items to deposit");
-
-        player.sendPacket(new WareHouseDepositList(player, WareHouseDepositList.Private));
-    }
-
-    private void showDepositWindowClan(L2PcInstance player)
-    {
-        player.sendPacket(new ActionFailed());
-        if (player.getClan() != null)
-        {
-            if (player.getClan().getLevel() == 0)
-            {
-                player.sendPacket(new SystemMessage(SystemMessage.ONLY_LEVEL_1_CLAN_OR_HIGHER_CAN_USE_WAREHOUSE));
-                return;
-            }
-
-            player.setActiveWarehouse(player.getClan().getWarehouse());
-            player.tempInventoryDisable();
-
-            if (Config.DEBUG)
-                _log.fine("Showing items to deposit - clan");
-
-            WareHouseDepositList dl = new WareHouseDepositList(player, WareHouseDepositList.Clan);
-            player.sendPacket(dl);
-        }
-    }
-
-    private void showWithdrawWindowClan(L2PcInstance player)
-    {
-        player.sendPacket(new ActionFailed());
-        if ((player.getClanPrivileges() & L2Clan.CP_CL_VIEW_WAREHOUSE) != L2Clan.CP_CL_VIEW_WAREHOUSE)
-        {
-        	player.sendPacket(new SystemMessage(SystemMessage.YOU_DO_NOT_HAVE_THE_RIGHT_TO_USE_CLAN_WAREHOUSE));
-        	return;
-        }
-        else
-        {
-            if (player.getClan().getLevel() == 0)
-            {
-                player.sendPacket(new SystemMessage(SystemMessage.ONLY_LEVEL_1_CLAN_OR_HIGHER_CAN_USE_WAREHOUSE));
-                return;
-            }
-
-            player.setActiveWarehouse(player.getClan().getWarehouse());
-
-            if (Config.DEBUG)
-                _log.fine("Showing items to withdraw - clan");
-
-            player.sendPacket(new WareHouseWithdrawalList(player, WareHouseWithdrawalList.Clan));
-        }
-    }
-
-    public void onBypassFeedback(L2PcInstance player, String command)
-    {
-        // little check to prevent enchant exploit
-        if (player.getActiveEnchantItem() != null)
-        {
-            _log.info("Player " + player.getName() + " trying to use enchant exploit, ban this player!");
-            player.closeNetConnection();
-            return;
-        }
-
-        if (command.startsWith("WithdrawP"))
-            showRetrieveWindow(player);
-        else if (command.equals("DepositP"))
-            showDepositWindow(player);
-        else if (command.equals("WithdrawC"))
-            showWithdrawWindowClan(player);
-        else if (command.equals("DepositC"))
-            showDepositWindowClan(player);
-        else if (command.startsWith("Chat"))
-        {
-            int val = 0;
-            try
-            {
-               val = Integer.parseInt(command.substring(5));
-            }
-            catch (IndexOutOfBoundsException ioobe){}
-            catch (NumberFormatException nfe){}
-            showChatWindow(player, val);
-        }
-        else
-            super.onBypassFeedback(player, command);
-    }
-
-    public void showChatWindow(L2PcInstance player, int val)
-    {
-        player.sendPacket(new ActionFailed());
-        String filename = "data/html/castlewarehouse/castlewarehouse-no.htm";
-
-        int condition = validateCondition(player);
-        if (condition > Cond_All_False)
-        {
-            if (condition == Cond_Busy_Because_Of_Siege)
-                filename = "data/html/castlewarehouse/castlewarehouse-busy.htm"; // Busy because of siege
-            else if (condition == Cond_Owner)                                    // Clan owns castle
-            {
-                if (val == 0)
-                    filename = "data/html/castlewarehouse/castlewarehouse.htm";
-                else
-                    filename = "data/html/castlewarehouse/castlewarehouse-" + val + ".htm";
-            }
-        }
-
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-        html.setFile(filename);
-        html.replace("%objectId%", String.valueOf(getObjectId()));
-        html.replace("%npcname%", getName());
-        player.sendPacket(html);
-    }
-
-    protected int validateCondition(L2PcInstance player)
-    {
-        if (player.isGM())
-            return Cond_Owner;
-
-        if (getCastle() != null && getCastle().getCastleId() > 0)
-        {
-            if (player.getClan() != null)
-            {
-                if (getCastle().getSiege().getIsInProgress())
-                    return Cond_Busy_Because_Of_Siege; // Busy because of siege
-                else if (getCastle().getOwnerId() == player.getClanId()) // Clan owns castle
-                    return Cond_Owner;
-            }
-        }
-
-        return Cond_All_False;
-    }
+	protected static int Cond_All_False = 0;
+	protected static int Cond_Busy_Because_Of_Siege = 1;
+	protected static int Cond_Owner = 2;
+	
+	/**
+	 * @param template
+	 */
+	public L2CastleWarehouseInstance(int objectId, L2NpcTemplate template)
+	{
+		super(objectId, template);
+	}
+	
+	private void showRetrieveWindow(L2PcInstance player)
+	{
+		player.sendPacket(new ActionFailed());
+		player.setActiveWarehouse(player.getWarehouse());
+		
+		if (player.getActiveWarehouse().getSize() == 0)
+		{
+			player.sendPacket(new SystemMessage(SystemMessage.NOTHING_IN_WAREHOUSE));
+			return;
+		}
+		
+		if (Config.DEBUG)
+		{
+			_log.fine("Showing stored items");
+		}
+		
+		player.sendPacket(new WareHouseWithdrawalList(player, WareHouseWithdrawalList.Private));
+	}
+	
+	private void showDepositWindow(L2PcInstance player)
+	{
+		player.sendPacket(new ActionFailed());
+		player.setActiveWarehouse(player.getWarehouse());
+		player.tempInventoryDisable();
+		
+		if (Config.DEBUG)
+		{
+			_log.fine("Showing items to deposit");
+		}
+		
+		player.sendPacket(new WareHouseDepositList(player, WareHouseDepositList.Private));
+	}
+	
+	private void showDepositWindowClan(L2PcInstance player)
+	{
+		player.sendPacket(new ActionFailed());
+		if (player.getClan() != null)
+		{
+			if (player.getClan().getLevel() == 0)
+			{
+				
+				player.sendPacket(new SystemMessage(SystemMessage.ONLY_LEVEL_1_CLAN_OR_HIGHER_CAN_USE_WAREHOUSE));
+				
+				return;
+			}
+			
+			player.setActiveWarehouse(player.getClan().getWarehouse());
+			player.tempInventoryDisable();
+			
+			if (Config.DEBUG)
+			{
+				_log.fine("Showing items to deposit - clan");
+			}
+			
+			WareHouseDepositList dl = new WareHouseDepositList(player, WareHouseDepositList.Clan);
+			player.sendPacket(dl);
+			
+		}
+	}
+	
+	private void showWithdrawWindowClan(L2PcInstance player)
+	{
+		player.sendPacket(new ActionFailed());
+		if ((player.getClanPrivileges() & L2Clan.CP_CL_VIEW_WAREHOUSE) != L2Clan.CP_CL_VIEW_WAREHOUSE)
+		{
+			player.sendPacket(new SystemMessage(SystemMessage.YOU_DO_NOT_HAVE_THE_RIGHT_TO_USE_CLAN_WAREHOUSE));
+			return;
+		}
+		else
+		{
+			if (player.getClan().getLevel() == 0)
+			{
+				
+				player.sendPacket(new SystemMessage(SystemMessage.ONLY_LEVEL_1_CLAN_OR_HIGHER_CAN_USE_WAREHOUSE));
+				return;
+			}
+			
+			player.setActiveWarehouse(player.getClan().getWarehouse());
+			
+			if (Config.DEBUG)
+			{
+				_log.fine("Showing items to withdraw - clan");
+			}
+			
+			player.sendPacket(new WareHouseWithdrawalList(player, WareHouseWithdrawalList.Clan));
+			
+		}
+	}
+	
+	@Override
+	public void onBypassFeedback(L2PcInstance player, String command)
+	{
+		// little check to prevent enchant exploit
+		if (player.getActiveEnchantItem() != null)
+		{
+			_log.info("Player " + player.getName() + " trying to use enchant exploit, ban this player!");
+			player.logout();
+			return;
+		}
+		
+		if (command.startsWith("WithdrawP"))
+		{
+			showRetrieveWindow(player);
+		}
+		else if (command.equals("DepositP"))
+		{
+			showDepositWindow(player);
+		}
+		else if (command.equals("WithdrawC"))
+		{
+			showWithdrawWindowClan(player);
+		}
+		else if (command.equals("DepositC"))
+		{
+			showDepositWindowClan(player);
+		}
+		else if (command.startsWith("Chat"))
+		{
+			int val = 0;
+			try
+			{
+				val = Integer.parseInt(command.substring(5));
+			}
+			catch (IndexOutOfBoundsException ioobe)
+			{
+			}
+			catch (NumberFormatException nfe)
+			{
+			}
+			showChatWindow(player, val);
+		}
+		else
+		{
+			super.onBypassFeedback(player, command);
+		}
+	}
+	
+	@Override
+	public void showChatWindow(L2PcInstance player, int val)
+	{
+		player.sendPacket(new ActionFailed());
+		String filename = "data/html/castlewarehouse/castlewarehouse-no.htm";
+		
+		int condition = validateCondition(player);
+		if (condition > Cond_All_False)
+		{
+			if (condition == Cond_Busy_Because_Of_Siege)
+			{
+				filename = "data/html/castlewarehouse/castlewarehouse-busy.htm"; // Busy because of siege
+			}
+			else if (condition == Cond_Owner) // Clan owns castle
+			{
+				if (val == 0)
+				{
+					filename = "data/html/castlewarehouse/castlewarehouse.htm";
+				}
+				else
+				{
+					filename = "data/html/castlewarehouse/castlewarehouse-" + val + ".htm";
+				}
+			}
+		}
+		
+		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+		html.setFile(filename);
+		html.replace("%objectId%", String.valueOf(getObjectId()));
+		html.replace("%npcname%", getName());
+		player.sendPacket(html);
+	}
+	
+	protected int validateCondition(L2PcInstance player)
+	{
+		if (player.isGM())
+		{
+			return Cond_Owner;
+		}
+		
+		if ((getCastle() != null) && (getCastle().getCastleId() > 0))
+		{
+			if (player.getClan() != null)
+			{
+				if (getCastle().getSiege().getIsInProgress())
+				{
+					return Cond_Busy_Because_Of_Siege; // Busy because of siege
+				}
+				else if (getCastle().getOwnerId() == player.getClanId())
+				{
+					return Cond_Owner;
+				}
+			}
+		}
+		
+		return Cond_All_False;
+	}
 }

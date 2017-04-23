@@ -23,26 +23,26 @@ import net.sf.l2j.loginserver.serverpackets.ServerBasePacket;
 
 /**
  * @author -Wooden-
- *
  */
 public class InitLS extends ServerBasePacket
 {
-    // ID 0x00
-    // format
-    // d proto rev
-    // d key size
-    // b key
+	// ID 0x00
+	// format
+	// d proto rev
+	// d key size
+	// b key
 
-    public InitLS(byte[] publickey)
-    {
-    	writeC(0x00);
-    	writeD(LoginServer.PROTOCOL_REV);
-    	writeD(publickey.length);
-    	writeB(publickey);
-    }
+	public InitLS(byte[] publickey)
+	{
+		writeC(0x00);
+		writeD(LoginServer.PROTOCOL_REV);
+		writeD(publickey.length);
+		writeB(publickey);
+	}
 
-    public byte[] getContent()
-    {
-        return getBytes();
-    }
+	@Override
+	public byte[] getContent()
+	{
+		return getBytes();
+	}
 }

@@ -27,7 +27,6 @@ import net.sf.l2j.gameserver.model.L2Skill.SkillType;
 
 /**
  * an IItemHandler implementation has to be stateless
- * 
  * @version $Revision: 1.2.2.2.2.3 $ $Date: 2005/04/03 15:55:06 $
  */
 public interface ISkillHandler
@@ -37,12 +36,13 @@ public interface ISkillHandler
 	 * @param activeChar
 	 * @param skill
 	 * @param targets
+	 * @param crit
 	 * @throws IOException
 	 */
-	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets) throws IOException;
-
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit) throws IOException;
+	
 	/**
-	 * this method is called at initialization to register all the item ids automatically 
+	 * this method is called at initialization to register all the item ids automatically
 	 * @return all known itemIds
 	 */
 	public SkillType[] getSkillIds();

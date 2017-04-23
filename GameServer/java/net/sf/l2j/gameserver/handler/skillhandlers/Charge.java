@@ -28,33 +28,44 @@ import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.2.2.9 $ $Date: 2005/04/04 19:08:01 $
  */
 public class Charge implements ISkillHandler
 {
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
-     */
-    private static SkillType[] _skillIds = { L2Skill.SkillType.CHARGE };
-
-    public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets)
-    {
-        L2PcInstance player = (L2PcInstance)activeChar;
-        if (player.getCharges() >= skill.getMaxCharges())
-        {
-            player.sendPacket(new SystemMessage(1196));
-            return;
-        }
-
-        player.addCharge(1);
-        SystemMessage sm = new SystemMessage(323);
-        sm.addNumber(player.getCharges());
-        activeChar.sendPacket(sm);
-    }
-
-    public SkillType[] getSkillIds()
-    {
-        return _skillIds;
-    }
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
+	 */
+	private static SkillType[] _skillIds =
+	{
+		L2Skill.SkillType.CHARGE
+	};
+	
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		
+		L2PcInstance player = (L2PcInstance) activeChar;
+		
+		if (player.getCharges() >= skill.getMaxCharges())
+		{
+			player.sendPacket(new SystemMessage(1196));
+			return;
+		}
+		
+		player.addCharge(1);
+		
+		SystemMessage sm = new SystemMessage(323);
+		
+		sm.addNumber(player.getCharges());
+		
+		activeChar.sendPacket(sm);
+		
+	}
+	
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return _skillIds;
+	}
 }

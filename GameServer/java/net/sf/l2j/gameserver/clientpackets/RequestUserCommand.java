@@ -18,55 +18,52 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.handler.IUserCommandHandler;
 import net.sf.l2j.gameserver.handler.UserCommandHandler;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.1.2.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestUserCommand extends ClientBasePacket
+public class RequestUserCommand extends L2GameClientPacket
 {
-    private static final String _C__AA_REQUESTUSERCOMMAND = "[C] aa RequestUserCommand";
-    static Logger _log = Logger.getLogger(RequestUserCommand.class.getName());
+	private static final String _C__AA_REQUESTUSERCOMMAND = "[C] aa RequestUserCommand";
+	static Logger _log = Logger.getLogger(RequestUserCommand.class.getName());
+	
+	private int _command;
+	
+	@Override
+	protected void readImpl()
+	{
+		_command = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
 		
-    private final int _command;
-
-    /**
-     * packet type id 0xaa
-     * format:	cd
-     *  
-     * @param rawPacket
-     */
-    public RequestUserCommand(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _command = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-	if (player == null)
-            return;
-
-        IUserCommandHandler handler = UserCommandHandler.getInstance().getUserCommandHandler(_command);
-        if (handler != null)
-            handler.useUserCommand(_command, getClient().getActiveChar());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__AA_REQUESTUSERCOMMAND;
-    }
+		IUserCommandHandler handler = UserCommandHandler.getInstance().getUserCommandHandler(_command);
+		if (handler != null)
+		{
+			handler.useUserCommand(_command, getClient().getActiveChar());
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__AA_REQUESTUSERCOMMAND;
+	}
 }

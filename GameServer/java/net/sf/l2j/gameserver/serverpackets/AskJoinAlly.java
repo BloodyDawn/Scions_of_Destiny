@@ -19,52 +19,49 @@
 package net.sf.l2j.gameserver.serverpackets;
 
 /**
- *
  * sample
  * <p>
- * 7d 
- * c1 b2 e0 4a 
- * 00 00 00 00
+ * 7d c1 b2 e0 4a 00 00 00 00
  * <p>
- * 
- * format
- * cdd
- * 
+ * format cdd
  * @version $Revision: 1.1.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class AskJoinAlly extends ServerBasePacket
+public class AskJoinAlly extends L2GameServerPacket
 {
-    private static final String _S__a8_ASKJOINALLY_0Xa8 = "[S] a8 AskJoinAlly 0xa8";
-    //private static Logger _log = Logger.getLogger(AskJoinAlly.class.getName());
+	private static final String _S__a8_ASKJOINALLY_0Xa8 = "[S] a8 AskJoinAlly 0xa8";
+	// private static Logger _log = Logger.getLogger(AskJoinAlly.class.getName());
 
-    private int _requestorId;
-    private String _requestorName;
-    private String _requestorAllyName;
+	private final int _requestorId;
+	private final String _requestorName;
+	private final String _requestorAllyName;
 
-    /**
-     *
-     */
-    public AskJoinAlly(int requestorId, String requestorName, String requestorAllyName)
-    {
-        _requestorId = requestorId;
-        _requestorName = requestorName;
-        _requestorAllyName = requestorAllyName;
-    }
+	/**
+	 *
+	 */
+	public AskJoinAlly(int requestorId, String requestorName, String requestorAllyName)
+	{
+		_requestorId = requestorId;
+		_requestorName = requestorName;
+		_requestorAllyName = requestorAllyName;
+	}
 
-    final void writeImpl()
-    {
-        writeC(0xa8);
-        writeD(_requestorId);
-        writeS(_requestorName);
-        writeS("");
-        writeS(_requestorAllyName);
-    }
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xa8);
+		writeD(_requestorId);
+		writeS(_requestorName);
+		writeS("");
+		writeS(_requestorAllyName);
+	}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__a8_ASKJOINALLY_0Xa8;
-    }
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__a8_ASKJOINALLY_0Xa8;
+	}
 }

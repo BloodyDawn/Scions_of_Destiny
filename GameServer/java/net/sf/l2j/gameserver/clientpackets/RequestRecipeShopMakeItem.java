@@ -18,87 +18,83 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.RecipeController;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.util.Util;
 
 /**
- * @author Administrator
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Administrator TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code Templates
  */
-public class RequestRecipeShopMakeItem extends ClientBasePacket 
+public class RequestRecipeShopMakeItem extends L2GameClientPacket
 {
-    private static final String _C__AF_REQUESTRECIPESHOPMAKEITEM = "[C] B6 RequestRecipeShopMakeItem";
-
-    private final int _id;
-    private final int _recipeId;
-    @SuppressWarnings("unused")
-    private final int _unknow;
-
-    /**
-     * packet type id 0xac
-     * format:		cd
-     * @param decrypt
-     */
-    public RequestRecipeShopMakeItem(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _id = readD();
-        _recipeId = readD();
-        _unknow = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-
-            return;
-
-
-        if (!getClient().getFloodProtectors().getManufacture().tryPerformAction("RecipeShopMake"))
-            return;
-
-        L2PcInstance manufacturer = (L2PcInstance)L2World.getInstance().findObject(_id);
-
-        if (manufacturer == null)
-            return;
-
-
-        if (activeChar.getPrivateStoreType() != 0)
-        {
-            activeChar.sendMessage("Cannot make items while trading.");
-            return;
-        }
-
-        if (manufacturer.getPrivateStoreType() != 5)
-        {
-            //activeChar.sendMessage("Cannot make items while trading.");
-            return;
-        }
-        
-        if (activeChar.isInCraftMode() || manufacturer.isInCraftMode())
-        {
-            activeChar.sendMessage("Currently in Craft Mode.");
-            return;
-        }
-
-        if (Util.checkIfInRange(150, activeChar, manufacturer, true))
-            RecipeController.getInstance().requestManufactureItem(manufacturer, _recipeId, activeChar);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType() 
-    {
-        return _C__AF_REQUESTRECIPESHOPMAKEITEM;
-    }
+	private static final String _C__AF_REQUESTRECIPESHOPMAKEITEM = "[C] B6 RequestRecipeShopMakeItem";
+	
+	private int _id;
+	private int _recipeId;
+	@SuppressWarnings("unused")
+	private int _unknow;
+	
+	@Override
+	protected void readImpl()
+	{
+		_id = readD();
+		_recipeId = readD();
+		_unknow = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (!getClient().getFloodProtectors().getManufacture().tryPerformAction("RecipeShopMake"))
+		{
+			return;
+		}
+		
+		L2PcInstance manufacturer = (L2PcInstance) L2World.getInstance().findObject(_id);
+		
+		if (manufacturer == null)
+		{
+			return;
+		}
+		
+		if (activeChar.getPrivateStoreType() != 0)
+		{
+			activeChar.sendMessage("Cannot make items while trading.");
+			return;
+		}
+		
+		if (manufacturer.getPrivateStoreType() != 5)
+		{
+			// activeChar.sendMessage("Cannot make items while trading.");
+			return;
+		}
+		
+		if (activeChar.isInCraftMode() || manufacturer.isInCraftMode())
+		{
+			activeChar.sendMessage("Currently in Craft Mode.");
+			return;
+		}
+		
+		if (Util.checkIfInRange(150, activeChar, manufacturer, true))
+		{
+			RecipeController.getInstance().requestManufactureItem(manufacturer, _recipeId, activeChar);
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__AF_REQUESTRECIPESHOPMAKEITEM;
+	}
 }

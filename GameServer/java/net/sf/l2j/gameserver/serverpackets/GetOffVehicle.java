@@ -20,48 +20,50 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * @author Maktakien
- *
  */
-public class GetOffVehicle extends ServerBasePacket
+public class GetOffVehicle extends L2GameServerPacket
 {
-    private int _charObjId, _boatObjId, _x, _y, _z;
-
-    /**
-     * @param charObjId
-     * @param boatObjId
-     * @param x
-     * @param y
-     * @param z
-     */
-    public GetOffVehicle(int charObjId, int boatObjId, int x, int y, int z)
-    {
-        _charObjId = charObjId;
-        _boatObjId = boatObjId;
-        _x = x;
-        _y = y;
-        _z = z;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    final void writeImpl()
-    {
-        writeC(0x5d);
-        writeD(_charObjId);
-        writeD(_boatObjId);
-        writeD(_x);
-        writeD(_y);
-        writeD(_z);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        // TODO Auto-generated method stub
-        return "[S] 5d GetOffVehicle";
-    }
+	private final int _charObjId, _boatObjId, _x, _y, _z;
+	
+	/**
+	 * @param charObjId
+	 * @param boatObjId
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public GetOffVehicle(int charObjId, int boatObjId, int x, int y, int z)
+	{
+		_charObjId = charObjId;
+		_boatObjId = boatObjId;
+		_x = x;
+		_y = y;
+		_z = z;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x5d);
+		writeD(_charObjId);
+		writeD(_boatObjId);
+		writeD(_x);
+		writeD(_y);
+		writeD(_z);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		// TODO Auto-generated method stub
+		return "[S] 5d GetOffVehicle";
+	}
 }

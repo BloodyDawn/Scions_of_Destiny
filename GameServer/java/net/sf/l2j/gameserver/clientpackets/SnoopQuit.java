@@ -18,52 +18,50 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * @author -Wooden-
- *
  */
-public class SnoopQuit extends ClientBasePacket
+public class SnoopQuit extends L2GameClientPacket
 {
 	private static final String _C__AB_SNOOPQUIT = "[C] AB SnoopQuit";
-
+	
 	private int _snoopID;
-
-	/**
-	 * @param buf
-	 * @param client
-	 */
-	public SnoopQuit(ByteBuffer buf, ClientThread client)
+	
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_snoopID = readD();
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
 	 */
 	@Override
 	public void runImpl()
 	{
-                L2PcInstance activeChar = getClient().getActiveChar();
-                if (activeChar == null)
-                        return;
-
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
 		L2PcInstance player = (L2PcInstance) L2World.getInstance().findObject(_snoopID);
 		if (player == null)
+		{
 			return;
-
+		}
+		
 		player.removeSnooper(activeChar);
 		activeChar.removeSnooped(player);
-
+		
 	}
-
-	/* (non-Javadoc)
+	
+	/*
+	 * (non-Javadoc)
 	 * @see net.sf.l2j.gameserver.BasePacket#getType()
 	 */
 	@Override

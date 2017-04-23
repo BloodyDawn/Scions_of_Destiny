@@ -22,36 +22,38 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.4.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class ObservationReturn extends ServerBasePacket
+public class ObservationReturn extends L2GameServerPacket
 {
-    // ddSS
-    private static final String _S__E0_OBSERVRETURN = "[S] E0 ObservationReturn";
-    private L2PcInstance _char;
-
-    /**
-     * @param _characters
-     */
-    public ObservationReturn(L2PcInstance observer)
-    {
-        _char = observer;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xe0); 
-        writeD(_char.getObsX()); 
-        writeD(_char.getObsY()); 
-        writeD(_char.getObsZ()); 
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__E0_OBSERVRETURN;
-    }
+	// ddSS
+	private static final String _S__E0_OBSERVRETURN = "[S] E0 ObservationReturn";
+	private final L2PcInstance _char;
+	
+	/**
+	 * @param _characters
+	 */
+	public ObservationReturn(L2PcInstance observer)
+	{
+		_char = observer;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xe0);
+		writeD(_char.getObsX());
+		writeD(_char.getObsY());
+		writeD(_char.getObsZ());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__E0_OBSERVRETURN;
+	}
 }

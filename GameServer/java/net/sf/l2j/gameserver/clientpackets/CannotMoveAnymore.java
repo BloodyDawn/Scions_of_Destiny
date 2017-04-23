@@ -18,11 +18,9 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.ai.CtrlEvent;
 import net.sf.l2j.gameserver.model.L2CharPosition;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -30,66 +28,59 @@ import net.sf.l2j.gameserver.serverpackets.PartyMemberPosition;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.1.2.4 $ $Date: 2005/03/27 15:29:30 $
  */
-public class CannotMoveAnymore extends ClientBasePacket
+public class CannotMoveAnymore extends L2GameClientPacket
 {
-    private static final String _C__36_STOPMOVE = "[C] 36 CannotMoveAnymore";
-    private static Logger _log = Logger.getLogger(CannotMoveAnymore.class.getName());
-
-    private final int _x;
-    private final int _y;
-    private final int _z;
-    private final int _heading;
-
-    /**
-     * packet type id 0x36
-     * 
-     * sample
-     * 
-     * 36
-     * a8 4f 02 00 // x
-     * 17 85 01 00 // y
-     * a7 00 00 00 // z
-     * 98 90 00 00 // heading?
-     * 
-     * format:		cdddd
-     * @param decrypt
-     */
-    public CannotMoveAnymore(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _x = readD();
-        _y = readD();
-        _z = readD();
-        _heading = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-
-            return;
-
-
-        if (Config.DEBUG)
-            _log.fine("client: x:"+_x+" y:"+_y+" z:"+_z+ " server x:"+player.getX()+" y:"+player.getY()+" z:"+player.getZ());
-
-        if (player.getAI() != null)
-            player.getAI().notifyEvent(CtrlEvent.EVT_ARRIVED_BLOCKED, new L2CharPosition(_x, _y, _z, _heading));
-
-        if (player.getParty() != null)
-            player.getParty().broadcastToPartyMembers(player, new PartyMemberPosition(player));
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__36_STOPMOVE;
-    }
+	private static final String _C__36_STOPMOVE = "[C] 36 CannotMoveAnymore";
+	private static Logger _log = Logger.getLogger(CannotMoveAnymore.class.getName());
+	
+	private int _x;
+	private int _y;
+	private int _z;
+	private int _heading;
+	
+	@Override
+	protected void readImpl()
+	{
+		_x = readD();
+		_y = readD();
+		_z = readD();
+		_heading = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
+		if (Config.DEBUG)
+		{
+			_log.fine("client: x:" + _x + " y:" + _y + " z:" + _z + " server x:" + player.getX() + " y:" + player.getY() + " z:" + player.getZ());
+		}
+		
+		if (player.getAI() != null)
+		{
+			player.getAI().notifyEvent(CtrlEvent.EVT_ARRIVED_BLOCKED, new L2CharPosition(_x, _y, _z, _heading));
+		}
+		
+		if (player.getParty() != null)
+		{
+			player.getParty().broadcastToPartyMembers(player, new PartyMemberPosition(player));
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__36_STOPMOVE;
+	}
 }

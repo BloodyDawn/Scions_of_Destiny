@@ -22,54 +22,57 @@ import net.sf.l2j.gameserver.model.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2NpcInstance;
 
 /**
- *
- * @author  devScarlet & mrTJO
+ * @author devScarlet & mrTJO
  */
-public final class ServerObjectInfo extends ServerBasePacket
+public final class ServerObjectInfo extends L2GameServerPacket
 {
-    private static final String _S__A5_SERVEROBJECTINFO = "[S] 8c ServerObjectInfo";
-    private L2NpcInstance _activeChar;
-    private int _x, _y, _z, _heading;
-    private int _idTemplate;
-    private boolean _isAttackable;
-    private double _collisionHeight, _collisionRadius;
-
-    public ServerObjectInfo(L2NpcInstance activeChar, L2Character actor)
-    {
-        _activeChar = activeChar;
-        _idTemplate = _activeChar.getTemplate().idTemplate;
-        _isAttackable = _activeChar.isAutoAttackable(actor);
-        _collisionHeight = _activeChar.getCollisionHeight();
-        _collisionRadius = _activeChar.getCollisionRadius();
-        _x = _activeChar.getX();
-        _y = _activeChar.getY();
-        _z = _activeChar.getZ();
-        _heading = _activeChar.getHeading();
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x8c);
-        writeD(_activeChar.getObjectId());
-        writeD(_idTemplate+1000000);
-        writeS(""); // name
-        writeD(_isAttackable ? 1 : 0);
-        writeD(_x);
-        writeD(_y);
-        writeD(_z);
-        writeD(_heading);
-        writeF(1.0); // movement multiplier
-        writeF(1.0); // attack speed multiplier
-        writeF(_collisionRadius);
-        writeF(_collisionHeight);
-        writeD((int) (_isAttackable ? _activeChar.getCurrentHp() : 0));
-        writeD(_isAttackable ? _activeChar.getMaxHp() : 0);
-        writeD(0x01); // object type
-        writeD(0x00); // special effects
-    }
-
-    public String getType()
-    {
-        return _S__A5_SERVEROBJECTINFO;
-    }
+	private static final String _S__A5_SERVEROBJECTINFO = "[S] 8c ServerObjectInfo";
+	private final L2NpcInstance _activeChar;
+	private final int _x, _y, _z, _heading;
+	private final int _idTemplate;
+	private final boolean _isAttackable;
+	private final double _collisionHeight, _collisionRadius;
+	
+	public ServerObjectInfo(L2NpcInstance activeChar, L2Character actor)
+	{
+		_activeChar = activeChar;
+		_idTemplate = _activeChar.getTemplate().idTemplate;
+		_isAttackable = _activeChar.isAutoAttackable(actor);
+		_collisionHeight = _activeChar.getCollisionHeight();
+		
+		_collisionRadius = _activeChar.getCollisionRadius();
+		_x = _activeChar.getX();
+		_y = _activeChar.getY();
+		_z = _activeChar.getZ();
+		_heading = _activeChar.getHeading();
+		
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x8c);
+		writeD(_activeChar.getObjectId());
+		writeD(_idTemplate + 1000000);
+		writeS(""); // name
+		writeD(_isAttackable ? 1 : 0);
+		writeD(_x);
+		writeD(_y);
+		writeD(_z);
+		writeD(_heading);
+		writeF(1.0); // movement multiplier
+		writeF(1.0); // attack speed multiplier
+		writeF(_collisionRadius);
+		writeF(_collisionHeight);
+		writeD((int) (_isAttackable ? _activeChar.getCurrentHp() : 0));
+		writeD(_isAttackable ? _activeChar.getMaxHp() : 0);
+		writeD(0x01); // object type
+		writeD(0x00); // special effects
+	}
+	
+	@Override
+	public String getType()
+	{
+		return _S__A5_SERVEROBJECTINFO;
+	}
 }

@@ -21,58 +21,59 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.model.L2RecipeList;
 
 /**
- * 
- *
- * 
- * format   d d(dd)
- * 
+ * format d d(dd)
  * @version $Revision: 1.1.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class RecipeBookItemList extends ServerBasePacket
+public class RecipeBookItemList extends L2GameServerPacket
 {
-    private static final String _S__D6_RECIPEBOOKITEMLIST = "[S] D6 RecipeBookItemList";
-    private L2RecipeList[] _recipes;
-    private boolean _IsDwarvenCraft; 
-    private int _maxMp;
-
-    public RecipeBookItemList(boolean isDwarvenCraft, int maxMp)
-    {
-        _IsDwarvenCraft = isDwarvenCraft; 
-        _maxMp = maxMp;
-    }
-
-    public void addRecipes(L2RecipeList[] recipeBook)
-    {
-        _recipes = recipeBook;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xD6);
-
-        writeD(_IsDwarvenCraft ? 0x00 : 0x01); //0 = Dwarven - 1 = Common 
-        writeD(_maxMp);
-
-        if (_recipes == null)
-            writeD(0);
-        else
-        {
-            writeD(_recipes.length);//number of items in recipe book
-
-            for (int i = 0; i < _recipes.length; i++)
-            {
-                L2RecipeList temp = _recipes[i];
-                writeD(temp.getId());
-                writeD(i+1);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__D6_RECIPEBOOKITEMLIST;
-    }
+	private static final String _S__D6_RECIPEBOOKITEMLIST = "[S] D6 RecipeBookItemList";
+	private L2RecipeList[] _recipes;
+	private final boolean _IsDwarvenCraft;
+	private final int _maxMp;
+	
+	public RecipeBookItemList(boolean isDwarvenCraft, int maxMp)
+	{
+		_IsDwarvenCraft = isDwarvenCraft;
+		_maxMp = maxMp;
+	}
+	
+	public void addRecipes(L2RecipeList[] recipeBook)
+	{
+		_recipes = recipeBook;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xD6);
+		
+		writeD(_IsDwarvenCraft ? 0x00 : 0x01); // 0 = Dwarven - 1 = Common
+		writeD(_maxMp);
+		
+		if (_recipes == null)
+		{
+			writeD(0);
+		}
+		else
+		{
+			writeD(_recipes.length);// number of items in recipe book
+			
+			for (int i = 0; i < _recipes.length; i++)
+			{
+				L2RecipeList temp = _recipes[i];
+				writeD(temp.getId());
+				writeD(i + 1);
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__D6_RECIPEBOOKITEMLIST;
+	}
 }

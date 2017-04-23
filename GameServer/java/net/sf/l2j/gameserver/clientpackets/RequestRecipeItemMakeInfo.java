@@ -18,47 +18,43 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.RecipeItemMakeInfo;
 
 /**
  */
-public class RequestRecipeItemMakeInfo extends ClientBasePacket 
+public class RequestRecipeItemMakeInfo extends L2GameClientPacket
 {
-    private static final String _C__AE_REQUESTRECIPEITEMMAKEINFO = "[C] AE RequestRecipeItemMakeInfo";
-
-    private final int _id;
-    
-    /**
-     * packet type id 0xac
-     * format:		cd
-     * @param decrypt
-     */
-    public RequestRecipeItemMakeInfo(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _id = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        RecipeItemMakeInfo response = new RecipeItemMakeInfo(_id, activeChar);
-        sendPacket(response);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType() 
-    {
-        return _C__AE_REQUESTRECIPEITEMMAKEINFO;
-    }
+	private static final String _C__AE_REQUESTRECIPEITEMMAKEINFO = "[C] AE RequestRecipeItemMakeInfo";
+	
+	private int _id;
+	
+	@Override
+	protected void readImpl()
+	{
+		_id = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		RecipeItemMakeInfo response = new RecipeItemMakeInfo(_id, activeChar);
+		sendPacket(response);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__AE_REQUESTRECIPEITEMMAKEINFO;
+	}
 }

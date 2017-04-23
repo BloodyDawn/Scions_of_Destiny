@@ -18,10 +18,7 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.CastleManorManager;
@@ -39,181 +36,198 @@ import net.sf.l2j.gameserver.templates.L2Item;
 import net.sf.l2j.gameserver.util.Util;
 
 /**
- * Format: cdd[dd]
- * c    // id (0xC4)
- * 
- * d    // manor id
- * d    // seeds to buy
- * [
- * d    // seed id
- * d    // count
- * ]
+ * Format: cdd[dd] c // id (0xC4) d // manor id d // seeds to buy [ d // seed id d // count ]
  * @param decrypt
  * @author l3x
  */
-public class RequestBuySeed extends ClientBasePacket
+public class RequestBuySeed extends L2GameClientPacket
 {
-    private static final String _C__C4_REQUESTBUYSEED = "[C] C4 RequestBuySeed";
+	private static final String _C__C4_REQUESTBUYSEED = "[C] C4 RequestBuySeed";
 
-    private int _count;
-    private int _manorId;
-    private int[] _items; // size _count * 2
-	
-    public RequestBuySeed(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _manorId = readD();
-        _count = readD();
+	private int _count;
+	private int _manorId;
+	private int[] _items; // size _count * 2
 
-        if (_count > 500) // check values
-        {
-            _count = 0;
-            return;
-        }
+	@Override
+	protected void readImpl()
+	{
+		_manorId = readD();
+		_count = readD();
 
-        _items = new int[_count * 2];
+		if ((_count > 500) || ((_count * 8) < _buf.remaining())) // check values
+		{
+			_count = 0;
+			return;
+		}
 
-        for (int i = 0; i < _count; i++)
-        {
-            int itemId = readD();
-            _items[i * 2 + 0] = itemId;
-            long cnt = readD();
-            if (cnt > Integer.MAX_VALUE || cnt < 1)
-            {
-                _count = 0;
-                _items = null;
-                return;
-            }
-            _items[i * 2 + 1] = (int) cnt;
-        }
-    }
+		_items = new int[_count * 2];
 
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
+		for (int i = 0; i < _count; i++)
+		{
+			int itemId = readD();
+			_items[(i * 2) + 0] = itemId;
+			long cnt = readD();
+			if ((cnt > Integer.MAX_VALUE) || (cnt < 1))
+			{
+				_count = 0;
+				_items = null;
+				return;
+			}
+			_items[(i * 2) + 1] = (int) cnt;
+		}
+	}
 
-        if (!getClient().getFloodProtectors().getManor().tryPerformAction("BuySeed"))
-            return;
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
 
-        if (_count < 1)
-        {
-            sendPacket(new ActionFailed());
-            return;
-        }
+		if (!getClient().getFloodProtectors().getManor().tryPerformAction("BuySeed"))
+		{
+			return;
+		}
 
-        L2Object target = player.getTarget();
+		if (_count < 1)
+		{
+			sendPacket(new ActionFailed());
+			return;
+		}
 
-        if (!(target instanceof L2ManorManagerInstance))
-            target = player.getLastFolkNPC();
+		L2Object target = player.getTarget();
 
-        if (!(target instanceof L2ManorManagerInstance))
-            return;
+		if (!(target instanceof L2ManorManagerInstance))
+		{
+			target = player.getLastFolkNPC();
+		}
 
-        long totalPrice = 0;
-        int slots = 0;
-        int totalWeight = 0;
+		if (!(target instanceof L2ManorManagerInstance))
+		{
+			return;
+		}
 
-        Castle castle = CastleManager.getInstance().getCastleById(_manorId);
+		long totalPrice = 0;
+		int slots = 0;
+		int totalWeight = 0;
 
-        for (int i = 0; i < _count; i++)
-        {
-            int seedId = _items[i * 2 + 0];
-            int count = _items[i * 2 + 1];
-            int price = 0;
-            int residual = 0;
+		Castle castle = CastleManager.getInstance().getCastleById(_manorId);
 
-            SeedProduction seed = castle.getSeed(seedId, CastleManorManager.PERIOD_CURRENT);
-            price = seed.getPrice();
-            residual = seed.getCanProduce();
+		for (int i = 0; i < _count; i++)
+		{
+			int seedId = _items[(i * 2) + 0];
+			int count = _items[(i * 2) + 1];
+			int price = 0;
+			int residual = 0;
 
-            if (price <= 0)
-                return;
+			SeedProduction seed = castle.getSeed(seedId, CastleManorManager.PERIOD_CURRENT);
+			price = seed.getPrice();
+			residual = seed.getCanProduce();
 
-            if (residual < count)
-                return;
+			if (price <= 0)
+			{
+				return;
+			}
 
-            totalPrice += count * price;
+			if (residual < count)
+			{
+				return;
+			}
 
-            L2Item template = ItemTable.getInstance().getTemplate(seedId);
-            totalWeight += count * template.getWeight();
-            if (!template.isStackable())
-                slots += count;
-            else if (player.getInventory().getItemByItemId(seedId) == null)
-                slots++;
-        }
+			totalPrice += count * price;
 
-        if (totalPrice > Integer.MAX_VALUE)
-        {
-            Util.handleIllegalPlayerAction(player, "Warning!! Character " + player.getName() + " of account " + player.getAccountName() + " tried to purchase over " + Integer.MAX_VALUE + " adena worth of goods.", Config.DEFAULT_PUNISH);
-            return;
-        }
+			L2Item template = ItemTable.getInstance().getTemplate(seedId);
+			totalWeight += count * template.getWeight();
+			if (!template.isStackable())
+			{
+				slots += count;
+			}
+			else if (player.getInventory().getItemByItemId(seedId) == null)
+			{
+				slots++;
+			}
+		}
 
-        if (!player.getInventory().validateWeight(totalWeight))
-        {
-            sendPacket(new SystemMessage(SystemMessage.WEIGHT_LIMIT_EXCEEDED));
-            return;
-        }
+		if (totalPrice > Integer.MAX_VALUE)
+		{
+			Util.handleIllegalPlayerAction(player, "Warning!! Character " + player.getName() + " of account " + player.getAccountName() + " tried to purchase over " + Integer.MAX_VALUE + " adena worth of goods.", Config.DEFAULT_PUNISH);
+			return;
+		}
 
-        if (!player.getInventory().validateCapacity(slots))
-        {
-            sendPacket(new SystemMessage(SystemMessage.SLOTS_FULL));
-            return;
-        }
+		if (!player.getInventory().validateWeight(totalWeight))
+		{
+			sendPacket(new SystemMessage(SystemMessage.WEIGHT_LIMIT_EXCEEDED));
+			return;
+		}
 
-        // Charge buyer
-        if ((totalPrice < 0) || !player.reduceAdena("Buy", (int) totalPrice, target, false))
-        {
-            sendPacket(new SystemMessage(SystemMessage.YOU_NOT_ENOUGH_ADENA));
-            return;
-        }
+		if (!player.getInventory().validateCapacity(slots))
+		{
+			sendPacket(new SystemMessage(SystemMessage.SLOTS_FULL));
+			return;
+		}
 
-        // Adding to treasury for Manor Castle
-        castle.addToTreasuryNoTax((int) totalPrice);
+		// Charge buyer
+		if ((totalPrice < 0) || !player.reduceAdena("Buy", (int) totalPrice, target, false))
+		{
+			sendPacket(new SystemMessage(SystemMessage.YOU_NOT_ENOUGH_ADENA));
+			return;
+		}
 
-        // Proceed the purchase
-        InventoryUpdate playerIU = new InventoryUpdate();
-        for (int i = 0; i < _count; i++)
-        {
-            int seedId = _items[i * 2 + 0];
-            int count = _items[i * 2 + 1];
-            if (count < 0)
-                count = 0;
+		// Adding to treasury for Manor Castle
+		castle.addToTreasuryNoTax((int) totalPrice);
 
-            // Update Castle Seeds Amount
-            SeedProduction seed = castle.getSeed(seedId, CastleManorManager.PERIOD_CURRENT);
-            seed.setCanProduce(seed.getCanProduce() - count);
-            if (Config.ALT_MANOR_SAVE_ALL_ACTIONS)
-                CastleManager.getInstance().getCastleById(_manorId).updateSeed(seed.getId(), seed.getCanProduce(), CastleManorManager.PERIOD_CURRENT);
+		// Proceed the purchase
+		InventoryUpdate playerIU = new InventoryUpdate();
+		for (int i = 0; i < _count; i++)
+		{
+			int seedId = _items[(i * 2) + 0];
+			int count = _items[(i * 2) + 1];
+			if (count < 0)
+			{
+				count = 0;
+			}
 
-            // Add item to Inventory and adjust update packet
-            L2ItemInstance item = player.getInventory().addItem("Buy", seedId, count, player, target);
+			// Update Castle Seeds Amount
+			SeedProduction seed = castle.getSeed(seedId, CastleManorManager.PERIOD_CURRENT);
+			seed.setCanProduce(seed.getCanProduce() - count);
+			if (Config.ALT_MANOR_SAVE_ALL_ACTIONS)
+			{
+				CastleManager.getInstance().getCastleById(_manorId).updateSeed(seed.getId(), seed.getCanProduce(), CastleManorManager.PERIOD_CURRENT);
+			}
 
-            if (item.getCount() > count)
-                playerIU.addModifiedItem(item);
-            else
-                playerIU.addNewItem(item);
+			// Add item to Inventory and adjust update packet
+			L2ItemInstance item = player.getInventory().addItem("Buy", seedId, count, player, target);
 
-            // Send Char Buy Messages
-            SystemMessage sm = null;
-            sm = new SystemMessage(SystemMessage.EARNED_S2_S1_s);
-            sm.addItemName(seedId);
-            sm.addNumber(count);
-            player.sendPacket(sm);
-        }
+			if (item.getCount() > count)
+			{
+				playerIU.addModifiedItem(item);
+			}
+			else
+			{
+				playerIU.addNewItem(item);
+			}
 
-        // Send update packets
-        player.sendPacket(playerIU);
+			// Send Char Buy Messages
+			SystemMessage sm = null;
+			sm = new SystemMessage(SystemMessage.EARNED_S2_S1_s);
+			sm.addItemName(seedId);
+			sm.addNumber(count);
+			player.sendPacket(sm);
+		}
 
-        StatusUpdate su = new StatusUpdate(player.getObjectId());
-        su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
-        player.sendPacket(su);
-    }
+		// Send update packets
+		player.sendPacket(playerIU);
 
-    public String getType()
-    {
-        return _C__C4_REQUESTBUYSEED;
-    }
+		StatusUpdate su = new StatusUpdate(player.getObjectId());
+		su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+		player.sendPacket(su);
+	}
+
+	@Override
+	public String getType()
+	{
+		return _C__C4_REQUESTBUYSEED;
+	}
 }

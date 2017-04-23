@@ -18,73 +18,72 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.serverpackets.KeyPacket;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.5.2.8.2.8 $ $Date: 2005/04/02 10:43:04 $
  */
-public class ProtocolVersion extends ClientBasePacket
+public class ProtocolVersion extends L2GameClientPacket
 {
-    private static final String _C__00_PROTOCOLVERSION = "[C] 00 ProtocolVersion";
-    static Logger _log = Logger.getLogger(ProtocolVersion.class.getName());
+	private static final String _C__00_PROTOCOLVERSION = "[C] 00 ProtocolVersion";
+	static Logger _log = Logger.getLogger(ProtocolVersion.class.getName());
 
-    private final long _version;
+	private int _version;
+	
+	@Override
+	protected void readImpl()
+	{
+		_version = readD();
+	}
 
-    /**
-     * packet type id 0x00
-     * format:	cd
-     *  
-     * @param rawPacket
-     */
-    public ProtocolVersion(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _version  = readD();
-    }
+	@Override
+	public void runImpl()
+	{
+		// this packet is never encrypted
+		if (_version == -2)
+		{
+			if (Config.DEBUG)
+			{
+				_log.info("Ping received");
+			}
 
-    @Override
-    public void runImpl()
-    {
-        // this packet is never encrypted
-        if (_version == -2)
-        {
-            if (Config.DEBUG)
-                _log.info("Ping received");
+			// this is just a ping attempt from the new C2 client
+			getClient().closeNow();
+			return;
+		}
 
-            // this is just a ping attempt from the new C2 client
-            getConnection().close(true);
-            return;
-        }
-
-        if (_version < Config.MIN_PROTOCOL_REVISION || _version > Config.MAX_PROTOCOL_REVISION)
-        {
-            _log.info("Client: "+getClient().toString()+" -> Protocol Revision: " + _version + " is invalid. Minimum is "+Config.MIN_PROTOCOL_REVISION+" and Maximum is "+Config.MAX_PROTOCOL_REVISION+" are supported. Closing connection.");
-            _log.warning("Wrong Protocol Version "+_version);
-            getClient().setProtocolOk(false);
-        }
-        else
-        {
-            getClient().setRevision((int)_version);
-            if (Config.DEBUG)
-                _log.fine("Client Protocol Revision is ok:"+_version);
-            getClient().setProtocolOk(true);
-        }
-        sendPacket(new KeyPacket(getConnection()));
-        getConnection().activateCryptKey();
-    }
+		if ((_version < Config.MIN_PROTOCOL_REVISION) || (_version > Config.MAX_PROTOCOL_REVISION))
+		{
+			_log.info("Client: " + getClient().toString() + " -> Protocol Revision: " + _version + " is invalid. Minimum is " + Config.MIN_PROTOCOL_REVISION + " and Maximum is " + Config.MAX_PROTOCOL_REVISION + " are supported. Closing connection.");
+			_log.warning("Wrong Protocol Version " + _version);
+			
+			getClient().setProtocolOk(false);
+			getClient().sendPacket(new KeyPacket(getClient().enableCrypt(), (byte) 0));
+		}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__00_PROTOCOLVERSION;
-    }
+		else
+		{
+			if (Config.DEBUG)
+			{
+				_log.fine("Client Protocol Revision is ok:" + _version);
+			}
+			
+			getClient().setProtocolOk(true);
+			getClient().sendPacket(new KeyPacket(getClient().enableCrypt(), (byte) 1));
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__00_PROTOCOLVERSION;
+	}
 }

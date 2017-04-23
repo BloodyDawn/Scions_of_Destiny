@@ -21,52 +21,53 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- *
  * sample
  * <p>
- * 4b 
- * c1 b2 e0 4a 
- * 00 00 00 00
+ * 4b c1 b2 e0 4a 00 00 00 00
  * <p>
- * 
- * format
- * cdd
- * 
+ * format cdd
  * @version $Revision: 1.1.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class AskJoinParty extends ServerBasePacket
+public class AskJoinParty extends L2GameServerPacket
 {
-    private static final String _S__4B_ASKJOINPARTY_0X4B = "[S] 39 AskJoinParty 0x4b";
-    //private static Logger _log = Logger.getLogger(AskJoinParty.class.getName());
-
-    private String _requestorName;
-    private int _itemDistribution;
-
-    /**
-     * @param int objectId of the target
-     * @param int 
-     */
-    public AskJoinParty(L2PcInstance requestor)
-    {
-        _requestorName = requestor.getName();
-        if (requestor.isInParty())
-            _itemDistribution = requestor.getParty().getLootDistribution();
-        else
-            _itemDistribution = requestor.getLootInvitation();
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x39);
-        writeS(_requestorName);
-        writeD(_itemDistribution);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__4B_ASKJOINPARTY_0X4B;
-    }
+	private static final String _S__4B_ASKJOINPARTY_0X4B = "[S] 39 AskJoinParty 0x4b";
+	// private static Logger _log = Logger.getLogger(AskJoinParty.class.getName());
+	
+	private final String _requestorName;
+	private int _itemDistribution;
+	
+	/**
+	 * @param int objectId of the target
+	 * @param int
+	 */
+	public AskJoinParty(L2PcInstance requestor)
+	{
+		_requestorName = requestor.getName();
+		if (requestor.isInParty())
+		{
+			_itemDistribution = requestor.getParty().getLootDistribution();
+		}
+		else
+		{
+			_itemDistribution = requestor.getLootInvitation();
+		}
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x39);
+		writeS(_requestorName);
+		writeD(_itemDistribution);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__4B_ASKJOINPARTY_0X4B;
+	}
 }

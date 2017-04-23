@@ -18,49 +18,40 @@
  */
 package net.sf.l2j.gameserver.serverpackets;
 
-import net.sf.l2j.gameserver.MMOConnection;
-
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class KeyPacket extends ServerBasePacket
+public class KeyPacket extends L2GameServerPacket
 {
-    private static final String _S__01_KEYPACKET = "[S] 01 KeyPacket";
+	private static final String _S__01_KEYPACKET = "[S] 01 KeyPacket";
 
-    private byte[] _key;
+	private final byte[] _key;
+	private final byte _protocolOk;
 
-    public KeyPacket(MMOConnection c)
-    {
-        _key = new byte[10];
-        _key[0] = 0x00;
+	public KeyPacket(byte key[], byte protocolOk)
+	{
+		_key = key;
+		_protocolOk = protocolOk;
+	}
 
-        if (c.getClient().isProtocolOk())
-            _key[1] = 0x01;
-        else
-            _key[1] = 0x00;
+	@Override
+	public void writeImpl()
+	{
+		writeC(0x00);
+		writeC(_protocolOk);
+		writeB(_key);
+		writeD(0x01);
+		writeD(0x01);
+	}
 
-        _key[2] = c.getCryptKey()[0];
-        _key[3] = c.getCryptKey()[1];
-        _key[4] = c.getCryptKey()[2];
-        _key[5] = c.getCryptKey()[3];
-        _key[6] = c.getCryptKey()[4];
-        _key[7] = c.getCryptKey()[5];
-        _key[8] = c.getCryptKey()[6];
-        _key[9] = c.getCryptKey()[7];
-    }
-
-    final void writeImpl()
-    {
-        writeB(_key);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__01_KEYPACKET;
-    }
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__01_KEYPACKET;
+	}
 }

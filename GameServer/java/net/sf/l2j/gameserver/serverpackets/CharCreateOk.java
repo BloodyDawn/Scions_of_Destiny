@@ -20,24 +20,26 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class CharCreateOk extends ServerBasePacket
+public class CharCreateOk extends L2GameServerPacket
 {
-    private static final String _S__25_CHARCREATEOK = "[S] 19 CharCreateOk";
-
-    final void writeImpl()
-    {
-        writeC(0x19);
-        writeD(0x01);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__25_CHARCREATEOK;
-    }
+	private static final String _S__25_CHARCREATEOK = "[S] 19 CharCreateOk";
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x19);
+		writeD(0x01);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__25_CHARCREATEOK;
+	}
 }

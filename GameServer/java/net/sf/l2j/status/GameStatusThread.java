@@ -172,7 +172,7 @@ public class GameStatusThread extends Thread
         if (isValidIP(client))
         {    
             telnetOutput(1, client.getInetAddress().getHostAddress()+" accepted.");
-            _print.println("Welcome To The L2Jserver Telnet Session.");
+            _print.println("Welcome To The L2JLisvus Telnet Session.");
             _print.println("Please Insert Your Password!");
             _print.print("Password: ");
             _print.flush();
@@ -196,7 +196,7 @@ public class GameStatusThread extends Thread
                 else
                 {
                     _print.println("Password Correct!");
-                    _print.println("[L2Jserver GameServer]");
+                    _print.println("[L2JLisvus GameServer]");
                     _print.print("");
                     _print.flush();
                     start();
@@ -586,8 +586,8 @@ public class GameStatusThread extends Thread
 
                                         StringBuilder sb = new StringBuilder();
                                         sb.append(sdf.format(cal.getTime()));
-                                        sb.append("\n\nServer Version: "+Config.SERVER_VERSION);
-                                        sb.append("\nDP Revision: "+Config.DATAPACK_VERSION);
+                                        sb.append("\n\nLisvus Server Version: "+Config.SERVER_VERSION);
+                                        sb.append("\nLisvus DP Revision: "+Config.DATAPACK_VERSION);
                                         sb.append("\n\n");
                                         sb.append(getServerStatus());
                                         sb.append("\n\n");

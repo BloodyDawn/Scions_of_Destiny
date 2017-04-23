@@ -22,156 +22,154 @@ import net.sf.l2j.gameserver.datatables.ClanTable;
 import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
-public class AllyInfo extends ServerBasePacket
+public class AllyInfo extends L2GameServerPacket
 {
-    //private static Logger _log = Logger.getLogger(AllyInfo.class.getName());
-    private static final String _S__7A_FRIENDLIST = "[S] 7a AllyInfo";
-    private static L2PcInstance _cha ;
-
-    public AllyInfo(L2PcInstance cha)
-    {
-        _cha=cha;
-
-    }	
-
-    final void writeImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        if (activeChar.getAllyId() == 0)
-        {
-            _cha.sendPacket(new SystemMessage(SystemMessage.NO_CURRENT_ALLIANCES));
-            return;
-
-        }
-
-        //======<AllyInfo>======
-
-        SystemMessage sm = new SystemMessage(SystemMessage.ALLIANCE_INFO_HEAD);
-
-        _cha.sendPacket(sm);
-
-
-        //======<Ally Name>======
-
-        sm = new SystemMessage(SystemMessage.ALLIANCE_NAME_S1);
-
-        sm.addString(_cha.getClan().getAllyName());
-
-        _cha.sendPacket(sm);
-
-        int online = 0;
-
-        int count = 0;
-
-        int clancount = 0;
-
-        for (L2Clan clan : ClanTable.getInstance().getClans())
-        {
-            if (clan.getAllyId() == _cha.getAllyId())
-            {
-
-                clancount++;
-
-                online+=clan.getOnlineMembers(0).length;
-
-                count+=clan.getMembers().length;
-
-            }
-
-        }
-
-
-        //Connection
-        sm = new SystemMessage(SystemMessage.CONNECTION_S1_TOTAL_S2);
-
-        sm.addString(""+online);
-
-        sm.addString(""+count);
-
-        _cha.sendPacket(sm);
-
-        L2Clan leaderclan = ClanTable.getInstance().getClan(_cha.getAllyId());
-
-        sm = new SystemMessage(SystemMessage.ALLIANCE_LEADER_S2_OF_S1);
-        sm.addString(leaderclan.getName());
-
-        sm.addString(leaderclan.getLeaderName());
-
-        _cha.sendPacket(sm);
-
-
-        //clan count
-
-        sm = new SystemMessage(SystemMessage.ALLIANCE_CLAN_TOTAL_S1);
-
-        sm.addString(""+clancount);
-
-        _cha.sendPacket(sm);
-
-        //clan information
-
-        sm = new SystemMessage(SystemMessage.CLAN_INFO_HEAD);
-
-        _cha.sendPacket(sm);
-
-        for (L2Clan clan : ClanTable.getInstance().getClans())
-        {
-
-            if (clan.getAllyId() == _cha.getAllyId())
-            {
-
-                //clan name
-
-                sm = new SystemMessage(SystemMessage.CLAN_INFO_NAME);
-
-                sm.addString(clan.getName());
-                _cha.sendPacket(sm);
-
-
-                //clan leader name
-
-                sm = new SystemMessage(SystemMessage.CLAN_INFO_LEADER);
-
-                sm.addString(clan.getLeaderName());
-
-                _cha.sendPacket(sm);
-
-
-                //clan level
-                sm = new SystemMessage(SystemMessage.CLAN_INFO_LEVEL);
-
-                sm.addNumber(clan.getLevel());
-
-                _cha.sendPacket(sm);
-
-
-                //---------
-
-                sm = new SystemMessage(SystemMessage.CLAN_INFO_SEPARATOR);
-
-                _cha.sendPacket(sm);
-
-            }
-
-        }
-
-
-        //=========================
-
-        sm = new SystemMessage(SystemMessage.CLAN_INFO_FOOT);
-
-        _cha.sendPacket(sm);
-
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__7A_FRIENDLIST;
-    }
+	// private static Logger _log = Logger.getLogger(AllyInfo.class.getName());
+	private static final String _S__7A_FRIENDLIST = "[S] 7a AllyInfo";
+	private static L2PcInstance _cha;
+	
+	public AllyInfo(L2PcInstance cha)
+	{
+		_cha = cha;
+		
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (activeChar.getAllyId() == 0)
+		{
+			_cha.sendPacket(new SystemMessage(SystemMessage.NO_CURRENT_ALLIANCES));
+			return;
+			
+		}
+		
+		// ======<AllyInfo>======
+		
+		SystemMessage sm = new SystemMessage(SystemMessage.ALLIANCE_INFO_HEAD);
+		
+		_cha.sendPacket(sm);
+		
+		// ======<Ally Name>======
+		
+		sm = new SystemMessage(SystemMessage.ALLIANCE_NAME_S1);
+		
+		sm.addString(_cha.getClan().getAllyName());
+		
+		_cha.sendPacket(sm);
+		
+		int online = 0;
+		
+		int count = 0;
+		
+		int clancount = 0;
+		
+		for (L2Clan clan : ClanTable.getInstance().getClans())
+		{
+			if (clan.getAllyId() == _cha.getAllyId())
+			{
+				
+				clancount++;
+				
+				online += clan.getOnlineMembers(0).length;
+				
+				count += clan.getMembers().length;
+				
+			}
+			
+		}
+		
+		// Connection
+		sm = new SystemMessage(SystemMessage.CONNECTION_S1_TOTAL_S2);
+		
+		sm.addString("" + online);
+		
+		sm.addString("" + count);
+		
+		_cha.sendPacket(sm);
+		
+		L2Clan leaderclan = ClanTable.getInstance().getClan(_cha.getAllyId());
+		
+		sm = new SystemMessage(SystemMessage.ALLIANCE_LEADER_S2_OF_S1);
+		sm.addString(leaderclan.getName());
+		
+		sm.addString(leaderclan.getLeaderName());
+		
+		_cha.sendPacket(sm);
+		
+		// clan count
+		
+		sm = new SystemMessage(SystemMessage.ALLIANCE_CLAN_TOTAL_S1);
+		
+		sm.addString("" + clancount);
+		
+		_cha.sendPacket(sm);
+		
+		// clan information
+		
+		sm = new SystemMessage(SystemMessage.CLAN_INFO_HEAD);
+		
+		_cha.sendPacket(sm);
+		
+		for (L2Clan clan : ClanTable.getInstance().getClans())
+		{
+			
+			if (clan.getAllyId() == _cha.getAllyId())
+			{
+				
+				// clan name
+				
+				sm = new SystemMessage(SystemMessage.CLAN_INFO_NAME);
+				
+				sm.addString(clan.getName());
+				_cha.sendPacket(sm);
+				
+				// clan leader name
+				
+				sm = new SystemMessage(SystemMessage.CLAN_INFO_LEADER);
+				
+				sm.addString(clan.getLeaderName());
+				
+				_cha.sendPacket(sm);
+				
+				// clan level
+				sm = new SystemMessage(SystemMessage.CLAN_INFO_LEVEL);
+				
+				sm.addNumber(clan.getLevel());
+				
+				_cha.sendPacket(sm);
+				
+				// ---------
+				
+				sm = new SystemMessage(SystemMessage.CLAN_INFO_SEPARATOR);
+				
+				_cha.sendPacket(sm);
+				
+			}
+			
+		}
+		
+		// =========================
+		
+		sm = new SystemMessage(SystemMessage.CLAN_INFO_FOOT);
+		
+		_cha.sendPacket(sm);
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__7A_FRIENDLIST;
+	}
 }

@@ -23,38 +23,41 @@ import net.sf.l2j.gameserver.model.PartyMatchRoom;
 /**
  * @author Gnacik
  */
-public class PartyMatchDetail extends ServerBasePacket
+public class PartyMatchDetail extends L2GameServerPacket
 {
-    private static final String _S__B0_PARTYMATCHDETAIL = "[S] 97 PartyMatchDetail";
-
-    private final PartyMatchRoom _room;
-
-    /**
-     * @param allPlayers
-     */
-    public PartyMatchDetail(PartyMatchRoom room)
-    {
-        _room = room;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x97);
-
-        writeD(_room.getId()); // Room ID
-        writeD(_room.getMaxMembers()); // Max Members
-        writeD(_room.getMinLvl()); // Level Min
-        writeD(_room.getMaxLvl()); // Level Max
-        writeD(_room.getLootType()); // Loot Type
-        writeD(_room.getLocation()); // Room Location
-        writeS(_room.getTitle()); // Room title
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__B0_PARTYMATCHDETAIL;
-    }
+	private static final String _S__B0_PARTYMATCHDETAIL = "[S] 97 PartyMatchDetail";
+	
+	private final PartyMatchRoom _room;
+	
+	/**
+	 * @param allPlayers
+	 */
+	public PartyMatchDetail(PartyMatchRoom room)
+	{
+		_room = room;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x97);
+		
+		writeD(_room.getId()); // Room ID
+		writeD(_room.getMaxMembers()); // Max Members
+		writeD(_room.getMinLvl()); // Level Min
+		writeD(_room.getMaxLvl()); // Level Max
+		writeD(_room.getLootType()); // Loot Type
+		writeD(_room.getLocation()); // Room Location
+		writeS(_room.getTitle()); // Room title
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__B0_PARTYMATCHDETAIL;
+	}
 }

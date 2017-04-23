@@ -26,42 +26,41 @@ package net.sf.l2j.gameserver.serverpackets;
  * 0020: 00 00 00 01 00 08 00 00 00 00 00 00 01 00 00 c4    ................
  * 0030: ...
  * 0530: 10 91 00 00 00 60 9b d1 01 e4 6e ee 52 97 dd       .....`....n.R..
- * </code>
- * 
- *  
- * format   dd x...x 
- * 
+ * </code> format dd x...x
  * @version $Revision: 1.3.2.1.2.4 $ $Date: 2005/03/27 15:29:39 $
  */
-public class AllyCrest extends ServerBasePacket
+public class AllyCrest extends L2GameServerPacket
 {
-    private static final String _S__C7_ALLYCREST = "[S] ae AllyCrest";
-    //private static Logger _log = Logger.getLogger(AllyCrest.class.getName());
-    private int _crestId;
-    private int _crestSize;
-    private byte[] _data;
-
-    public AllyCrest(int crestId,byte[] data)
-    {
-        _crestId = crestId;
-        _data = data;
-        _crestSize = _data.length;
-    }	
-
-    final void writeImpl()
-    {
-        writeC(0xae);
-        writeD(_crestId);
-        writeD(_crestSize);
-        writeB(_data);
-        _data = null;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__C7_ALLYCREST;
-    }
+	private static final String _S__C7_ALLYCREST = "[S] ae AllyCrest";
+	// private static Logger _log = Logger.getLogger(AllyCrest.class.getName());
+	private final int _crestId;
+	private final int _crestSize;
+	private byte[] _data;
+	
+	public AllyCrest(int crestId, byte[] data)
+	{
+		_crestId = crestId;
+		_data = data;
+		_crestSize = _data.length;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xae);
+		writeD(_crestId);
+		writeD(_crestSize);
+		writeB(_data);
+		_data = null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__C7_ALLYCREST;
+	}
 }

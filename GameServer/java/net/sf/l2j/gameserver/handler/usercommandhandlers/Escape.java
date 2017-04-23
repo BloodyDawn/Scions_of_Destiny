@@ -26,7 +26,7 @@ import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.handler.IUserCommandHandler;
 import net.sf.l2j.gameserver.instancemanager.DimensionalRiftManager;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.serverpackets.SetupGauge;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.util.Broadcast;
@@ -84,7 +84,7 @@ public class Escape implements IUserCommandHandler
         activeChar.setTarget(activeChar);
         activeChar.disableAllSkills();
 
-        MagicSkillUser msk = new MagicSkillUser(activeChar, 1050, 1, unstuckTimer, 0);
+        MagicSkillUse msk = new MagicSkillUse(activeChar, 1050, 1, unstuckTimer, 0);
         Broadcast.toSelfAndKnownPlayersInRadius(activeChar, msk, 810000);
         SetupGauge sg = new SetupGauge(0, unstuckTimer);
         activeChar.sendPacket(sg);

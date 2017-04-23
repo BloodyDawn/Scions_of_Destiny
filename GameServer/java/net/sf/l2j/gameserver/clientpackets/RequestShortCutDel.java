@@ -18,53 +18,48 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestShortCutDel extends ClientBasePacket
+public class RequestShortCutDel extends L2GameClientPacket
 {
-    private static final String _C__35_REQUESTSHORTCUTDEL = "[C] 35 RequestShortCutDel";
-
-    private final int _slot;
-    private final int _page;
-
-    /**
-     * packet type id 0x35
-     * format:		cd
-     * @param rawPacket
-     */
-    public RequestShortCutDel(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        int id = readD();
-        _slot = id % 12;
-        _page = id / 12;
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        // client needs no confirmation.
-        // This packet is just to inform the server
-        activeChar.deleteShortCut(_slot, _page);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__35_REQUESTSHORTCUTDEL;
-    }
+	private static final String _C__35_REQUESTSHORTCUTDEL = "[C] 35 RequestShortCutDel";
+	
+	private int _slot;
+	private int _page;
+	
+	@Override
+	protected void readImpl()
+	{
+		int id = readD();
+		_slot = id % 12;
+		_page = id / 12;
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		// client needs no confirmation.
+		// This packet is just to inform the server
+		activeChar.deleteShortCut(_slot, _page);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__35_REQUESTSHORTCUTDEL;
+	}
 }

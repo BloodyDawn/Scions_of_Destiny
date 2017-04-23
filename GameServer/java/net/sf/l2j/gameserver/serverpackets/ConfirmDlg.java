@@ -19,39 +19,45 @@
 package net.sf.l2j.gameserver.serverpackets;
 
 /**
- * @author Dezmond_snz
- * Format: cdddsdd
+ * @author Dezmond_snz Format: cdddsdd
  */
-public class ConfirmDlg extends ServerBasePacket
+public class ConfirmDlg extends L2GameServerPacket
 {
-    private static final String _S__ED_CONFIRMDLG = "[S] ed ConfirmDlg";
-    private int _requestId;
-    private String _Name;
-
-    public ConfirmDlg(int requestId, String requestorName)
-    {
-        _requestId = requestId;
-        _Name = requestorName;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xed);
-        writeD(_requestId);
-        writeD(0x02); // ??
-        writeD(0x00); // ??
-        if (_Name != null)
-            writeS(_Name);
-        else
-            writeS("");
-        writeD(0x01); // ??
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__ED_CONFIRMDLG;
-    }
+	private static final String _S__ED_CONFIRMDLG = "[S] ed ConfirmDlg";
+	private final int _requestId;
+	private final String _Name;
+	
+	public ConfirmDlg(int requestId, String requestorName)
+	{
+		_requestId = requestId;
+		_Name = requestorName;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xed);
+		writeD(_requestId);
+		writeD(0x02); // ??
+		writeD(0x00); // ??
+		if (_Name != null)
+		{
+			writeS(_Name);
+		}
+		else
+		{
+			writeS("");
+		}
+		writeD(0x01); // ??
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__ED_CONFIRMDLG;
+	}
 }

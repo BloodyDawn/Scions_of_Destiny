@@ -18,30 +18,35 @@
  */
 package net.sf.l2j.gameserver.serverpackets;
 
-public class ManagePledgePower extends ServerBasePacket
+public class ManagePledgePower extends L2GameServerPacket
 {
-    private static final String _S__30_MANAGEPLEDGEPOWER = "[S] 30 ManagePledgePower";
-
-    private int _privs;
-
-    public ManagePledgePower(int privs)
-    {
-        _privs = privs;
-    }   
-
-    final void writeImpl()
-    {
-        writeC(0x30);
-        writeD(0);
-        writeD(0);
-        writeD(_privs);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__30_MANAGEPLEDGEPOWER;
-    }
+	private static final String _S__30_MANAGEPLEDGEPOWER = "[S] 30 ManagePledgePower";
+	
+	private final int _privs;
+	
+	public ManagePledgePower(int privs)
+	{
+		
+		_privs = privs;
+		
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x30);
+		writeD(0);
+		writeD(0);
+		writeD(_privs);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__30_MANAGEPLEDGEPOWER;
+	}
 }

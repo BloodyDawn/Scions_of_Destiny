@@ -22,46 +22,50 @@ import net.sf.l2j.util.Point3D;
 
 /**
  * @author Maktakien
- *
  */
-public class GetOnVehicle extends ServerBasePacket
+public class GetOnVehicle extends L2GameServerPacket
 {
-    private int _charObjId;
-    private int _boatObjId;
-    private Point3D _pos;
-
-    /**
-     * @param charObjId
-     * @param boatObjId
-     * @param pos
-     */
-    public GetOnVehicle(int charObjId, int boatObjId, Point3D pos)
-    {
-        _charObjId = charObjId;
-        _boatObjId = boatObjId;
-        _pos = pos;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    final void writeImpl()
-    {
-        writeC(0x5c);
-        writeD(_charObjId);
-        writeD(_boatObjId);
-        writeD(_pos.getX());
-        writeD(_pos.getY());
-        writeD(_pos.getZ());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        // TODO Auto-generated method stub
-        return "[S] 5C GetOnVehicle";
-    }
+	private final int _charObjId;
+	private final int _boatObjId;
+	private final Point3D _pos;
+	
+	/**
+	 * @param charObjId
+	 * @param boatObjId
+	 * @param pos
+	 */
+	public GetOnVehicle(int charObjId, int boatObjId, Point3D pos)
+	{
+		_charObjId = charObjId;
+		_boatObjId = boatObjId;
+		_pos = pos;
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x5c);
+		writeD(_charObjId);
+		writeD(_boatObjId);
+		
+		writeD(_pos.getX());
+		writeD(_pos.getY());
+		writeD(_pos.getZ());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		// TODO Auto-generated method stub
+		return "[S] 5C GetOnVehicle";
+	}
 }

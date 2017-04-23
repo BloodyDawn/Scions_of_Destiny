@@ -36,7 +36,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PlayableInstance;
 import net.sf.l2j.gameserver.serverpackets.PetItemList;
 import net.sf.l2j.gameserver.serverpackets.MagicSkillLaunched;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.serverpackets.SetupGauge;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.templates.L2NpcTemplate;
@@ -136,7 +136,7 @@ public class SummonItems implements IItemHandler
                 if (skill == null)
                     return;
 
-                activeChar.broadcastPacket(new MagicSkillUser(activeChar, skill.getId(), 1, skill.getHitTime(), 0));
+                activeChar.broadcastPacket(new MagicSkillUse(activeChar, skill.getId(), 1, skill.getHitTime(), 0));
                 activeChar.setTarget(oldtarget);
                 activeChar.sendPacket(new SetupGauge(0, 5000));
     		activeChar.sendPacket(new SystemMessage(SystemMessage.SUMMON_A_PET));

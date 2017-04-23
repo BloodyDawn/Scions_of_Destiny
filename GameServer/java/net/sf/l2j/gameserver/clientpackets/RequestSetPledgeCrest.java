@@ -18,7 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.l2j.L2DatabaseFactory;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.cache.CrestCache;
 import net.sf.l2j.gameserver.idfactory.BitSetIDFactory;
 import net.sf.l2j.gameserver.model.L2Clan;
@@ -35,115 +33,133 @@ import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.4 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestSetPledgeCrest extends ClientBasePacket
+public class RequestSetPledgeCrest extends L2GameClientPacket
 {
 	private static final String _C__53_REQUESTSETPLEDGECREST = "[C] 53 RequestSetPledgeCrest";
 	static Logger _log = Logger.getLogger(RequestSetPledgeCrest.class.getName());
 
-	private final int _length;
-	private final byte[] _data;
+	private int _length;
+	private byte[] _data;
 
-	public RequestSetPledgeCrest(ByteBuffer buf, ClientThread client)
+	@Override
+	protected void readImpl()
 	{
-            super(buf, client);
-            _length = readD();
-            _data = readB(_length);
+		_length = readD();
+		if (_length > 256)
+		{
+			return;
+		}
+		
+		_data = new byte[_length];
+		readB(_data);
 	}
 
-        @Override
+	@Override
 	public void runImpl()
 	{
-            L2PcInstance activeChar = getClient().getActiveChar();
-            if (activeChar == null)
-                return;
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
 
-            L2Clan clan = activeChar.getClan();
-            if (clan == null)
-                return;
+		L2Clan clan = activeChar.getClan();
+		if (clan == null)
+		{
+			return;
+		}
 
-            if ((activeChar.getClanPrivileges() & L2Clan.CP_CL_REGISTER_CREST) != L2Clan.CP_CL_REGISTER_CREST)
-            {
-                activeChar.sendPacket(new SystemMessage(SystemMessage.YOU_ARE_NOT_AUTHORIZED));
-                return;
-            }
+		if ((activeChar.getClanPrivileges() & L2Clan.CP_CL_REGISTER_CREST) != L2Clan.CP_CL_REGISTER_CREST)
+		{
+			activeChar.sendPacket(new SystemMessage(SystemMessage.YOU_ARE_NOT_AUTHORIZED));
+			return;
+		}
 
-            if (clan.getDissolvingExpiryTime() > System.currentTimeMillis())
-            {
-                activeChar.sendPacket(new SystemMessage(552));
-                return;
-            }
+		if (clan.getDissolvingExpiryTime() > System.currentTimeMillis())
+		{
+			activeChar.sendPacket(new SystemMessage(552));
+			return;
+		}
 
-            CrestCache crestCache = CrestCache.getInstance();
+		CrestCache crestCache = CrestCache.getInstance();
 
-            if (_length < 0)
-            {
-                activeChar.sendMessage("File Transfer Error.");
-                return;
-            }
+		if (_length < 0)
+		{
+			activeChar.sendMessage("File Transfer Error.");
+			return;
+		}
 
-            if (_length > 256)
-            {
-                activeChar.sendMessage("The clan crest file size is greater than 256 bytes.");
-                return;
-            }
+		if (_length > 256)
+		{
+			activeChar.sendMessage("The clan crest file size is greater than 256 bytes.");
+			return;
+		}
 
-            if (_length == 0 || _data.length == 0)
-            {
-                crestCache.removePledgeCrest(clan.getCrestId());
+		if ((_length == 0) || (_data.length == 0))
+		{
+			crestCache.removePledgeCrest(clan.getCrestId());
 
-                clan.setHasCrest(false);
-                activeChar.sendMessage("The clan crest has been deleted.");
+			clan.setHasCrest(false);
+			activeChar.sendMessage("The clan crest has been deleted.");
 
-                for (L2PcInstance member : clan.getOnlineMembers(0))
-                    member.broadcastUserInfo();
+			for (L2PcInstance member : clan.getOnlineMembers(0))
+			{
+				member.broadcastUserInfo();
+			}
 
-                return;
-            }
+			return;
+		}
 
-            if (clan.getLevel() < 3)
-            {
-                activeChar.sendPacket(new SystemMessage(SystemMessage.CLAN_LVL_3_NEEDED_TO_SET_CREST));
-                return;
-            }
+		if (clan.getLevel() < 3)
+		{
+			activeChar.sendPacket(new SystemMessage(SystemMessage.CLAN_LVL_3_NEEDED_TO_SET_CREST));
 
-            int newId = BitSetIDFactory.getInstance().getNextId();
+			return;
+		}
 
-            if (clan.hasCrest())
-            	crestCache.removePledgeCrest(newId);
+		int newId = BitSetIDFactory.getInstance().getNextId();
 
-            if (!crestCache.savePledgeCrest(newId,_data))
-            {
-                _log.log(Level.INFO, "Error loading crest of clan:" + clan.getName());
-                return;
-            }
+		if (clan.hasCrest())
+		{
+			crestCache.removePledgeCrest(newId);
+		}
 
-            try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-                PreparedStatement statement = con.prepareStatement("UPDATE clan_data SET crest_id = ? WHERE clan_id = ?"))
-            {
-                statement.setInt(1, newId);
-                statement.setInt(2, clan.getClanId());
-                statement.executeUpdate();
-            }
-            catch (SQLException e)
-            {
-                _log.warning("could not update the crest id:"+e.getMessage());
-            }
+		if (!crestCache.savePledgeCrest(newId, _data))
+		{
+			_log.log(Level.INFO, "Error loading crest of clan:" + clan.getName());
+			return;
+		}
 
-            clan.setCrestId(newId);
-            clan.setHasCrest(true);
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement("UPDATE clan_data SET crest_id = ? WHERE clan_id = ?"))
+		{
+			statement.setInt(1, newId);
+			statement.setInt(2, clan.getClanId());
+			statement.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			_log.warning("could not update the crest id:" + e.getMessage());
+		}
 
-            for (L2PcInstance member : clan.getOnlineMembers(0))
-                member.broadcastUserInfo();
+		clan.setCrestId(newId);
+		clan.setHasCrest(true);
+
+		for (L2PcInstance member : clan.getOnlineMembers(0))
+		{
+			member.broadcastUserInfo();
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
-            return _C__53_REQUESTSETPLEDGECREST;
+		return _C__53_REQUESTSETPLEDGECREST;
 	}
 }

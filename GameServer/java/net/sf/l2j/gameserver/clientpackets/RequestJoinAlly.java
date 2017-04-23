@@ -18,9 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -29,58 +26,67 @@ import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestJoinAlly extends ClientBasePacket
+public class RequestJoinAlly extends L2GameClientPacket
 {
-    private static final String _C__82_REQUESTJOINALLY = "[C] 82 RequestJoinAlly";
-    //private static Logger _log = Logger.getLogger(RequestJoinAlly.class.getName());
-
-    private final int _id;
-
-    public RequestJoinAlly(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _id = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        if (!(L2World.getInstance().findObject(_id) instanceof L2PcInstance))
-            return;
-
-        L2Clan clan = activeChar.getClan();
-        if (clan == null)
-        {
-            activeChar.sendPacket(new SystemMessage(SystemMessage.YOU_ARE_NOT_A_CLAN_MEMBER));
-            return;
-        }
-
-        L2PcInstance target = (L2PcInstance) L2World.getInstance().findObject(_id);
-
-        if (!clan.CheckAllyJoinCondition(activeChar, target))
-            return;
-
-        if (!activeChar.getRequest().setRequest(target, this))
-            return;
-
-        SystemMessage sm = new SystemMessage(SystemMessage.S1_ALLIANCE_LEADER_OF_S2_REQUESTED_ALLIANCE);
-        sm.addString(activeChar.getName());
-        sm.addString(clan.getAllyName());
-        target.sendPacket(sm);
-        sm = null;
-
-        target.sendPacket(new AskJoinAlly(activeChar.getObjectId(), activeChar.getName(), clan.getAllyName()));
-    }
-
-    public String getType()
-    {
-        return _C__82_REQUESTJOINALLY;
-    }
+	private static final String _C__82_REQUESTJOINALLY = "[C] 82 RequestJoinAlly";
+	// private static Logger _log = Logger.getLogger(RequestJoinAlly.class.getName());
+	
+	private int _id;
+	
+	@Override
+	protected void readImpl()
+	{
+		_id = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (!(L2World.getInstance().findObject(_id) instanceof L2PcInstance))
+		{
+			return;
+		}
+		
+		L2Clan clan = activeChar.getClan();
+		if (clan == null)
+		{
+			activeChar.sendPacket(new SystemMessage(SystemMessage.YOU_ARE_NOT_A_CLAN_MEMBER));
+			return;
+		}
+		
+		L2PcInstance target = (L2PcInstance) L2World.getInstance().findObject(_id);
+		
+		if (!clan.CheckAllyJoinCondition(activeChar, target))
+		{
+			return;
+		}
+		
+		if (!activeChar.getRequest().setRequest(target, this))
+		{
+			return;
+		}
+		
+		SystemMessage sm = new SystemMessage(SystemMessage.S1_ALLIANCE_LEADER_OF_S2_REQUESTED_ALLIANCE);
+		sm.addString(activeChar.getName());
+		sm.addString(clan.getAllyName());
+		target.sendPacket(sm);
+		sm = null;
+		
+		target.sendPacket(new AskJoinAlly(activeChar.getObjectId(), activeChar.getName(), clan.getAllyName()));
+	}
+	
+	@Override
+	public String getType()
+	{
+		return _C__82_REQUESTJOINALLY;
+	}
 }

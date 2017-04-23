@@ -21,20 +21,23 @@ package net.sf.l2j.gameserver.serverpackets;
 /**
  * @author devScarlet & mrTJO
  */
-public class ServerClose extends ServerBasePacket
+public class ServerClose extends L2GameServerPacket
 {
-    private static final String _S__26_SERVERCLOSE = "[S] 26 ServerClose";
-
-    final void writeImpl()
-    {
-        writeC(0x26);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__26_SERVERCLOSE;
-    }
+	private static final String _S__26_SERVERCLOSE = "[S] 26 ServerClose";
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x26);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__26_SERVERCLOSE;
+	}
 }

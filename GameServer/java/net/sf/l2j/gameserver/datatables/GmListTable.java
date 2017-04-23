@@ -25,7 +25,7 @@ import javolution.util.FastMap;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.serverpackets.ServerBasePacket;
+import net.sf.l2j.gameserver.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
@@ -147,7 +147,7 @@ public class GmListTable
         }
     }
 
-    public static void broadcastToGMs(ServerBasePacket packet)
+    public static void broadcastToGMs(L2GameServerPacket packet)
     {
         for (L2PcInstance gm : getInstance().getAllGms(true))
         {

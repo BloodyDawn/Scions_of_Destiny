@@ -30,7 +30,7 @@ import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PlayableInstance;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.serverpackets.SetupGauge;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
@@ -114,7 +114,7 @@ public class ScrollOfEscape implements IItemHandler
 
         activeChar.disableAllSkills();
 
-        activeChar.broadcastPacket(new MagicSkillUser(activeChar, skill.getId(), 1, skill.getHitTime(), 0));
+        activeChar.broadcastPacket(new MagicSkillUse(activeChar, skill.getId(), 1, skill.getHitTime(), 0));
         activeChar.sendPacket(new SetupGauge(0, skill.getHitTime()));
 
         SystemMessage sm = new SystemMessage(SystemMessage.S1_DISAPPEARED);

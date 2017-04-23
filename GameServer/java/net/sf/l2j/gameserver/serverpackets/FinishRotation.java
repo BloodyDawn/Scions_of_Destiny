@@ -21,35 +21,36 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.model.L2Character;
 
 /**
- *  
- * format  dd
- * 
- * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $ 
+ * format dd
+ * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class FinishRotation extends ServerBasePacket
+public class FinishRotation extends L2GameServerPacket
 {
-    private static final String _S__78_FINISHROTATION = "[S] 63 FinishRotation";
-    private int _heading;
-    private int _objectId;
-
-    public FinishRotation(L2Character cha)
-    {
-        _objectId = cha.getObjectId();
-        _heading = cha.getHeading();
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x63);
-        writeD(_objectId);
-        writeD(_heading);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__78_FINISHROTATION;
-    }
+	private static final String _S__78_FINISHROTATION = "[S] 63 FinishRotation";
+	private final int _heading;
+	private final int _objectId;
+	
+	public FinishRotation(L2Character cha)
+	{
+		_objectId = cha.getObjectId();
+		_heading = cha.getHeading();
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x63);
+		writeD(_objectId);
+		writeD(_heading);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__78_FINISHROTATION;
+	}
 }

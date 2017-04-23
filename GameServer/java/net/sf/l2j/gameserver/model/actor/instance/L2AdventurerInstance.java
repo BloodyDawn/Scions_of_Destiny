@@ -55,7 +55,7 @@ public class L2AdventurerInstance extends L2FolkInstance
                         player.sendPacket(new RadarControl(0, 1, spawn.getLocx(), spawn.getLocy(), spawn.getLocz()));
                         break;
                     case UNDEFINED:
-                        player.sendMessage("This Boss isn't in game - notify L2Jserver Team.");
+                        player.sendMessage("This Boss isn't in game - notify L2JLisvus Team.");
                         break;
                 }
             }

@@ -21,30 +21,31 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- *
- * @author  devScarlet
+ * @author devScarlet
  */
-public class NicknameChanged extends ServerBasePacket
+public class NicknameChanged extends L2GameServerPacket
 {
-    private static final String _S__CC_TITLE_UPDATE = "[S] cc NicknameChanged";
-    private String _title;
-    private int _objectId;
-
-    public NicknameChanged(L2PcInstance cha)
-    {
-        _objectId = cha.getObjectId();
-        _title = cha.getTitle();
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xcc);
-        writeD(_objectId);
-        writeS(_title);
-    }
-
-    public String getType()
-    {
-        return _S__CC_TITLE_UPDATE;
-    }
+	private static final String _S__CC_TITLE_UPDATE = "[S] cc NicknameChanged";
+	private final String _title;
+	private final int _objectId;
+	
+	public NicknameChanged(L2PcInstance cha)
+	{
+		_objectId = cha.getObjectId();
+		_title = cha.getTitle();
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xcc);
+		writeD(_objectId);
+		writeS(_title);
+	}
+	
+	@Override
+	public String getType()
+	{
+		return _S__CC_TITLE_UPDATE;
+	}
 }

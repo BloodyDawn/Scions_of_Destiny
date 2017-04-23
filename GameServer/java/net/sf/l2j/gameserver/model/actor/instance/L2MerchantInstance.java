@@ -23,7 +23,7 @@ import java.util.StringTokenizer;
 import javolution.text.TextBuilder;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
+import net.sf.l2j.gameserver.L2GameClient;
 import net.sf.l2j.gameserver.TradeController;
 import net.sf.l2j.gameserver.model.L2Multisell;
 import net.sf.l2j.gameserver.model.L2TradeList;
@@ -211,7 +211,7 @@ public class L2MerchantInstance extends L2FolkInstance
         player.startRentPet(time);
     }
 
-    public void onActionShift(ClientThread client)
+    public void onActionShift(L2GameClient client)
     {
         L2PcInstance player = client.getActiveChar();
         if (player == null) return;

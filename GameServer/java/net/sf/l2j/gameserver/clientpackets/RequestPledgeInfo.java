@@ -18,11 +18,9 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.datatables.ClanTable;
 import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -31,59 +29,59 @@ import net.sf.l2j.gameserver.serverpackets.PledgeShowMemberListAll;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.5.4.3 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestPledgeInfo extends ClientBasePacket
+public class RequestPledgeInfo extends L2GameClientPacket
 {
-    private static final String _C__66_REQUESTPLEDGEINFO = "[C] 66 RequestPledgeInfo";
-    private static Logger _log = Logger.getLogger(RequestPledgeInfo.class.getName());
-
-    private final int _clanId;
-
-    /**
-     * packet type id 0x66
-     * format:		cd
-     * @param rawPacket
-     */
-    public RequestPledgeInfo(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _clanId  = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        if (Config.DEBUG)
-            _log.fine("infos for clan " + _clanId + " requested");
-
-        L2PcInstance activeChar = getClient().getActiveChar();
-        L2Clan clan = ClanTable.getInstance().getClan(_clanId);
-        if (clan == null)
-        {
-            if (Config.DEBUG)
-                _log.warning("Clan data for clanId "+ _clanId + " is missing");
-            return; // we have no clan data ?!? should not happen
-        }
-
-        if (activeChar != null)
-        {
-            activeChar.sendPacket(new PledgeInfo(clan));
-
-            if (clan.getClanId() == activeChar.getClanId())
-            {
-                PledgeShowMemberListAll pm = new PledgeShowMemberListAll(clan, activeChar);
-                activeChar.sendPacket(pm);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__66_REQUESTPLEDGEINFO;
-    }
+	private static final String _C__66_REQUESTPLEDGEINFO = "[C] 66 RequestPledgeInfo";
+	private static Logger _log = Logger.getLogger(RequestPledgeInfo.class.getName());
+	
+	private int _clanId;
+	
+	@Override
+	protected void readImpl()
+	{
+		_clanId = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		if (Config.DEBUG)
+		{
+			_log.fine("infos for clan " + _clanId + " requested");
+		}
+		
+		L2PcInstance activeChar = getClient().getActiveChar();
+		L2Clan clan = ClanTable.getInstance().getClan(_clanId);
+		if (clan == null)
+		{
+			if (Config.DEBUG)
+			{
+				_log.warning("Clan data for clanId " + _clanId + " is missing");
+			}
+			return; // we have no clan data ?!? should not happen
+		}
+		
+		if (activeChar != null)
+		{
+			activeChar.sendPacket(new PledgeInfo(clan));
+			
+			if (clan.getClanId() == activeChar.getClanId())
+			{
+				PledgeShowMemberListAll pm = new PledgeShowMemberListAll(clan, activeChar);
+				activeChar.sendPacket(pm);
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__66_REQUESTPLEDGEINFO;
+	}
 }

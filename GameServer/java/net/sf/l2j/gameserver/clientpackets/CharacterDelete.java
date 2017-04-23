@@ -18,76 +18,78 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.serverpackets.CharDeleteFail;
 import net.sf.l2j.gameserver.serverpackets.CharDeleteOk;
 import net.sf.l2j.gameserver.serverpackets.CharSelectInfo;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.8.2.1.2.3 $ $Date: 2005/03/27 15:29:30 $
  */
-public class CharacterDelete extends ClientBasePacket
+public class CharacterDelete extends L2GameClientPacket
 {
-    private static final String _C__0C_CHARACTERDELETE = "[C] 0C CharacterDelete";
-    private static Logger _log = Logger.getLogger(CharacterDelete.class.getName());
+	private static final String _C__0C_CHARACTERDELETE = "[C] 0C CharacterDelete";
+	private static Logger _log = Logger.getLogger(CharacterDelete.class.getName());
 
-    // cd
-    private final int _charSlot;
+	// cd
+	private int _charSlot;
 
-    /**
-     * @param decrypt
-     */
-    public CharacterDelete(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _charSlot = readD();
-    }
+	@Override
+	protected void readImpl()
+	{
+		_charSlot = readD();
+	}
 
-    @Override
-    public void runImpl()
-    {
-        if (Config.DEBUG) _log.fine("deleting slot:" + _charSlot);
-
-        try
-        {
-            byte answer = getClient().markToDeleteChar(_charSlot);
-            switch(answer)
-            {
-                case -1: // Error
-                    break;
-                case 0: // Success!
-                    sendPacket(new CharDeleteOk());
-                    break;
-                case 1:
-                    sendPacket(new CharDeleteFail(CharDeleteFail.REASON_YOU_MAY_NOT_DELETE_CLAN_MEMBER));
-                    break;
-                case 2:
-                    sendPacket(new CharDeleteFail(CharDeleteFail.REASON_CLAN_LEADERS_MAY_NOT_BE_DELETED));
-                    break;
-            }
-        }
-        catch (Exception e)
-        {
-            _log.log(Level.SEVERE, "Error:", e);
-        }
+	@Override
+	public void runImpl()
+	{
+		if (Config.DEBUG)
+		{
+			_log.fine("deleting slot:" + _charSlot);
+		}
 
-        CharSelectInfo cl = new CharSelectInfo(getClient().getLoginName(), getClient().getSessionId().playOkID1);
-        sendPacket(cl);
-        getClient().setCharSelection(cl.getCharInfo());
-    }
+		try
+		{
+			byte answer = getClient().markToDeleteChar(_charSlot);
+			switch (answer)
+			{
+				
+				case -1: // Error
+					break;
+				case 0: // Success!
+					sendPacket(new CharDeleteOk());
+					break;
+				case 1:
+					sendPacket(new CharDeleteFail(CharDeleteFail.REASON_YOU_MAY_NOT_DELETE_CLAN_MEMBER));
+					break;
+				case 2:
+					sendPacket(new CharDeleteFail(CharDeleteFail.REASON_CLAN_LEADERS_MAY_NOT_BE_DELETED));
+					break;
+			}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__0C_CHARACTERDELETE;
-    }
+		}
+		catch (Exception e)
+		{
+			_log.log(Level.SEVERE, "Error:", e);
+
+		}
+
+		CharSelectInfo cl = new CharSelectInfo(getClient().getAccountName(), getClient().getSessionId().playOkID1);
+		sendPacket(cl);
+		getClient().setCharSelection(cl.getCharInfo());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__0C_CHARACTERDELETE;
+	}
 }

@@ -20,23 +20,25 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class SunRise extends ServerBasePacket
+public class SunRise extends L2GameServerPacket
 {
-    private static final String _S__28_SUNRISE = "[S] 1c SunRise";
-
-    final void writeImpl()
-    {
-        writeC(0x1c);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__28_SUNRISE;
-    }
+	private static final String _S__28_SUNRISE = "[S] 1c SunRise";
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x1c);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__28_SUNRISE;
+	}
 }

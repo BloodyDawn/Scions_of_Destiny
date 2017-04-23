@@ -22,45 +22,48 @@ import net.sf.l2j.gameserver.model.L2CommandChannel;
 import net.sf.l2j.gameserver.model.L2Party;
 
 /**
- *
- * @author  chris_00
- *
+ * @author chris_00
  */
-public class ExMultiPartyCommandChannelInfo extends ServerBasePacket
+public class ExMultiPartyCommandChannelInfo extends L2GameServerPacket
 {
-    private static final String _S__FE_30_EXPARTYCHANNELINFO = "[S] FE:30 ExMultiPartyCommandChannelInfo";
-
-    private L2CommandChannel _channel;
-
-    public ExMultiPartyCommandChannelInfo(L2CommandChannel channel)
-    {
-        _channel = channel;
-    }
-
-    final void writeImpl()
-    {
-        if (_channel == null)
-            return;
-
-        writeC(0xfe);
-        writeH(0x30);
-
-        writeS(_channel.getChannelLeader().getName());
-        writeD(_channel.getMemberCount());
-
-        writeD(_channel.getParties().size());
-        for (L2Party p : _channel.getParties())
-        {
-            writeS(p.getPartyMembers().get(0).getName());
-            writeD(p.getMemberCount());
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__FE_30_EXPARTYCHANNELINFO;
-    }
+	private static final String _S__FE_30_EXPARTYCHANNELINFO = "[S] FE:30 ExMultiPartyCommandChannelInfo";
+	
+	private final L2CommandChannel _channel;
+	
+	public ExMultiPartyCommandChannelInfo(L2CommandChannel channel)
+	{
+		_channel = channel;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		if (_channel == null)
+		{
+			return;
+		}
+		
+		writeC(0xfe);
+		writeH(0x30);
+		
+		writeS(_channel.getChannelLeader().getName());
+		writeD(_channel.getMemberCount());
+		
+		writeD(_channel.getParties().size());
+		for (L2Party p : _channel.getParties())
+		{
+			writeS(p.getPartyMembers().get(0).getName());
+			writeD(p.getMemberCount());
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__FE_30_EXPARTYCHANNELINFO;
+	}
 }

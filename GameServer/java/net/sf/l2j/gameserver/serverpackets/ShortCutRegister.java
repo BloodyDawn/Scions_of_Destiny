@@ -21,61 +21,51 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.model.L2ShortCut;
 
 /**
- * 
- *
- * sample
- *  
- * 56 
- * 01000000 04000000 dd9fb640 01000000
- * 
- * 56 
- * 02000000 07000000 38000000 03000000 01000000
- * 
- * 56 
- * 03000000 00000000 02000000 01000000
- * 
- * format   dd d/dd/d d
- * 
- * 
+ * sample 56 01000000 04000000 dd9fb640 01000000 56 02000000 07000000 38000000 03000000 01000000 56 03000000 00000000 02000000 01000000 format dd d/dd/d d
  * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class ShortCutRegister extends ServerBasePacket
+public class ShortCutRegister extends L2GameServerPacket
 {
-    private static final String _S__56_SHORTCUTREGISTER = "[S] 44 ShortCutRegister";
-
-    private L2ShortCut _shortcut;
-
-
-    /**
-     * Register new skill shortcut
-     * @param slot
-     * @param type
-     * @param typeId
-     * @param level
-     * @param dat2
-     */
-    public ShortCutRegister(L2ShortCut shortcut)
-    {
-        _shortcut = shortcut;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x44);
-
-        writeD(_shortcut.getType());
-        writeD(_shortcut.getSlot() + _shortcut.getPage() * 12); // C4 Client
-        writeD(_shortcut.getId());
-        if (_shortcut.getLevel() > -1)
-            writeD(_shortcut.getLevel());
-        writeD(1);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__56_SHORTCUTREGISTER;
-    }
+	private static final String _S__56_SHORTCUTREGISTER = "[S] 44 ShortCutRegister";
+	
+	private final L2ShortCut _shortcut;
+	
+	/**
+	 * Register new skill shortcut
+	 * @param slot
+	 * @param type
+	 * @param typeId
+	 * @param level
+	 * @param dat2
+	 */
+	public ShortCutRegister(L2ShortCut shortcut)
+	{
+		_shortcut = shortcut;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x44);
+		
+		writeD(_shortcut.getType());
+		writeD(_shortcut.getSlot() + (_shortcut.getPage() * 12)); // C4 Client
+		writeD(_shortcut.getId());
+		
+		if (_shortcut.getLevel() > -1)
+		{
+			writeD(_shortcut.getLevel());
+		}
+		writeD(1);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__56_SHORTCUTREGISTER;
+	}
 }

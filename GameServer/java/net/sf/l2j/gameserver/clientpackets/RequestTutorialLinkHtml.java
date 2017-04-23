@@ -18,40 +18,42 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2ClassMasterInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 
-public class RequestTutorialLinkHtml extends ClientBasePacket
+public class RequestTutorialLinkHtml extends L2GameClientPacket
 {
-    private static final String _C__7b_REQUESTTUTORIALLINKHTML = "[C] 7b RequestTutorialLinkHtml";
-    private String _bypass;
-
-    public RequestTutorialLinkHtml(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _bypass = readS();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
-
-        L2ClassMasterInstance.onTutorialLink(player, _bypass);
-
-        QuestState qs = player.getQuestState("255_Tutorial");
-        if (qs != null)
-            qs.getQuest().notifyEvent(_bypass, null, player);
-    }
-
-    public String getType()
-    {
-        return _C__7b_REQUESTTUTORIALLINKHTML;
-    }
+	private static final String _C__7b_REQUESTTUTORIALLINKHTML = "[C] 7b RequestTutorialLinkHtml";
+	private String _bypass;
+	
+	@Override
+	protected void readImpl()
+	{
+		_bypass = readS();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
+		L2ClassMasterInstance.onTutorialLink(player, _bypass);
+		
+		QuestState qs = player.getQuestState("255_Tutorial");
+		if (qs != null)
+		{
+			qs.getQuest().notifyEvent(_bypass, null, player);
+		}
+	}
+	
+	@Override
+	public String getType()
+	{
+		return _C__7b_REQUESTTUTORIALLINKHTML;
+	}
 }

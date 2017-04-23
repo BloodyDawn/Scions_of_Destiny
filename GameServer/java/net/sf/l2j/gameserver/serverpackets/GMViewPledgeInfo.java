@@ -23,62 +23,64 @@ import net.sf.l2j.gameserver.model.L2ClanMember;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- * format   SdSS dddddddd d (Sddddd)
- * 
+ * format SdSS dddddddd d (Sddddd)
  * @version $Revision: 1.1.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class GMViewPledgeInfo extends ServerBasePacket
+public class GMViewPledgeInfo extends L2GameServerPacket
 {
-    private static final String _S__A9_GMVIEWPLEDGEINFO = "[S] 90 GMViewPledgeInfo";
-    private L2Clan _clan;
-    private L2PcInstance _activeChar;
-
-    public GMViewPledgeInfo(L2Clan clan, L2PcInstance activeChar)
-    {
-        _clan = clan;
-        _activeChar = activeChar;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x90);
-        writeS(_activeChar.getName());
-        writeD(_clan.getClanId());
-        writeS(_clan.getName());
-        writeS(_clan.getLeaderName());
-        writeD(_clan.getCrestId()); // -> no, it's no longer used (nuocnam) fix by game
-        writeD(_clan.getLevel());
-        writeD(_clan.getHasCastle());
-        writeD(_clan.getHasHideout());
-        writeD(0);
-        writeD(_activeChar.getLevel()); 
-        writeD(_clan.getDissolvingExpiryTime() > System.currentTimeMillis() ? 3 : 0);
-        writeD(0);
-
-        writeD(_clan.getAllyId()); //c2
-        writeS(_clan.getAllyName()); //c2
-        writeD(_clan.getAllyCrestId()); //c2
-        writeD(_clan.isAtWar()); //c3
-
-        L2ClanMember[] members = _clan.getMembers();
-        writeD(members.length);
-
-        for (L2ClanMember m : members)
-        {
-            writeS(m.getName());
-            writeD(m.getLevel());
-            writeD(m.getClassId());
-            writeD(0); 
-            writeD(1);
-            writeD(m.isOnline() ? m.getObjectId() : 0);
-        }		
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__A9_GMVIEWPLEDGEINFO;
-    }
+	private static final String _S__A9_GMVIEWPLEDGEINFO = "[S] 90 GMViewPledgeInfo";
+	private final L2Clan _clan;
+	private final L2PcInstance _activeChar;
+	
+	public GMViewPledgeInfo(L2Clan clan, L2PcInstance activeChar)
+	{
+		_clan = clan;
+		_activeChar = activeChar;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x90);
+		writeS(_activeChar.getName());
+		writeD(_clan.getClanId());
+		writeS(_clan.getName());
+		writeS(_clan.getLeaderName());
+		writeD(_clan.getCrestId()); // -> no, it's no longer used (nuocnam) fix by game
+		writeD(_clan.getLevel());
+		writeD(_clan.getHasCastle());
+		writeD(_clan.getHasHideout());
+		writeD(0);
+		writeD(_activeChar.getLevel());
+		writeD(_clan.getDissolvingExpiryTime() > System.currentTimeMillis() ? 3 : 0);
+		writeD(0);
+		
+		writeD(_clan.getAllyId()); // c2
+		writeS(_clan.getAllyName()); // c2
+		writeD(_clan.getAllyCrestId()); // c2
+		writeD(_clan.isAtWar()); // c3
+		
+		L2ClanMember[] members = _clan.getMembers();
+		writeD(members.length);
+		
+		for (L2ClanMember m : members)
+		{
+			writeS(m.getName());
+			writeD(m.getLevel());
+			writeD(m.getClassId());
+			writeD(0);
+			writeD(1);
+			writeD(m.isOnline() ? m.getObjectId() : 0);
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__A9_GMVIEWPLEDGEINFO;
+	}
 }

@@ -18,27 +18,30 @@
  */
 package net.sf.l2j.gameserver.serverpackets;
 
-public class EnchantResult extends ServerBasePacket
+public class EnchantResult extends L2GameServerPacket
 {
-    private static final String _S__81_ENCHANTRESULT = "[S] 81 EnchantResult";
-    private int _result;
-
-    public EnchantResult(int result)
-    {
-        _result = result;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x81);
-        writeD(_result);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__81_ENCHANTRESULT;
-    }
+	private static final String _S__81_ENCHANTRESULT = "[S] 81 EnchantResult";
+	private final int _result;
+	
+	public EnchantResult(int result)
+	{
+		_result = result;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x81);
+		writeD(_result);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__81_ENCHANTRESULT;
+	}
 }

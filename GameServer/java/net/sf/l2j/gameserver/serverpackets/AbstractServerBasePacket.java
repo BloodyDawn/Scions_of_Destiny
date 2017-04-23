@@ -1,4 +1,4 @@
-/* 
+/*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -20,19 +20,26 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class makes writeImpl() abstract for custom classes outside of this package
- * 
  * @version $Revision: $ $Date: $
- * @author  galun
+ * @author galun
  */
-public abstract class AbstractServerBasePacket extends ServerBasePacket
+public abstract class AbstractServerBasePacket extends L2GameServerPacket
 {
-    /**
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    abstract protected void writeImpl();
-
-    /**
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    abstract public String getType();
+	/**
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#runImpl()
+	 */
+	@Override
+	abstract public void runImpl();
+	
+	/**
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	abstract protected void writeImpl();
+	
+	/**
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	abstract public String getType();
 }

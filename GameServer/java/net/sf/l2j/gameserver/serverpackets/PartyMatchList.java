@@ -19,83 +19,92 @@
 package net.sf.l2j.gameserver.serverpackets;
 
 import javolution.util.FastList;
-
 import net.sf.l2j.gameserver.model.PartyMatchRoom;
 import net.sf.l2j.gameserver.model.PartyMatchRoomList;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- * 
  * @version $Revision: 1.1.2.1.2.4 $ $Date: 2005/03/27 15:29:57 $
  */
-public class PartyMatchList extends ServerBasePacket
+public class PartyMatchList extends L2GameServerPacket
 {
-    private static final String _S__AF_PARTYMATCHLIST = "[S] 96 PartyMatchList";
-
-    private L2PcInstance _cha;
-    private int _loc;
-    private int _lim;
-    private FastList<PartyMatchRoom> _rooms;
-
-    /**
-     * @param allPlayers
-     */
-    public PartyMatchList(L2PcInstance player, int auto, int location, int limit)
-    {
-        _cha = player;
-        _loc = location;
-        _lim = limit;
-        _rooms = new FastList<>();
-    }
-
-    final void writeImpl()
-    {
-        for (PartyMatchRoom room : PartyMatchRoomList.getInstance().getRooms())
-        {
-            if (room.getMembers() < 1 || room.getOwner() == null || room.getOwner().isOnline() == 0 || room.getOwner().getPartyRoom() != room.getId())
-            {
-                PartyMatchRoomList.getInstance().deleteRoom(room.getId());
-                continue;
-            }
-
-            if (_loc > 0 && _loc != room.getLocation())
-                continue;
-
-            if (_lim == 0 && ((_cha.getLevel() < room.getMinLvl()) || (_cha.getLevel() > room.getMaxLvl())))
-                continue;
-
-            _rooms.add(room);
-        }
-
-        int size = _rooms.size();
-
-        writeC(0x96);
-
-        if (size > 0)
-            writeD(1);
-        else
-            writeD(0);
-
-        writeD(size);
-
-        for (PartyMatchRoom room : _rooms)
-        {
-            writeD(room.getId());
-            writeS(room.getTitle());
-            writeD(room.getLocation());
-            writeD(room.getMinLvl());
-            writeD(room.getMaxLvl());
-            writeD(room.getMembers());
-            writeD(room.getMaxMembers());
-            writeS(room.getOwner().getName());
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__AF_PARTYMATCHLIST;
-    }
+	private static final String _S__AF_PARTYMATCHLIST = "[S] 96 PartyMatchList";
+	
+	private final L2PcInstance _cha;
+	private final int _loc;
+	private final int _lim;
+	private final FastList<PartyMatchRoom> _rooms;
+	
+	/**
+	 * @param allPlayers
+	 */
+	public PartyMatchList(L2PcInstance player, int auto, int location, int limit)
+	{
+		_cha = player;
+		_loc = location;
+		_lim = limit;
+		_rooms = new FastList<>();
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		for (PartyMatchRoom room : PartyMatchRoomList.getInstance().getRooms())
+		{
+			if ((room.getMembers() < 1) || (room.getOwner() == null) || (room.getOwner().isOnline() == 0) || (room.getOwner().getPartyRoom() != room.getId()))
+			{
+				PartyMatchRoomList.getInstance().deleteRoom(room.getId());
+				continue;
+			}
+			
+			if ((_loc > 0) && (_loc != room.getLocation()))
+			{
+				continue;
+			}
+			
+			if ((_lim == 0) && ((_cha.getLevel() < room.getMinLvl()) || (_cha.getLevel() > room.getMaxLvl())))
+			{
+				continue;
+			}
+			
+			_rooms.add(room);
+		}
+		
+		int size = _rooms.size();
+		
+		writeC(0x96);
+		
+		if (size > 0)
+		{
+			writeD(1);
+		}
+		else
+		{
+			writeD(0);
+		}
+		
+		writeD(size);
+		
+		for (PartyMatchRoom room : _rooms)
+		{
+			writeD(room.getId());
+			writeS(room.getTitle());
+			writeD(room.getLocation());
+			writeD(room.getMinLvl());
+			writeD(room.getMaxLvl());
+			writeD(room.getMembers());
+			writeD(room.getMaxMembers());
+			writeS(room.getOwner().getName());
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__AF_PARTYMATCHLIST;
+	}
 }

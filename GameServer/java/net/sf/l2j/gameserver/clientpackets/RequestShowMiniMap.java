@@ -18,41 +18,38 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.ShowMiniMap;
 
 /**
- * sample
- *
- * format
- * d
- * 
+ * sample format d
  * @version $Revision: 1 $ $Date: 2005/04/10 00:17:44 $
  */
-public class RequestShowMiniMap extends ClientBasePacket
+public class RequestShowMiniMap extends L2GameClientPacket
 {
 	private static final String _C__cd_REQUESTSHOWMINIMAP = "[C] cd RequestShowMiniMap";
-
-	public RequestShowMiniMap(ByteBuffer buf, ClientThread client)
+	
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 	}
-
-        @Override
+	
+	@Override
 	public void runImpl()
 	{
 		L2PcInstance activeChar = getClient().getActiveChar();
 		if (activeChar == null)
-                        return;
-                activeChar.sendPacket(new ShowMiniMap(1665));
+		{
+			return;
+		}
+		activeChar.sendPacket(new ShowMiniMap(1665));
 	}
-	
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__cd_REQUESTSHOWMINIMAP;

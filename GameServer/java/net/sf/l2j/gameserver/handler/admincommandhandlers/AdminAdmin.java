@@ -38,7 +38,7 @@ import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.serverpackets.PlaySound;
-import net.sf.l2j.gameserver.serverpackets.ServerBasePacket;
+import net.sf.l2j.gameserver.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.serverpackets.SignsSky;
 import net.sf.l2j.gameserver.serverpackets.SunRise;
 import net.sf.l2j.gameserver.serverpackets.SunSet;
@@ -327,7 +327,7 @@ public class AdminAdmin implements IAdminCommandHandler
      */
     public void adminAtmosphere(String type, String state, L2PcInstance activeChar)
     {
-        ServerBasePacket packet = null;
+        L2GameServerPacket packet = null;
 
         if (type.equals("signsky"))
         {

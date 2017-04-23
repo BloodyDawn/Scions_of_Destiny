@@ -18,46 +18,35 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
-
-public class RequestDeleteMacro extends ClientBasePacket
-{  
+public class RequestDeleteMacro extends L2GameClientPacket
+{
 	private int _id;
-	
+
 	private static final String _C__C2_REQUESTDELETEMACRO = "[C] C2 RequestDeleteMacro";
-	
-	/**
-	 * packet type id 0xc2
-	 * 
-	 * sample
-	 * 
-	 * c2
-	 * d // macro id
-	 * 
-	 * format:		cd
-	 * @param decrypt
-	 */
-	public RequestDeleteMacro(ByteBuffer buf, ClientThread client)
+
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_id = readD();
 	}
-
-        @Override
+	
+	@Override
 	public void runImpl()
 	{
-                if (getClient().getActiveChar() == null)
-                        return;
-
-                getClient().getActiveChar().deleteMacro(_id);
-	        getClient().getActiveChar().sendMessage("Delete macro id="+_id);
+		if (getClient().getActiveChar() == null)
+		{
+			return;
+		}
+		
+		getClient().getActiveChar().deleteMacro(_id);
+		getClient().getActiveChar().sendMessage("Delete macro id=" + _id);
 	}
-	
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__C2_REQUESTDELETEMACRO;

@@ -23,50 +23,56 @@ import net.sf.l2j.util.Point3D;
 
 /**
  * @author Maktakien
- *
  */
-public class MoveToLocationInVehicle extends ServerBasePacket
+public class MoveToLocationInVehicle extends L2GameServerPacket
 {
-    private int _pciId;
-    private int _boatId;
-    private Point3D _destination;
-    private Point3D _origin;
-
-    /**
-     * @param player
-     * @param destination
-     * @param origin
-     */
-    public MoveToLocationInVehicle(L2PcInstance player, Point3D destination, Point3D origin)
-    {
-        _pciId = player.getObjectId();
-        _boatId = player.getBoat().getObjectId();
-        _destination = destination;
-        _origin = origin;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    final void writeImpl()
-    {
-        writeC(0x71);
-        writeD(_pciId);
-        writeD(_boatId);
-        writeD(_destination.getX());
-        writeD(_destination.getY());
-        writeD(_destination.getZ());
-        writeD(_origin.getX());
-        writeD(_origin.getY());
-        writeD(_origin.getZ());		
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        return "[S] 71 MoveToLocationInVehicle";
-    }
+	private final int _pciId;
+	private final int _boatId;
+	private final Point3D _destination;
+	private final Point3D _origin;
+	
+	/**
+	 * @param player
+	 * @param destination
+	 * @param origin
+	 */
+	public MoveToLocationInVehicle(L2PcInstance player, Point3D destination, Point3D origin)
+	{
+		
+		_pciId = player.getObjectId();
+		
+		_boatId = player.getBoat().getObjectId();
+		_destination = destination;
+		_origin = origin;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x71);
+		
+		writeD(_pciId);
+		
+		writeD(_boatId);
+		writeD(_destination.getX());
+		writeD(_destination.getY());
+		writeD(_destination.getZ());
+		writeD(_origin.getX());
+		writeD(_origin.getY());
+		writeD(_origin.getZ());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return "[S] 71 MoveToLocationInVehicle";
+	}
 }

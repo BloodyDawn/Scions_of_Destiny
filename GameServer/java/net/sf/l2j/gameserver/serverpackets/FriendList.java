@@ -20,73 +20,70 @@ package net.sf.l2j.gameserver.serverpackets;
 
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- * Support for "Chat with Friends" dialog. 
- * 
- * Format: ch (hdSdh)
- * h: Total Friend Count
- * 
- * h: Unknown
- * d: Player Object ID
- * S: Friend Name
- * d: Online/Offline
- * h: Unknown
- * 
+ * Support for "Chat with Friends" dialog. Format: ch (hdSdh) h: Total Friend Count h: Unknown d: Player Object ID S: Friend Name d: Online/Offline h: Unknown
  * @author Tempy
- *
  */
-public class FriendList extends ServerBasePacket
+public class FriendList extends L2GameServerPacket
 {
-    private static Logger _log = Logger.getLogger(FriendList.class.getName());
-    private static final String _S__FA_FRIENDLIST = "[S] FA FriendList";
-
-    private L2PcInstance _cha;
-
-    public FriendList(L2PcInstance cha)
-    {
-        _cha = cha;
-    }
-
-    final void writeImpl()
-    {
-        L2PcInstance _activeChar = getClient().getActiveChar();
-        if (_activeChar == null)
-            return;
-
-        writeC(0xfa);
-
-        if (_activeChar.getFriendList().size() > 0)
-        {
-            writeH(_activeChar.getFriendList().size());
-
-            for (L2PcInstance.Friend friend : _activeChar.getFriendList())
-            {
-                if (friend.getObjectId() == _cha.getObjectId())
-                {
-                    if (!friend.getName().equals(_cha.getName()))
-                        friend.setName(_cha.getName());
-                    friend.setOnline(_cha.isOnline());
-                }
-
-                writeH(0); // ??
-                writeD(friend.getObjectId());
-                writeS(friend.getName());
-
-                writeD(friend.isOnline()); // online status
-
-                writeH(0); // ??
-            }				
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__FA_FRIENDLIST;
-    }
+	private static Logger _log = Logger.getLogger(FriendList.class.getName());
+	private static final String _S__FA_FRIENDLIST = "[S] FA FriendList";
+	
+	private final L2PcInstance _cha;
+	
+	public FriendList(L2PcInstance cha)
+	{
+		_cha = cha;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		L2PcInstance _activeChar = getClient().getActiveChar();
+		if (_activeChar == null)
+		{
+			return;
+		}
+		
+		writeC(0xfa);
+		
+		if (_activeChar.getFriendList().size() > 0)
+		{
+			writeH(_activeChar.getFriendList().size());
+			
+			for (L2PcInstance.Friend friend : _activeChar.getFriendList())
+			
+			{
+				if (friend.getObjectId() == _cha.getObjectId())
+				{
+					if (!friend.getName().equals(_cha.getName()))
+					{
+						friend.setName(_cha.getName());
+					}
+					friend.setOnline(_cha.isOnline());
+				}
+				
+				writeH(0); // ??
+				writeD(friend.getObjectId());
+				writeS(friend.getName());
+				
+				writeD(friend.isOnline()); // online status
+				
+				writeH(0); // ??
+			}
+		}
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__FA_FRIENDLIST;
+	}
 }

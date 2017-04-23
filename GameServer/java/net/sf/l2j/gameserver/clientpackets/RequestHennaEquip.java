@@ -18,14 +18,10 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.datatables.HennaTable;
 import net.sf.l2j.gameserver.datatables.HennaTreeTable;
 import net.sf.l2j.gameserver.model.L2HennaInstance;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.InventoryUpdate;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
@@ -34,88 +30,91 @@ import net.sf.l2j.gameserver.util.Util;
 
 /**
  * This class ...
- * 
  * @version $Revision$ $Date$
  */
-public class RequestHennaEquip extends ClientBasePacket
+public class RequestHennaEquip extends L2GameClientPacket
 {
-    private static final String _C__BC_RequestHennaEquip = "[C] bc RequestHennaEquip";
-    //private static Logger _log = Logger.getLogger(RequestHennaEquip.class.getName());
-    private final int SymbolId;
-    // format  cd
-
-    /**
-     * packet type id 0xbb
-     * format:		cd
-     * @param decrypt
-     */
-    public RequestHennaEquip(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        SymbolId  = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        L2Henna template = HennaTable.getInstance().getTemplate(SymbolId);
-        if (template == null)
-            return;
-
-    	L2HennaInstance henna = new L2HennaInstance(template);
-    	int _count = 0;
-
-        /* Prevents henna drawing exploit:
-         * 1) talk to L2SymbolMakerInstance
-         * 2) RequestHennaList
-         * 3) Don't close the window and go to a GrandMaster and change your subclass
-         * 4) Get SymbolMaker range again and press draw
-         * You could draw any kind of henna just having the required subclass...
-         */
-        boolean cheater = true;
-        for (L2HennaInstance h : HennaTreeTable.getInstance().getAvailableHenna(activeChar.getClassId()))
-        {
-            if (h.getSymbolId() == henna.getSymbolId())
-            {
-                cheater = false;
-                break;
-            }
-        }
-
-        try
-        {
-            _count = activeChar.getInventory().getItemByItemId(henna.getItemIdDye()).getCount();
-        }
-        catch(Exception e){}
-
-        if (!cheater && (_count >= henna.getAmountDyeRequire()) && (activeChar.getAdena()>= henna.getPrice()) && activeChar.addHenna(henna))
-        {
-            activeChar.destroyItemByItemId("Henna", henna.getItemIdDye(),henna.getAmountDyeRequire(), activeChar, true);
-            activeChar.getInventory().reduceAdena("Henna", henna.getPrice(), activeChar, activeChar.getLastFolkNPC());
-
-            InventoryUpdate iu = new InventoryUpdate();
-            iu.addItem(activeChar.getInventory().getAdenaInstance());
-            activeChar.sendPacket(iu);
-
-            activeChar.sendPacket(new SystemMessage(SystemMessage.SYMBOL_ADDED));
-        }
-        else
-        {
-            activeChar.sendPacket(new SystemMessage(SystemMessage.CANT_DRAW_SYMBOL));
-            if ((!activeChar.isGM()) && (cheater))
-                Util.handleIllegalPlayerAction(activeChar,"Exploit attempt: Character "+activeChar.getName()+" of account "+activeChar.getAccountName()+" tried to add a forbidden henna.",Config.DEFAULT_PUNISH);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__BC_RequestHennaEquip;
-    }
+	private static final String _C__BC_RequestHennaEquip = "[C] bc RequestHennaEquip";
+	// private static Logger _log = Logger.getLogger(RequestHennaEquip.class.getName());
+	
+	private int SymbolId;
+	
+	@Override
+	protected void readImpl()
+	{
+		SymbolId = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		L2Henna template = HennaTable.getInstance().getTemplate(SymbolId);
+		
+		if (template == null)
+		{
+			return;
+		}
+		
+		L2HennaInstance henna = new L2HennaInstance(template);
+		int _count = 0;
+		
+		/*
+		 * Prevents henna drawing exploit: 1) talk to L2SymbolMakerInstance 2) RequestHennaList 3) Don't close the window and go to a GrandMaster and change your subclass 4) Get SymbolMaker range again and press draw You could draw any kind of henna just having the required subclass...
+		 */
+		boolean cheater = true;
+		for (L2HennaInstance h : HennaTreeTable.getInstance().getAvailableHenna(activeChar.getClassId()))
+		{
+			if (h.getSymbolId() == henna.getSymbolId())
+			{
+				cheater = false;
+				break;
+			}
+		}
+		
+		try
+		{
+			_count = activeChar.getInventory().getItemByItemId(henna.getItemIdDye()).getCount();
+		}
+		catch (Exception e)
+		{
+		}
+		
+		if (!cheater && (_count >= henna.getAmountDyeRequire()) && (activeChar.getAdena() >= henna.getPrice()) && activeChar.addHenna(henna))
+		{
+			activeChar.destroyItemByItemId("Henna", henna.getItemIdDye(), henna.getAmountDyeRequire(), activeChar, true);
+			activeChar.getInventory().reduceAdena("Henna", henna.getPrice(), activeChar, activeChar.getLastFolkNPC());
+			
+			InventoryUpdate iu = new InventoryUpdate();
+			iu.addItem(activeChar.getInventory().getAdenaInstance());
+			activeChar.sendPacket(iu);
+			
+			activeChar.sendPacket(new SystemMessage(SystemMessage.SYMBOL_ADDED));
+		}
+		else
+		{
+			
+			activeChar.sendPacket(new SystemMessage(SystemMessage.CANT_DRAW_SYMBOL));
+			if ((!activeChar.isGM()) && (cheater))
+			{
+				Util.handleIllegalPlayerAction(activeChar, "Exploit attempt: Character " + activeChar.getName() + " of account " + activeChar.getAccountName() + " tried to add a forbidden henna.", Config.DEFAULT_PUNISH);
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__BC_RequestHennaEquip;
+	}
 }

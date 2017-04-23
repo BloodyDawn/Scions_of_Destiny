@@ -20,11 +20,10 @@ package net.sf.l2j.loginserver.gameserverpackets;
 
 /**
  * @author -Wooden-
- *
  */
 public class PlayerLogout extends GameServerBasePacket
 {
-	private String _account;
+	private final String _account;
 
 	/**
 	 * @param decrypt

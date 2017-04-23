@@ -18,16 +18,15 @@
  */
 package net.sf.l2j.loginserver.gameserverpackets;
 
-import net.sf.l2j.loginserver.LoginController.SessionKey;
+import net.sf.l2j.loginserver.SessionKey;
 
 /**
  * @author -Wooden-
- *
  */
 public class PlayerAuthRequest extends GameServerBasePacket
 {
-	private String _account;
-	private SessionKey _sessionKey;
+	private final String _account;
+	private final SessionKey _sessionKey;
 
 	/**
 	 * @param decrypt
@@ -35,14 +34,16 @@ public class PlayerAuthRequest extends GameServerBasePacket
 	public PlayerAuthRequest(byte[] decrypt)
 	{
 		super(decrypt);
-		_account = readS();
-
-                int playKey1 = readD();
-                int playKey2 = readD();
-                int loginKey1 = readD();
-                int loginKey2 = readD();
-
-		_sessionKey = new SessionKey(loginKey1, loginKey2, playKey1, playKey2);
+		_account = readS();
+
+		int playKey1 = readD();
+		int playKey2 = readD();
+		int loginKey1 = readD();
+
+		int loginKey2 = readD();
+
+		_sessionKey = new SessionKey(loginKey1, loginKey2, playKey1, playKey2);
+
 	}
 
 	/**

@@ -20,12 +20,11 @@ package net.sf.l2j.loginserver.gameserverpackets;
 
 /**
  * @author -Wooden-
- *
  */
 public class ChangeAccessLevel extends GameServerBasePacket
 {
-	private int _level;
-	private String _account;
+	private final int _level;
+	private final String _account;
 
 	/**
 	 * @param decrypt

@@ -18,17 +18,19 @@
  */
 package net.sf.l2j.gameserver.serverpackets;
 
-public class TutorialCloseHtml extends ServerBasePacket
+public class TutorialCloseHtml extends L2GameServerPacket
 {
-    private static final String _S__A3_TUTORIALCLOSEHTML = "[S] a3 TutorialCloseHtml";
-
-    final void writeImpl()
-    {
-        writeC(0xa3);
-    }
-
-    public String getType()
-    {
-        return _S__A3_TUTORIALCLOSEHTML;
-    }
+	private static final String _S__A3_TUTORIALCLOSEHTML = "[S] a3 TutorialCloseHtml";
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xa3);
+	}
+	
+	@Override
+	public String getType()
+	{
+		return _S__A3_TUTORIALCLOSEHTML;
+	}
 }

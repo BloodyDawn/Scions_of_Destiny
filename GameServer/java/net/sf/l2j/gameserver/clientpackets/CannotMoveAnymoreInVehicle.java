@@ -18,68 +18,64 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.StopMoveInVehicle;
 import net.sf.l2j.util.Point3D;
 
 /**
  * @author Maktakien
- *
  */
-public class CannotMoveAnymoreInVehicle extends ClientBasePacket
+public class CannotMoveAnymoreInVehicle extends L2GameClientPacket
 {
-    private final int _x;
-    private final int _y;
-    private final int _z;
-    private final int _heading;
-    private final int _boatid;
-
-    /**
-     * @param buf
-     * @param client
-     */
-    public CannotMoveAnymoreInVehicle(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _boatid = readD();
-        _x = readD();
-        _y = readD();
-        _z = readD();
-        _heading = readD();
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
-     */
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
-
-        if (player.isInBoat())
-        {
-            if (player.getBoat().getObjectId() == _boatid)
-            {
-                player.setInBoatPosition(new Point3D(_x,_y,_z));
-                player.getPosition().setHeading(_heading);
-                StopMoveInVehicle msg = new StopMoveInVehicle(player,_boatid);
-                player.broadcastPacket(msg);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        // TODO Auto-generated method stub
-        return "[C] 5D CannotMoveAnymoreInVehicle";
-    }
+	private int _x;
+	private int _y;
+	private int _z;
+	private int _heading;
+	private int _boatid;
+	
+	@Override
+	protected void readImpl()
+	{
+		_boatid = readD();
+		_x = readD();
+		_y = readD();
+		_z = readD();
+		_heading = readD();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
+	 */
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
+		if (player.isInBoat())
+		{
+			if (player.getBoat().getObjectId() == _boatid)
+			{
+				player.setInBoatPosition(new Point3D(_x, _y, _z));
+				player.getPosition().setHeading(_heading);
+				StopMoveInVehicle msg = new StopMoveInVehicle(player, _boatid);
+				player.broadcastPacket(msg);
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		// TODO Auto-generated method stub
+		return "[C] 5D CannotMoveAnymoreInVehicle";
+	}
 }

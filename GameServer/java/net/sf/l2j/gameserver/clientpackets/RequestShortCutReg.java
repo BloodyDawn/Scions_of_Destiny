@@ -18,9 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.model.L2ShortCut;
 import net.sf.l2j.gameserver.model.L2Skill;
@@ -29,76 +26,77 @@ import net.sf.l2j.gameserver.serverpackets.ShortCutRegister;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.3 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestShortCutReg extends ClientBasePacket
+public class RequestShortCutReg extends L2GameClientPacket
 {
-    private static final String _C__33_REQUESTSHORTCUTREG = "[C] 33 RequestShortCutReg";
-
-    private final int _type;
-    private final int _id;
-    private final int _slot;
-    private final int _page;
-    private final int _unk;
-
-    /**
-     * packet type id 0x33
-     * format:		cdddd
-     * @param rawPacket
-     */
-    public RequestShortCutReg(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _type = readD();
-        int slot = readD();
-        _id = readD();
-        _unk = readD();
-        _slot = slot % 12;
-        _page = slot / 12;
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        switch (_type)
-        {
-            case 0x01:	// item
-            case 0x03:	// action
-            case 0x04:	// macro
-            case 0x05:  // recipe
-            {
-                L2ShortCut sc = new L2ShortCut(_slot, _page, _type, _id, -1, _unk);
-                sendPacket(new ShortCutRegister(sc));
-                activeChar.registerShortCut(sc);
-                break;
-            }
-            case 0x02:  // skill
-            {
-                L2Skill shortCutSkill = SkillTable.getInstance().getInfo(_id, activeChar.getSkillLevel(_id));
-                if (shortCutSkill != null)
-                {
-                    if (shortCutSkill.isPassive())
-                        return;
-
-                    L2ShortCut sc = new L2ShortCut(_slot, _page, _type, _id, shortCutSkill.getLevel(), _unk);
-                    sendPacket(new ShortCutRegister(sc));
-                    activeChar.registerShortCut(sc);
-                }
-                break;
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__33_REQUESTSHORTCUTREG;
-    }
+	private static final String _C__33_REQUESTSHORTCUTREG = "[C] 33 RequestShortCutReg";
+	
+	private int _type;
+	private int _id;
+	private int _slot;
+	private int _page;
+	private int _unk;
+	
+	@Override
+	protected void readImpl()
+	{
+		_type = readD();
+		int slot = readD();
+		_id = readD();
+		_unk = readD();
+		_slot = slot % 12;
+		_page = slot / 12;
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		switch (_type)
+		{
+			case 0x01: // item
+			case 0x03: // action
+			case 0x04: // macro
+			case 0x05: // recipe
+			{
+				L2ShortCut sc = new L2ShortCut(_slot, _page, _type, _id, -1, _unk);
+				sendPacket(new ShortCutRegister(sc));
+				activeChar.registerShortCut(sc);
+				break;
+			}
+			case 0x02: // skill
+			{
+				L2Skill shortCutSkill = SkillTable.getInstance().getInfo(_id, activeChar.getSkillLevel(_id));
+				
+				if (shortCutSkill != null)
+				{
+					if (shortCutSkill.isPassive())
+					{
+						return;
+					}
+					
+					L2ShortCut sc = new L2ShortCut(_slot, _page, _type, _id, shortCutSkill.getLevel(), _unk);
+					sendPacket(new ShortCutRegister(sc));
+					activeChar.registerShortCut(sc);
+				}
+				break;
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__33_REQUESTSHORTCUTREG;
+	}
 }

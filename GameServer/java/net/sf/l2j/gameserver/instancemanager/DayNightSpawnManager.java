@@ -69,8 +69,7 @@ public class DayNightSpawnManager
             _log.warning("DayNightSpawnManager: Spawn already added into day map");
             return;
         }
-        else
-            _dayCreatures.put(spawnDat, null);
+		_dayCreatures.put(spawnDat, null);
     }
     
     public void addNightCreature(L2Spawn spawnDat)
@@ -80,8 +79,7 @@ public class DayNightSpawnManager
             _log.warning("DayNightSpawnManager: Spawn already added into night map");
             return;
         }
-        else
-            _nightCreatures.put(spawnDat, null);
+		_nightCreatures.put(spawnDat, null);
     }
     
     public void spawnDayCreatures()
@@ -255,18 +253,17 @@ public class DayNightSpawnManager
             {
                 L2RaidBossInstance boss = _bosses.get(spawn);
             
-                if (boss == null && mode == 1)
+                if (boss == null)
                 {
-                    boss = (L2RaidBossInstance)spawn.doSpawn();
-                    RaidBossSpawnManager.getInstance().notifySpawnNightBoss(boss);
-                    _bosses.remove(spawn);
-                    _bosses.put(spawn, boss);
+                	if (mode == 1)
+                	{
+                		boss = (L2RaidBossInstance)spawn.doSpawn();
+                		RaidBossSpawnManager.getInstance().notifySpawnNightBoss(boss);
+                		_bosses.remove(spawn);
+                		_bosses.put(spawn, boss);
+                	}
                     continue;
                 }
-
-                if (boss == null && mode == 0)
-                    continue;
-
                 if (boss.getNpcId() == 10328 && boss.getRaidStatus().equals(RaidBossSpawnManager.StatusEnum.ALIVE))
                     handleHellmans(boss, mode);
                 return;
@@ -296,7 +293,7 @@ public class DayNightSpawnManager
     public L2RaidBossInstance handleBoss(L2Spawn spawnDat)
     {
         if (_bosses.containsKey(spawnDat))
-            return _bosses.get(spawnDat);
+            return _bosses.get(spawnDat);
 
         if (GameTimeController.getInstance().isNowNight())
         {    
@@ -304,8 +301,7 @@ public class DayNightSpawnManager
             _bosses.put(spawnDat, raidboss);
             return raidboss;
         }
-        else
-            _bosses.put(spawnDat, null);
+		_bosses.put(spawnDat, null);
 
         return null;
     }

@@ -20,23 +20,25 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class ActionFailed extends ServerBasePacket
+public class ActionFailed extends L2GameServerPacket
 {
-    private static final String _S__35_ACTIONFAILED = "[S] 25 ActionFailed";
-
-    final void writeImpl()
-    {
-        writeC(0x25);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__35_ACTIONFAILED;
-    }
+	private static final String _S__35_ACTIONFAILED = "[S] 25 ActionFailed";
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x25);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__35_ACTIONFAILED;
+	}
 }

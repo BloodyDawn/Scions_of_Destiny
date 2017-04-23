@@ -19,97 +19,113 @@
 package net.sf.l2j.gameserver.handler.itemhandlers;
 
 import net.sf.l2j.gameserver.handler.IItemHandler;
-import net.sf.l2j.gameserver.model.L2Effect;
 import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PlayableInstance;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.4 $ $Date: 2005/04/06 16:13:51 $
  */
 public class Remedy implements IItemHandler
 {
-    private static int[] _itemIds = { 1831, 1832, 1833, 1834, 3889, 6654 };
+	private static int[] _itemIds =
+	{
+		1831,
+		1832,
+		1833,
+		1834,
+		3889,
+		6654
+	};
 
-    public void useItem(L2PlayableInstance playable, L2ItemInstance item)
-    {
-        L2PcInstance activeChar;
-        if (playable instanceof L2PcInstance)
-            activeChar = (L2PcInstance)playable;
-        else if (playable instanceof L2PetInstance)
-            activeChar = ((L2PetInstance)playable).getOwner();
-        else
-            return;
+	@Override
+	public void useItem(L2PlayableInstance playable, L2ItemInstance item)
+	{
+		L2PcInstance activeChar;
+		if (playable instanceof L2PcInstance)
+		{
+			activeChar = (L2PcInstance) playable;
+		}
+		else if (playable instanceof L2PetInstance)
+		{
+			activeChar = ((L2PetInstance) playable).getOwner();
+		}
+		else
+		{
+			return;
+		}
 
-        if (activeChar.isInOlympiadMode())
-        {
-            activeChar.sendPacket(new SystemMessage(SystemMessage.THIS_ITEM_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT));
-            return;
-        }
+		if (activeChar.isInOlympiadMode())
+		{
+			activeChar.sendPacket(new SystemMessage(SystemMessage.THIS_ITEM_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT));
+			return;
+		}
 
-        if (activeChar.getEventTeam() > 0)
-            return;
+		if (activeChar.getEventTeam() > 0)
+		{
+			return;
+		}
 
-        int itemId = item.getItemId();
-        if (itemId == 1831) // antidote
-        {
-            activeChar.negateEffects(L2Skill.SkillType.POISON, 3, 0);
-            MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2042, 1, 0, 0);
-            activeChar.sendPacket(MSU);
-            activeChar.broadcastPacket(MSU);
-            playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
-        }
-        else if (itemId == 1832) // advanced antidote
-        {
-            activeChar.negateEffects(L2Skill.SkillType.POISON, 7, 0);
-            MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2043, 1, 0, 0);
-            activeChar.sendPacket(MSU);
-            activeChar.broadcastPacket(MSU);
-            playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
-        }
-        else if (itemId == 1833) // bandage
-        {
-            activeChar.negateEffects(L2Skill.SkillType.BLEED, 3, 0);
-            MagicSkillUser MSU = new MagicSkillUser(playable, playable, 34, 1, 0, 0);
-            activeChar.sendPacket(MSU);
-            activeChar.broadcastPacket(MSU);
-            playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
-        }
-        else if (itemId == 1834) // emergency dressing
-        {
-            activeChar.negateEffects(L2Skill.SkillType.BLEED, 7, 0);
-            MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2045, 1, 0, 0);
-            activeChar.sendPacket(MSU);
-            activeChar.broadcastPacket(MSU);
-            playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
-        }
-        else if (itemId == 3889) // potion of recovery
-        {
-            activeChar.stopSkillEffects(4082);
-            MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2042, 1, 0, 0);
-            activeChar.sendPacket(MSU);
-            activeChar.broadcastPacket(MSU);
-            playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
-        }
-        else if (itemId == 6654) // Amulet: Flames of Valakas
-        {
-            activeChar.stopSkillEffects(4683);
-            activeChar.stopSkillEffects(4684);
-            MagicSkillUser MSU = new MagicSkillUser(playable, playable, 2233, 1, 0, 0);
-            activeChar.sendPacket(MSU);
-            activeChar.broadcastPacket(MSU);
-            playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
-        }
-    }
+		int itemId = item.getItemId();
+		if (itemId == 1831) // antidote
+		{
+			activeChar.negateEffects(L2Skill.SkillType.POISON, 3, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2042, 1, 0, 0);
+			activeChar.sendPacket(MSU);
+			activeChar.broadcastPacket(MSU);
+			playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
+		}
+		else if (itemId == 1832) // advanced antidote
+		{
+			activeChar.negateEffects(L2Skill.SkillType.POISON, 7, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2043, 1, 0, 0);
+			activeChar.sendPacket(MSU);
+			activeChar.broadcastPacket(MSU);
+			playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
+		}
+		else if (itemId == 1833) // bandage
+		{
+			activeChar.negateEffects(L2Skill.SkillType.BLEED, 3, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 34, 1, 0, 0);
+			activeChar.sendPacket(MSU);
+			activeChar.broadcastPacket(MSU);
+			playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
+		}
+		else if (itemId == 1834) // emergency dressing
+		{
+			activeChar.negateEffects(L2Skill.SkillType.BLEED, 7, 0);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2045, 1, 0, 0);
+			activeChar.sendPacket(MSU);
+			activeChar.broadcastPacket(MSU);
+			playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
+		}
+		else if (itemId == 3889) // potion of recovery
+		{
+			activeChar.stopSkillEffects(4082);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2042, 1, 0, 0);
+			activeChar.sendPacket(MSU);
+			activeChar.broadcastPacket(MSU);
+			playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
+		}
+		else if (itemId == 6654) // Amulet: Flames of Valakas
+		{
+			activeChar.stopSkillEffects(4683);
+			activeChar.stopSkillEffects(4684);
+			MagicSkillUse MSU = new MagicSkillUse(playable, playable, 2233, 1, 0, 0);
+			activeChar.sendPacket(MSU);
+			activeChar.broadcastPacket(MSU);
+			playable.destroyItem("Consume", item.getObjectId(), 1, null, false);
+		}
+	}
 
-    public int[] getItemIds()
-    {
-        return _itemIds;
-    }
+	@Override
+	public int[] getItemIds()
+	{
+		return _itemIds;
+	}
 }

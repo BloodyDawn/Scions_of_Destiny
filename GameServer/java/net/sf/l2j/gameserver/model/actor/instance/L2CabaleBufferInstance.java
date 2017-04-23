@@ -28,7 +28,7 @@ import net.sf.l2j.gameserver.model.L2Character;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.serverpackets.ActionFailed;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.serverpackets.MyTargetSelected;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.serverpackets.ValidateLocation;
@@ -167,7 +167,7 @@ public class L2CabaleBufferInstance extends L2NpcInstance
             if (player.getFirstEffect(skill) == null)
             {
                 skill.getEffects(_caster, player);
-                broadcastPacket(new MagicSkillUser(_caster, player, skill.getId(), skillLevel, skill.getHitTime(), 0));
+                broadcastPacket(new MagicSkillUse(_caster, player, skill.getId(), skillLevel, skill.getHitTime(), 0));
                 SystemMessage sm = new SystemMessage(SystemMessage.YOU_FEEL_S1_EFFECT);
                 sm.addSkillName(skillId);
                 player.sendPacket(sm);

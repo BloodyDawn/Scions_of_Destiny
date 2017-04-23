@@ -32,67 +32,86 @@ import net.sf.l2j.gameserver.skills.Formulas;
  */
 public class CpDamPercent implements ISkillHandler
 {
-    private static final SkillType[] _skillIds =
-    {
-        SkillType.CPDAMPERCENT
-    };
-
-    public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets)
-    {
-        if (activeChar.isAlikeDead())
-            return;
-
-        for (int index = 0; index < targets.length; index++)
-        {
-            L2Character target = (L2Character) targets[index];
-            if (activeChar instanceof L2PcInstance && target instanceof L2PcInstance && ((L2PcInstance)target).isFakeDeath())
-                target.stopFakeDeath(null);
-            else if (target.isDead())
-                continue;
-
-            int damage = (int) (target.getCurrentCp() * (skill.getPower() / 100));
-
-            if (damage > 0)
-            {
-                activeChar.sendDamageMessage(target, damage, false, false, false);
-
-                if (skill.hasEffects())
-                {
-                    if (Formulas.getInstance().calcSkillSuccess(activeChar, target, skill, false, false, false))
-                    {
-                        if (Formulas.getInstance().calculateSkillReflect(skill, activeChar, target))
-                            target = activeChar;
-
-                        // activate attacked effects, if any
-                        target.stopEffect(skill.getId());
-                        if (target.getFirstEffect(skill.getId()) != null)
-                            target.removeEffect(target.getFirstEffect(skill.getId()));
-
-                        skill.getEffects(activeChar, target);
-                    }
-                    else
-                    {
-                        SystemMessage sm = new SystemMessage(SystemMessage.S1_WAS_UNAFFECTED_BY_S2);
-                        sm.addString(target.getName());
-                        sm.addSkillName(skill.getDisplayId());
-                        activeChar.sendPacket(sm);
-                    }
-                }
-
-                target.setCurrentCp(target.getCurrentCp() - damage);
-
-                SystemMessage smsg = new SystemMessage(SystemMessage.S1_GAVE_YOU_S2_DMG);
-                smsg.addString(activeChar.getName());
-                smsg.addNumber(damage);
-                target.sendPacket(smsg);
-            }
-            else
-                activeChar.sendPacket(new SystemMessage(SystemMessage.ATTACK_FAILED));
-        }
-    }
-
-    public SkillType[] getSkillIds()
-    {
-        return _skillIds;
-    }
+	private static final SkillType[] _skillIds =
+	{
+		SkillType.CPDAMPERCENT
+	};
+	
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		if (activeChar.isAlikeDead())
+		{
+			return;
+		}
+		
+		for (L2Object target2 : targets)
+		{
+			L2Character target = (L2Character) target2;
+			if ((activeChar instanceof L2PcInstance) && (target instanceof L2PcInstance) && ((L2PcInstance) target).isFakeDeath())
+			{
+				target.stopFakeDeath(null);
+			}
+			else if (target.isDead())
+			{
+				continue;
+			}
+			
+			int damage = (int) (target.getCurrentCp() * (skill.getPower() / 100));
+			
+			if (damage > 0)
+			{
+				activeChar.sendDamageMessage(target, damage, false, false, false);
+				
+				if (skill.hasEffects())
+				{
+					
+					if (Formulas.getInstance().calcSkillSuccess(activeChar, target, skill, false, false, false))
+					
+					{
+						if (Formulas.getInstance().calculateSkillReflect(skill, activeChar, target))
+						{
+							target = activeChar;
+						}
+						
+						// activate attacked effects, if any
+						target.stopEffect(skill.getId());
+						if (target.getFirstEffect(skill.getId()) != null)
+						{
+							target.removeEffect(target.getFirstEffect(skill.getId()));
+						}
+						
+						skill.getEffects(activeChar, target);
+						
+					}
+					
+					else
+					{
+						SystemMessage sm = new SystemMessage(SystemMessage.S1_WAS_UNAFFECTED_BY_S2);
+						sm.addString(target.getName());
+						sm.addSkillName(skill.getDisplayId());
+						activeChar.sendPacket(sm);
+					}
+				}
+				
+				target.setCurrentCp(target.getCurrentCp() - damage);
+				
+				SystemMessage smsg = new SystemMessage(SystemMessage.S1_GAVE_YOU_S2_DMG);
+				smsg.addString(activeChar.getName());
+				smsg.addNumber(damage);
+				target.sendPacket(smsg);
+				
+			}
+			else
+			{
+				activeChar.sendPacket(new SystemMessage(SystemMessage.ATTACK_FAILED));
+			}
+		}
+	}
+	
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return _skillIds;
+	}
 }

@@ -18,54 +18,43 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.cache.CrestCache;
 import net.sf.l2j.gameserver.serverpackets.ExPledgeCrestLarge;
 
 /**
- * Fomat : chd
- * c: (id) 0xD0
- * h: (subid) 0x10
- * d: the crest id
- * 
- * This is a trigger
+ * Fomat : chd c: (id) 0xD0 h: (subid) 0x10 d: the crest id This is a trigger
  * @author -Wooden-
- *
  */
-public class RequestExPledgeCrestLarge extends ClientBasePacket
+public class RequestExPledgeCrestLarge extends L2GameClientPacket
 {
 	private static final String _C__D0_10_REQUESTEXPLEDGECRESTLARGE = "[C] D0:10 RequestExPledgeCrestLarge";
 	private int _crestId;
-
-	/**
-	 * @param buf
-	 * @param client
-	 */
-	public RequestExPledgeCrestLarge(ByteBuffer buf, ClientThread client)
+	
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_crestId = readD();
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
 	 */
-        @Override
+	@Override
 	public void runImpl()
 	{
 		byte[] data = CrestCache.getInstance().getPledgeCrestLarge(_crestId);
-        
+		
 		if (data != null)
 		{
 			ExPledgeCrestLarge pcl = new ExPledgeCrestLarge(_crestId, data);
 			sendPacket(pcl);
 		}
-		
-	}
 
-	/* (non-Javadoc)
+	}
+	
+	/*
+	 * (non-Javadoc)
 	 * @see net.sf.l2j.gameserver.BasePacket#getType()
 	 */
 	@Override

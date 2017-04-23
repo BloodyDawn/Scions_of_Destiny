@@ -22,7 +22,6 @@ import net.sf.l2j.loginserver.serverpackets.ServerBasePacket;
 
 /**
  * @author -Wooden-
- *
  */
 public class LoginServerFail extends ServerBasePacket
 {
@@ -35,6 +34,7 @@ public class LoginServerFail extends ServerBasePacket
 		writeC(reason);
 	}
 	
+	@Override
 	public byte[] getContent()
 	{
 		return getBytes();

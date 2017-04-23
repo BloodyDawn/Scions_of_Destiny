@@ -26,7 +26,7 @@ import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.ExCloseMPCC;
 import net.sf.l2j.gameserver.serverpackets.ExOpenMPCC;
-import net.sf.l2j.gameserver.serverpackets.ServerBasePacket;
+import net.sf.l2j.gameserver.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
@@ -123,9 +123,9 @@ public class L2CommandChannel
 
     /**
      * Broadcast packet to every channelmember 
-     * @param ServerBasePacket
+     * @param L2GameServerPacket
      */
-    public void broadcastToChannelMembers(ServerBasePacket gsp) 
+    public void broadcastToChannelMembers(L2GameServerPacket gsp) 
     {
         if (!_parties.isEmpty())
         {

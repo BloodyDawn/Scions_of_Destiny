@@ -22,37 +22,40 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class PrivateStoreMsgSell extends ServerBasePacket
+public class PrivateStoreMsgSell extends L2GameServerPacket
 {
-    private static final String _S__B5_PRIVATESTOREMSGSELL = "[S] 9c PrivateStoreMsgSell";
-    private L2PcInstance _player;
-    private String _storeMsg;
-
-
-    public PrivateStoreMsgSell(L2PcInstance player)
-    {
-        _player = player;
-        if (_player.getSellList() != null)
-            _storeMsg = _player.getSellList().getTitle();
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x9c);
-        writeD(_player.getObjectId());
-
-        writeS(_storeMsg);
-
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__B5_PRIVATESTOREMSGSELL;
-    }
+	private static final String _S__B5_PRIVATESTOREMSGSELL = "[S] 9c PrivateStoreMsgSell";
+	private final L2PcInstance _player;
+	private String _storeMsg;
+	
+	public PrivateStoreMsgSell(L2PcInstance player)
+	{
+		_player = player;
+		if (_player.getSellList() != null)
+		{
+			_storeMsg = _player.getSellList().getTitle();
+		}
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x9c);
+		writeD(_player.getObjectId());
+		
+		writeS(_storeMsg);
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__B5_PRIVATESTOREMSGSELL;
+	}
 }

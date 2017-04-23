@@ -18,9 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.PartyMatchRoom;
 import net.sf.l2j.gameserver.model.PartyMatchRoomList;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -32,86 +29,83 @@ import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestPartyMatchConfig extends ClientBasePacket
+public class RequestPartyMatchConfig extends L2GameClientPacket
 {
-    private static final String _C__6F_REQUESTPARTYMATCHCONFIG = "[C] 6F RequestPartyMatchConfig";
-
-    private int _auto, _loc, _lvl;
-
-    /**
-     * packet type id 0x6f
-     * 
-     * sample
-     * 
-     * 6f
-     * 01 00 00 00 
-     * 00 00 00 00 
-     * 00 00 00 00 
-     * 00 00 
-     * 
-     * format:		cdddS 
-     * @param decrypt
-     */
-    public RequestPartyMatchConfig(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _auto = readD();
-        _loc = readD(); // Location
-        _lvl = readD(); // my level
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        if (!activeChar.isInPartyMatchRoom() && activeChar.getParty() != null && activeChar.getParty().getPartyMembers().get(0) != activeChar)
-        {
-            activeChar.sendPacket(new SystemMessage(SystemMessage.CANT_VIEW_PARTY_ROOMS));
-            activeChar.sendPacket(new ActionFailed());
-            return;
-        }
-
-        if (activeChar.isInPartyMatchRoom())
-        {
-            // If Player is in Room show him room, not list
-            PartyMatchRoomList _list = PartyMatchRoomList.getInstance();
-            if (_list == null)
-                return;
-
-            PartyMatchRoom _room = _list.getPlayerRoom(activeChar);
-            if (_room == null)
-                return;
-
-            activeChar.sendPacket(new PartyMatchDetail(_room));
-
-            if (activeChar == _room.getOwner())
-                activeChar.sendPacket(new ExPartyRoomMember(activeChar, _room, 1));
-            else
-                activeChar.sendPacket(new ExPartyRoomMember(activeChar, _room, 2));
-
-            activeChar.setPartyRoom(_room.getId());
-            activeChar.broadcastUserInfo();
-        }
-        else
-        {
-            // Send Room list
-            PartyMatchList matchList = new PartyMatchList(activeChar,_auto,_loc,_lvl);
-
-            activeChar.sendPacket(matchList);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__6F_REQUESTPARTYMATCHCONFIG;
-    }
+	private static final String _C__6F_REQUESTPARTYMATCHCONFIG = "[C] 6F RequestPartyMatchConfig";
+	
+	private int _auto, _loc, _lvl;
+	
+	@Override
+	protected void readImpl()
+	{
+		_auto = readD();
+		_loc = readD(); // Location
+		_lvl = readD(); // my level
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (!activeChar.isInPartyMatchRoom() && (activeChar.getParty() != null) && (activeChar.getParty().getPartyMembers().get(0) != activeChar))
+		{
+			activeChar.sendPacket(new SystemMessage(SystemMessage.CANT_VIEW_PARTY_ROOMS));
+			activeChar.sendPacket(new ActionFailed());
+			return;
+		}
+		
+		if (activeChar.isInPartyMatchRoom())
+		{
+			// If Player is in Room show him room, not list
+			PartyMatchRoomList _list = PartyMatchRoomList.getInstance();
+			if (_list == null)
+			{
+				return;
+			}
+			
+			PartyMatchRoom _room = _list.getPlayerRoom(activeChar);
+			if (_room == null)
+			{
+				return;
+			}
+			
+			activeChar.sendPacket(new PartyMatchDetail(_room));
+			
+			if (activeChar == _room.getOwner())
+			{
+				activeChar.sendPacket(new ExPartyRoomMember(activeChar, _room, 1));
+			}
+			else
+			{
+				activeChar.sendPacket(new ExPartyRoomMember(activeChar, _room, 2));
+			}
+			
+			activeChar.setPartyRoom(_room.getId());
+			activeChar.broadcastUserInfo();
+		}
+		else
+		{
+			// Send Room list
+			PartyMatchList matchList = new PartyMatchList(activeChar, _auto, _loc, _lvl);
+			
+			activeChar.sendPacket(matchList);
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__6F_REQUESTPARTYMATCHCONFIG;
+	}
 }

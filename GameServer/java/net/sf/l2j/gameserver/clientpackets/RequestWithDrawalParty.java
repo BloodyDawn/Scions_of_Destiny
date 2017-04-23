@@ -18,39 +18,39 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
- * 
  * This class ...
- * 
  * @version $Revision: 1.3.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestWithDrawalParty extends ClientBasePacket
+public class RequestWithDrawalParty extends L2GameClientPacket
 {
-    private static final String _C__2B_REQUESTWITHDRAWALPARTY = "[C] 2B RequestWithDrawalParty";
-
-    public RequestWithDrawalParty(ByteBuffer buf, ClientThread client)
-    {	
-        super(buf, client);
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
-
-        if (player.isInParty())
-            player.getParty().removePartyMember(player, true);
-    }
-
-    public String getType()
-    {
-        return _C__2B_REQUESTWITHDRAWALPARTY;
-    }
+	private static final String _C__2B_REQUESTWITHDRAWALPARTY = "[C] 2B RequestWithDrawalParty";
+	
+	@Override
+	protected void readImpl()
+	{
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
+		if (player.isInParty())
+		{
+			player.getParty().removePartyMember(player, true);
+		}
+	}
+	
+	@Override
+	public String getType()
+	{
+		return _C__2B_REQUESTWITHDRAWALPARTY;
+	}
 }

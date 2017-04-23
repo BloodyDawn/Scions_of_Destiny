@@ -18,11 +18,9 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.datatables.CharTemplateTable;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.serverpackets.CharTemplates;
@@ -30,68 +28,66 @@ import net.sf.l2j.gameserver.templates.L2PcTemplate;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.5 $ $Date: 2005/03/27 15:29:30 $
  */
-public class NewCharacter extends ClientBasePacket
+public class NewCharacter extends L2GameClientPacket
 {
 	private static final String _C__0E_NEWCHARACTER = "[C] 0E NewCharacter";
 	private static Logger _log = Logger.getLogger(NewCharacter.class.getName());
-
-	/**
-	 * packet type id 0x0e
-	 * format:		c
-	 * @param rawPacket
-	 */
-	public NewCharacter(ByteBuffer buf, ClientThread client)
+	
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
-		// packet contains no data so just create answer
 	}
-
-        @Override
+	
+	@Override
 	public void runImpl()
 	{
-		if (Config.DEBUG) _log.fine("CreateNewChar");
-		
+		if (Config.DEBUG)
+		{
+			_log.fine("CreateNewChar");
+		}
+
 		CharTemplates ct = new CharTemplates();
-		
+
 		L2PcTemplate template = CharTemplateTable.getInstance().getTemplate(0);
 		ct.addChar(template);
-
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.fighter);	// human fighter
-		ct.addChar(template);
-
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.mage);	// human mage
-		ct.addChar(template);
-
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.elvenFighter);	// elf fighter
-		ct.addChar(template);
-
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.elvenMage);	// elf mage
-		ct.addChar(template);
-
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.darkFighter);	// dark elf fighter
-		ct.addChar(template);
-
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.darkMage);	// dark elf mage
-		ct.addChar(template);
-
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.orcFighter);	// orc fighter
+		
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.fighter); // human fighter
 		ct.addChar(template);
 		
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.orcMage);	// orc mage
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.mage); // human mage
+		ct.addChar(template);
+		
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.elvenFighter); // elf fighter
+		ct.addChar(template);
+		
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.elvenMage); // elf mage
+		ct.addChar(template);
+		
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.darkFighter); // dark elf fighter
+		ct.addChar(template);
+		
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.darkMage); // dark elf mage
+		ct.addChar(template);
+		
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.orcFighter); // orc fighter
 		ct.addChar(template);
 
-		template = CharTemplateTable.getInstance().getTemplate(ClassId.dwarvenFighter);	// dwarf fighter
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.orcMage); // orc mage
 		ct.addChar(template);
-
+		
+		template = CharTemplateTable.getInstance().getTemplate(ClassId.dwarvenFighter); // dwarf fighter
+		ct.addChar(template);
+		
 		sendPacket(ct);
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__0E_NEWCHARACTER;

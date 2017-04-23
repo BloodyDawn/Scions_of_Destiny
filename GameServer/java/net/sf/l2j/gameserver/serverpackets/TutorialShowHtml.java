@@ -18,31 +18,34 @@
  */
 package net.sf.l2j.gameserver.serverpackets;
 
-public class TutorialShowHtml extends ServerBasePacket
+public class TutorialShowHtml extends L2GameServerPacket
 {
-    private static final String _S__A0_TUTORIALSHOWHTML = "[S] a0 TutorialShowHtml";
-    private String _html;
-
-    public TutorialShowHtml(String html)
-    {
-        _html = html;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    final void writeImpl()
-    {
-        writeC(0xa0);
-        writeS(_html);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        return _S__A0_TUTORIALSHOWHTML;
-    }
+	private static final String _S__A0_TUTORIALSHOWHTML = "[S] a0 TutorialShowHtml";
+	private final String _html;
+	
+	public TutorialShowHtml(String html)
+	{
+		_html = html;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xa0);
+		writeS(_html);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__A0_TUTORIALSHOWHTML;
+	}
 }

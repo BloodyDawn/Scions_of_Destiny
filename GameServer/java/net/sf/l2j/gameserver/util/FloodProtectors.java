@@ -19,7 +19,7 @@
 package net.sf.l2j.gameserver.util;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
+import net.sf.l2j.gameserver.L2GameClient;
 
 /**
  * Collection of flood protectors for single player.
@@ -91,7 +91,7 @@ public final class FloodProtectors
      * @param player
      *            player for which the collection of flood protectors is being created.
      */
-    public FloodProtectors(final ClientThread client)
+    public FloodProtectors(final L2GameClient client)
     {
         super();
         _useItem = new FloodProtectorAction(client, Config.FLOOD_PROTECTOR_USE_ITEM);

@@ -18,9 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2World;
@@ -34,83 +31,92 @@ import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 /**
  * format (ch) d
  * @author -Wooden-
- *
  */
-public class RequestOustFromPartyRoom extends ClientBasePacket
+public class RequestOustFromPartyRoom extends L2GameClientPacket
 {
-    private static final String _C__D0_01_REQUESTOUSTFROMPARTYROOM = "[C] D0:01 RequestOustFromPartyRoom";
-
-    private int _charId;
-
-    /**
-     * @param buf
-     * @param client
-     */
-    public RequestOustFromPartyRoom(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _charId = readD();
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
-     */
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        L2Object object = L2World.getInstance().findObject(_charId);
-        if (object == null)
-            return;
-
-        if (!(object instanceof L2PcInstance))
-            return;
-
-        L2PcInstance member = (L2PcInstance)object;
-
-        PartyMatchRoom _room = PartyMatchRoomList.getInstance().getPlayerRoom(member);
-        if (_room == null)
-            return;
-
-        if (_room.getOwner() != activeChar)
-            return;
-
-        if (_room.getOwner() == member)
-        {
-            activeChar.sendPacket(new SystemMessage(SystemMessage.INCORRECT_TARGET));
-            return;
-        }
-
-        if (activeChar.isInParty() && member.isInParty() && activeChar.getParty().getPartyLeaderOID() == member.getParty().getPartyLeaderOID())
-            activeChar.sendPacket(new SystemMessage(SystemMessage.CANNOT_DISMISS_PARTY_MEMBER));
-        else
-        {
-            // Remove member from party room
-            _room.deleteMember(member);
-            member.setPartyRoom(0);
-
-            // Close the PartyRoom window
-            member.sendPacket(new ExClosePartyRoom());
-
-            // Send Room list
-            int loc = MapRegionTable.getInstance().getClosestTownNumber(member);
-            member.sendPacket(new PartyMatchList(member, 0, loc, member.getLevel()));
-
-            // Clean Looking for Party title
-            member.broadcastUserInfo();
-            member.sendPacket(new SystemMessage(SystemMessage.OUSTED_FROM_PARTY_ROOM));
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        return _C__D0_01_REQUESTOUSTFROMPARTYROOM;
-    }
+	private static final String _C__D0_01_REQUESTOUSTFROMPARTYROOM = "[C] D0:01 RequestOustFromPartyRoom";
+	
+	private int _charId;
+	
+	@Override
+	protected void readImpl()
+	{
+		_charId = readD();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
+	 */
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		L2Object object = L2World.getInstance().findObject(_charId);
+		if (object == null)
+		{
+			return;
+		}
+		
+		if (!(object instanceof L2PcInstance))
+		{
+			return;
+		}
+		
+		L2PcInstance member = (L2PcInstance) object;
+		
+		PartyMatchRoom _room = PartyMatchRoomList.getInstance().getPlayerRoom(member);
+		if (_room == null)
+		{
+			return;
+		}
+		
+		if (_room.getOwner() != activeChar)
+		{
+			return;
+		}
+		
+		if (_room.getOwner() == member)
+		{
+			activeChar.sendPacket(new SystemMessage(SystemMessage.INCORRECT_TARGET));
+			return;
+		}
+		
+		if (activeChar.isInParty() && member.isInParty() && (activeChar.getParty().getPartyLeaderOID() == member.getParty().getPartyLeaderOID()))
+		{
+			activeChar.sendPacket(new SystemMessage(SystemMessage.CANNOT_DISMISS_PARTY_MEMBER));
+		}
+		else
+		{
+			// Remove member from party room
+			_room.deleteMember(member);
+			member.setPartyRoom(0);
+			
+			// Close the PartyRoom window
+			member.sendPacket(new ExClosePartyRoom());
+			
+			// Send Room list
+			int loc = MapRegionTable.getInstance().getClosestTownNumber(member);
+			member.sendPacket(new PartyMatchList(member, 0, loc, member.getLevel()));
+			
+			// Clean Looking for Party title
+			member.broadcastUserInfo();
+			member.sendPacket(new SystemMessage(SystemMessage.OUSTED_FROM_PARTY_ROOM));
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__D0_01_REQUESTOUSTFROMPARTYROOM;
+	}
 }

@@ -18,36 +18,38 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 
-public class RequestTutorialPassCmdToServer extends ClientBasePacket
+public class RequestTutorialPassCmdToServer extends L2GameClientPacket
 {
-    private String _bypass = null;
-
-    public RequestTutorialPassCmdToServer(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _bypass = readS();
-    } 
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
-
-        QuestState qs = player.getQuestState("255_Tutorial");
-        if (qs != null)
-            qs.getQuest().notifyEvent(_bypass, null, player);
-    }
-
-    public String getType()
-    {
-        return "[C] 7c RequestTutorialPassCmdToServer";
-    }
+	private String _bypass = null;
+	
+	@Override
+	protected void readImpl()
+	{
+		_bypass = readS();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
+		QuestState qs = player.getQuestState("255_Tutorial");
+		if (qs != null)
+		{
+			qs.getQuest().notifyEvent(_bypass, null, player);
+		}
+	}
+	
+	@Override
+	public String getType()
+	{
+		return "[C] 7c RequestTutorialPassCmdToServer";
+	}
 }

@@ -18,17 +18,13 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.communitybbs.CommunityBoard;
 
 /**
  * Format SSSSSS
  * @author -Wooden-
- *
  */
-public class RequestBBSwrite extends ClientBasePacket
+public class RequestBBSwrite extends L2GameClientPacket
 {
 	private static final String _C__22_REQUESTBBSWRITE = "[C] 22 RequestBBSwrite";
 	private String _url;
@@ -37,15 +33,10 @@ public class RequestBBSwrite extends ClientBasePacket
 	private String _arg3;
 	private String _arg4;
 	private String _arg5;
-	
-	/**
-	 * Format SSSSSS
-	 * @param buf
-	 * @param client
-	 */
-	public RequestBBSwrite(ByteBuffer buf, ClientThread client)
+
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_url = readS();
 		_arg1 = readS();
 		_arg2 = readS();
@@ -53,17 +44,19 @@ public class RequestBBSwrite extends ClientBasePacket
 		_arg4 = readS();
 		_arg5 = readS();
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
 	 */
-        @Override
+	@Override
 	public void runImpl()
 	{
-		CommunityBoard.getInstance().handleWriteCommands(getClient(),_url,_arg1,_arg2, _arg3, _arg4, _arg5);
+		CommunityBoard.getInstance().handleWriteCommands(getClient(), _url, _arg1, _arg2, _arg3, _arg4, _arg5);
 	}
-
-	/* (non-Javadoc)
+	
+	/*
+	 * (non-Javadoc)
 	 * @see net.sf.l2j.gameserver.BasePacket#getType()
 	 */
 	@Override

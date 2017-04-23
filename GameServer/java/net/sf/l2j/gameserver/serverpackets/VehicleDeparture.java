@@ -22,41 +22,43 @@ import net.sf.l2j.gameserver.model.actor.instance.L2BoatInstance;
 
 /**
  * @author Maktakien
- *
  */
-public class VehicleDeparture extends ServerBasePacket
+public class VehicleDeparture extends L2GameServerPacket
 {
-    private L2BoatInstance _boat;
-
-    /**
-     * @param _boat
-     */
-    public VehicleDeparture(L2BoatInstance boat)
-    {
-        _boat = boat;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#writeImpl()
-     */
-    final void writeImpl()
-    {
-        writeC(0x5a);
-        writeD(_boat.getObjectId());
-        writeD((int)_boat.getStat().getMoveSpeed());
-        writeD(_boat.getStat().getRotationSpeed());
-        writeD(_boat.getXdestination());
-        writeD(_boat.getYdestination());
-        writeD(_boat.getZdestination());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        // TODO Auto-generated method stub
-        return "[S] 5A VehicleDeparture";
-    }
+	private final L2BoatInstance _boat;
+	
+	/**
+	 * @param _boat
+	 */
+	public VehicleDeparture(L2BoatInstance boat)
+	{
+		_boat = boat;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#writeImpl()
+	 */
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x5a);
+		writeD(_boat.getObjectId());
+		writeD((int) _boat.getStat().getMoveSpeed());
+		writeD(_boat.getStat().getRotationSpeed());
+		writeD(_boat.getXdestination());
+		writeD(_boat.getYdestination());
+		writeD(_boat.getZdestination());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		// TODO Auto-generated method stub
+		return "[S] 5A VehicleDeparture";
+	}
 }

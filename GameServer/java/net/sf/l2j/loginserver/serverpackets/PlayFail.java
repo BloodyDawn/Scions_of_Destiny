@@ -20,25 +20,25 @@ package net.sf.l2j.loginserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.4.1 $ $Date: 2005/03/27 15:30:11 $
  */
 public class PlayFail extends ServerBasePacket
 {
-    public static int REASON_TOO_MANY_PLAYERS = 0x0f; // too many players on server
-    public static int REASON_SYSTEM_ERROR = 0x01; 					// system error
-    public static int REASON_USER_OR_PASS_WRONG = 0x02;
-    public static int REASON3 = 0x03;
-    public static int REASON4 = 0x04;
+	public static int REASON_TOO_MANY_PLAYERS = 0x0f; // too many players on server
+	public static int REASON_SYSTEM_ERROR = 0x01; // system error
+	public static int REASON_USER_OR_PASS_WRONG = 0x02;
+	public static int REASON3 = 0x03;
+	public static int REASON4 = 0x04;
 
-    public PlayFail(int reason) 
-    {
-        writeC(0x06);
-        writeC(reason);
-    }
-
-    public byte[] getContent()
-    {
-        return getBytes();
-    }
+	public PlayFail(int reason)
+	{
+		writeC(0x06);
+		writeC(reason);
+	}
+	
+	@Override
+	public byte[] getContent()
+	{
+		return getBytes();
+	}
 }

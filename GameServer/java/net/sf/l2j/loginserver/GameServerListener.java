@@ -18,40 +18,28 @@
  */
 package net.sf.l2j.loginserver;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javolution.util.FastList;
-
 import net.sf.l2j.Config;
 
 /**
- * This class waits fro incomming connections from GameServers
- * and launches (@link GameServerThread GameServerThreads}
- * 
+ * This class waits for incoming connections from GameServers and launches (@link GameServerThread GameServerThreads}
  * @author luisantonioa, -Wooden-
  */
 
 public class GameServerListener extends FloodProtectedListener
 {
 	protected static Logger _log = Logger.getLogger(LoginServer.class.getName());
+	private final List<GameServerThread> _gameServerThreads = new FastList<>();
 	
-	private List<GameServerThread> _gameServerThreads;
-	private static GameServerListener _instance;
-	
-	public static GameServerListener getInstance()
+	public GameServerListener() throws IOException
 	{
-		if (_instance == null)
-			_instance = new GameServerListener();
-		return _instance;
-	}
-	
-	public GameServerListener()
-	{
-		super(Config.GAME_SERVER_LOGIN_HOST,Config.GAME_SERVER_LOGIN_PORT);
-		_log.info("Listening to GameServer at port "+Config.GAME_SERVER_LOGIN_PORT);
-		_gameServerThreads = new FastList<>();
+		super(Config.GAME_SERVER_LOGIN_HOST, Config.GAME_SERVER_LOGIN_PORT);
+		setName(getClass().getSimpleName());
 	}
 	
 	/**
@@ -70,7 +58,8 @@ public class GameServerListener extends FloodProtectedListener
 		_gameServerThreads.remove(gst);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see net.sf.l2j.loginserver.FloodProtectedListener#addClient(java.net.Socket)
 	 */
 	@Override

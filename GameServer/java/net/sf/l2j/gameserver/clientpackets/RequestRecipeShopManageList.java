@@ -18,9 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.L2ManufactureList;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.ActionFailed;
@@ -28,51 +25,58 @@ import net.sf.l2j.gameserver.serverpackets.RecipeShopManageList;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.1.2.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestRecipeShopManageList extends ClientBasePacket
+public class RequestRecipeShopManageList extends L2GameClientPacket
 {
-    private static final String _C__B0_RequestRecipeShopManageList = "[C] b0 RequestRecipeShopManageList";
-
-    public RequestRecipeShopManageList(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
-
-        // Player shouldn't be able to set stores if he/she is alike dead (dead or fake death)
-        if (player.isAlikeDead())
-        {
-            sendPacket(new ActionFailed());
-            return;
-        }
-
-        if (player.getPrivateStoreType() != 0)
-        {
-            player.setPrivateStoreType(L2PcInstance.STORE_PRIVATE_NONE);
-            player.broadcastUserInfo();
-            if (player.isSitting())
-                player.standUp();
-        }
-
-        if (player.getCreateList() == null)
-            player.setCreateList(new L2ManufactureList());
-
-        player.sendPacket(new RecipeShopManageList(player, true));
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__B0_RequestRecipeShopManageList;
-    }
+	private static final String _C__B0_RequestRecipeShopManageList = "[C] b0 RequestRecipeShopManageList";
+	
+	@Override
+	protected void readImpl()
+	{
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
+		// Player shouldn't be able to set stores if he/she is alike dead (dead or fake death)
+		if (player.isAlikeDead())
+		{
+			sendPacket(new ActionFailed());
+			return;
+		}
+		
+		if (player.getPrivateStoreType() != 0)
+		{
+			player.setPrivateStoreType(L2PcInstance.STORE_PRIVATE_NONE);
+			player.broadcastUserInfo();
+			if (player.isSitting())
+			{
+				player.standUp();
+			}
+		}
+		
+		if (player.getCreateList() == null)
+		{
+			player.setCreateList(new L2ManufactureList());
+		}
+		
+		player.sendPacket(new RecipeShopManageList(player, true));
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__B0_RequestRecipeShopManageList;
+	}
 }

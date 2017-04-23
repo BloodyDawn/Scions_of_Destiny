@@ -18,102 +18,103 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
-import net.sf.l2j.gameserver.ClientThread.GameClientState;
+import net.sf.l2j.gameserver.L2GameClient.GameClientState;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.CharSelected;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.5.2.1.2.5 $ $Date: 2005/03/27 15:29:30 $
  */
-public class CharacterSelected extends ClientBasePacket
+public class CharacterSelected extends L2GameClientPacket
 {
-    private static final String _C__0D_CHARACTERSELECTED = "[C] 0D CharacterSelected";
-    private static Logger _log = Logger.getLogger(CharacterSelected.class.getName());
+	private static final String _C__0D_CHARACTERSELECTED = "[C] 0D CharacterSelected";
+	private static Logger _log = Logger.getLogger(CharacterSelected.class.getName());
 
-    // cd
-    private final int _charSlot;
+	// cd
+	private int _charSlot;
 
-    @SuppressWarnings("unused")
-    private final int _unk1; 	// new in C4
-    @SuppressWarnings("unused")
-    private final int _unk2;	// new in C4
-    @SuppressWarnings("unused")
-    private final int _unk3;	// new in C4
-    @SuppressWarnings("unused")
-    private final int _unk4;	// new in C4
+	@SuppressWarnings("unused")
+	private int _unk1; // new in C4
+	@SuppressWarnings("unused")
+	private int _unk2; // new in C4
+	@SuppressWarnings("unused")
+	private int _unk3; // new in C4
+	@SuppressWarnings("unused")
+	private int _unk4; // new in C4
 
-    /**
-     * @param decrypt
-     */
-    public CharacterSelected(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _charSlot = readD();
-        _unk1 = readH();
-        _unk2 = readD();
-        _unk3 = readD();
-        _unk4 = readD();
-    }
+	@Override
+	protected void readImpl()
+	{
+		_charSlot = readD();
+		_unk1 = readH();
+		_unk2 = readD();
+		_unk3 = readD();
+		_unk4 = readD();
+	}
 
-    @Override
-    public void runImpl()
-    {
-        if (!getClient().getFloodProtectors().getCharacterSelect().tryPerformAction("CharacterSelect"))
-            return;
+	@Override
+	public void runImpl()
+	{
+		if (!getClient().getFloodProtectors().getCharacterSelect().tryPerformAction("CharacterSelect"))
+		{
+			return;
+		}
 
-        // we should always be abble to acquire the lock
-        // but if we cant lock then nothing should be done (ie repeated packet)
-        if (getClient().getActiveCharLock().tryLock())
-        {
-            try
-            {
-                // should always be null
-                // but if not then this is repeated packet and nothing should be done here
-                if (getClient().getActiveChar() == null)
-                {
-                    // The L2PcInstance must be created here, so that it can be attached to the ClientThread
-                    if (Config.DEBUG)
-                        _log.fine("selected slot:" + _charSlot);
+		// we should always be able to acquire the lock
+		// but if we cant lock then nothing should be done (ie repeated packet)
+		if (getClient().getActiveCharLock().tryLock())
+		{
+			try
+			{
+				// should always be null
+				// but if not then this is repeated packet and nothing should be done here
+				if (getClient().getActiveChar() == null)
+				{
+					// The L2PcInstance must be created here, so that it can be attached to the L2GameClient
+					if (Config.DEBUG)
+					{
+						_log.fine("selected slot:" + _charSlot);
+					}
+
+					// load up character from disk
+					L2PcInstance cha = getClient().loadCharFromDisk(_charSlot);
+					if (cha == null)
+					{
+						return;
+					}
 					
-                    // load up character from disk
-                    L2PcInstance cha = getClient().loadCharFromDisk(_charSlot);
-                    if (cha == null)
-                        return;
+					if (cha.getAccessLevel() < 0)
+					{
+						cha.logout();
+						return;
+					}
+					
+					cha.setClient(getClient());
+					getClient().setActiveChar(cha);
 
-                    getClient().setActiveChar(cha);
+					getClient().setState(GameClientState.IN_GAME);
+					CharSelected cs = new CharSelected(cha, getClient().getSessionId().playOkID1);
+					sendPacket(cs);
+				}
+			}
+			finally
+			{
+				getClient().getActiveCharLock().unlock();
+			}
+		}
+	}
 
-                    if (cha.getAccessLevel() < 0)
-                    {
-                        getConnection().close(true);
-                        return;
-                    }
-
-                    cha.setNetConnection(getConnection());
-
-                    getClient().setState(GameClientState.IN_GAME);
-                    CharSelected cs = new CharSelected(cha, getClient().getSessionId().playOkID1);
-                    sendPacket(cs);
-                }
-            }
-            finally
-            {
-                getClient().getActiveCharLock().unlock();
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__0D_CHARACTERSELECTED;
-    }	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__0D_CHARACTERSELECTED;
+	}
 }

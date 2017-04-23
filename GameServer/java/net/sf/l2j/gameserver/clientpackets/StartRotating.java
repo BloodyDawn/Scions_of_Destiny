@@ -18,56 +18,45 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.serverpackets.BeginRotation;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.4.3 $ $Date: 2005/03/27 15:29:30 $
  */
-public class StartRotating extends ClientBasePacket
+public class StartRotating extends L2GameClientPacket
 {
-    private static final String _C__4A_STARTROTATING = "[C] 4A StartRotating";
-
-    private final int _degree;
-    private final int _side;
-    /**
-     * packet type id 0x4a
-     * 
-     * sample
-     * 
-     * 4a
-     * fb 0f 00 00 // degree (goes from 0 to 65535)
-     * 01 00 00 00 // side (01 00 00 00 = right, ff ff ff ff = left)
-     * 
-     * format:		cdd
-     * @param decrypt
-     */
-    public StartRotating(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _degree = readD();
-        _side = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        if (getClient().getActiveChar() == null)
-            return;
-
-        BeginRotation br = new BeginRotation(getClient().getActiveChar().getObjectId(), _degree, _side, 0);
-        getClient().getActiveChar().broadcastPacket(br);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__4A_STARTROTATING;
-    }
+	private static final String _C__4A_STARTROTATING = "[C] 4A StartRotating";
+	
+	private int _degree;
+	private int _side;
+	
+	@Override
+	protected void readImpl()
+	{
+		_degree = readD();
+		_side = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		if (getClient().getActiveChar() == null)
+		{
+			return;
+		}
+		
+		BeginRotation br = new BeginRotation(getClient().getActiveChar().getObjectId(), _degree, _side, 0);
+		getClient().getActiveChar().broadcastPacket(br);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__4A_STARTROTATING;
+	}
 }

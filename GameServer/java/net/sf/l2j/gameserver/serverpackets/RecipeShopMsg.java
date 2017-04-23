@@ -22,31 +22,33 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class RecipeShopMsg extends ServerBasePacket
+public class RecipeShopMsg extends L2GameServerPacket
 {
-    private static final String _S__DB_RecipeShopMsg = "[S] db RecipeShopMsg";
-    private L2PcInstance _cha;
-
-    public RecipeShopMsg(L2PcInstance player)
-    {
-        _cha = player;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xdb);
-        writeD(_cha.getObjectId());
-        writeS(_cha.getCreateList().getStoreName()); //_cha.getTradeList().getSellStoreName());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__DB_RecipeShopMsg;
-    }
+	private static final String _S__DB_RecipeShopMsg = "[S] db RecipeShopMsg";
+	private final L2PcInstance _cha;
+	
+	public RecipeShopMsg(L2PcInstance player)
+	{
+		_cha = player;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xdb);
+		writeD(_cha.getObjectId());
+		writeS(_cha.getCreateList().getStoreName()); // _cha.getTradeList().getSellStoreName());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__DB_RecipeShopMsg;
+	}
 }

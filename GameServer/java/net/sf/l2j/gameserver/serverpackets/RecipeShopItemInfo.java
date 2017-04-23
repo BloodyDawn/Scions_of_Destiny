@@ -25,37 +25,43 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
  * ddddd
  * @version $Revision: 1.1.2.3.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class RecipeShopItemInfo  extends ServerBasePacket
+public class RecipeShopItemInfo extends L2GameServerPacket
 {
-    private static final String _S__DA_RecipeShopItemInfo = "[S] da RecipeShopItemInfo";
-    private int _shopId;
-    private int _recipeId;
-
-    public RecipeShopItemInfo(int shopId, int recipeId)
-    {
-        _shopId = shopId;
-        _recipeId = recipeId;
-    }
-
-    final void writeImpl()
-    {
-        if (!(L2World.getInstance().findObject(_shopId) instanceof L2PcInstance))
-            return;
-
-        L2PcInstance manufacturer = (L2PcInstance)L2World.getInstance().findObject(_shopId);
+	private static final String _S__DA_RecipeShopItemInfo = "[S] da RecipeShopItemInfo";
+	private final int _shopId;
+	private final int _recipeId;
+	
+	public RecipeShopItemInfo(int shopId, int recipeId)
+	{
+		_shopId = shopId;
+		
+		_recipeId = recipeId;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		if (!(L2World.getInstance().findObject(_shopId) instanceof L2PcInstance))
+		{
+			return;
+		}
+		
+		L2PcInstance manufacturer = (L2PcInstance) L2World.getInstance().findObject(_shopId);
 		writeC(0xda);
-        writeD(_shopId);
-        writeD(_recipeId);
-        writeD(manufacturer != null ? (int)manufacturer.getCurrentMp() : 0);
-        writeD(manufacturer != null ? manufacturer.getMaxMp() : 0);
-        writeD(0xffffffff);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__DA_RecipeShopItemInfo;
-    }
+		writeD(_shopId);
+		writeD(_recipeId);
+		writeD(manufacturer != null ? (int) manufacturer.getCurrentMp() : 0);
+		writeD(manufacturer != null ? manufacturer.getMaxMp() : 0);
+		writeD(0xffffffff);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__DA_RecipeShopItemInfo;
+	}
 }

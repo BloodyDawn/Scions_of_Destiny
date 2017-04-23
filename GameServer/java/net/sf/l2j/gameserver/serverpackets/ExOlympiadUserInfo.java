@@ -22,46 +22,48 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.4.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
- * 
  * @author godson
  */
-public class ExOlympiadUserInfo extends ServerBasePacket
+public class ExOlympiadUserInfo extends L2GameServerPacket
 {
-    private static final String _S__FE_29_OLYMPIADUSERINFO = "[S] FE:29 OlympiadUserInfo";
-    private int _side;
-    private L2PcInstance _player;
-
-    /**
-     * @param _player
-     * @param _side (1 = right, 2 = left)
-     */
-    public ExOlympiadUserInfo(L2PcInstance player, int side)
-    {
-        _player = player;
-        _side = side;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xfe);
-        writeH(0x29);
-        writeC(_side);
-        writeD(_player.getObjectId());
-        writeS(_player.getName());
-        writeD(_player.getClassId().getId());
-        writeD((int)_player.getCurrentHp());
-        writeD(_player.getMaxHp());
-        writeD((int)_player.getCurrentCp());
-        writeD(_player.getMaxCp());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__FE_29_OLYMPIADUSERINFO;
-    }
+	private static final String _S__FE_29_OLYMPIADUSERINFO = "[S] FE:29 OlympiadUserInfo";
+	
+	private final int _side;
+	private final L2PcInstance _player;
+	
+	/**
+	 * @param _player
+	 * @param _side (1 = right, 2 = left)
+	 */
+	public ExOlympiadUserInfo(L2PcInstance player, int side)
+	{
+		_player = player;
+		_side = side;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xfe);
+		writeH(0x29);
+		writeC(_side);
+		writeD(_player.getObjectId());
+		writeS(_player.getName());
+		writeD(_player.getClassId().getId());
+		writeD((int) _player.getCurrentHp());
+		writeD(_player.getMaxHp());
+		writeD((int) _player.getCurrentCp());
+		writeD(_player.getMaxCp());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__FE_29_OLYMPIADUSERINFO;
+	}
 }

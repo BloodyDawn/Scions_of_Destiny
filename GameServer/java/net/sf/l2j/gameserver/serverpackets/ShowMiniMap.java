@@ -19,34 +19,33 @@
 package net.sf.l2j.gameserver.serverpackets;
 
 /**
- * sample
- *
- * format
- * d
- * 
+ * sample format d
  * @version $Revision: 1.1.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class ShowMiniMap extends ServerBasePacket
+public class ShowMiniMap extends L2GameServerPacket
 {
-    private static final String _S__b6_SHOWMINIMAP = "[S] 9d ShowMiniMap";
-    private int _mapId;
-
-    public ShowMiniMap(int mapId)
-    {
-        _mapId = mapId;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x9d);
-        writeD(_mapId);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__b6_SHOWMINIMAP;
-    }
+	private static final String _S__b6_SHOWMINIMAP = "[S] 9d ShowMiniMap";
+	private final int _mapId;
+	
+	public ShowMiniMap(int mapId)
+	{
+		_mapId = mapId;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x9d);
+		writeD(_mapId);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__b6_SHOWMINIMAP;
+	}
 }

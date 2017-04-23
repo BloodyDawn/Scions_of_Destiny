@@ -1,4 +1,4 @@
-/* 
+/*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -18,15 +18,11 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
 import java.util.List;
 import java.util.logging.Logger;
 
 import javolution.util.FastList;
-
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.model.ItemContainer;
 import net.sf.l2j.gameserver.model.L2ItemInstance;
@@ -38,216 +34,253 @@ import net.sf.l2j.gameserver.serverpackets.InventoryUpdate;
 import net.sf.l2j.gameserver.serverpackets.ItemList;
 import net.sf.l2j.gameserver.serverpackets.StatusUpdate;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.templates.L2EtcItemType;
 import net.sf.l2j.gameserver.util.IllegalPlayerAction;
 import net.sf.l2j.gameserver.util.Util;
 
 /**
- *
- * @author  -Wooden-
+ * @author -Wooden-
  */
-public class RequestPackageSend extends ClientBasePacket
+public class RequestPackageSend extends L2GameClientPacket
 {
-    private static final String _C_9F_REQUESTPACKAGESEND = "[C] 9F RequestPackageSend";
-    private static Logger _log = Logger.getLogger(RequestPackageSend.class.getName());
-    private List<Item> _items = new FastList<Item>();
-    private int _objectID;
-    private int _count;
+	private static final String _C_9F_REQUESTPACKAGESEND = "[C] 9F RequestPackageSend";
+	private static Logger _log = Logger.getLogger(RequestPackageSend.class.getName());
+	private final List<Item> _items = new FastList<>();
+	private int _objectID;
+	private int _count;
 
-    public RequestPackageSend(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _objectID = readD();
-        _count = readD();
+	@Override
+	protected void readImpl()
+	{
+		_objectID = readD();
+		_count = readD();
 
-        if (_count < 0 || _count > 500)
-        {
-            _count = -1;
-            return;
-        }
-
-        for (int i = 0; i<_count; i++)
-        {
-            int id = readD(); //this is some id sent in PackageSendableList
-            int count = readD();
-            _items.add(new Item(id, count));
-        }
-    }
+		if ((_count < 0) || (_count > 500))
+		{
+			_count = -1;
+			return;
+		}
 
-    /**
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
-     */
-    @Override
-    protected void runImpl()
-    {
-        if (_count == -1)
-            return;
+		for (int i = 0; i < _count; i++)
+		{
+			int id = readD(); // this is some id sent in PackageSendableList
+			int count = readD();
+			_items.add(new Item(id, count));
+		}
+	}
 
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
+	/**
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
+	 */
+	@Override
+	protected void runImpl()
+	{
+		if (_count == -1)
+		{
+			return;
+		}
 
-        // why would sb do such a thing?
-        if (player.getObjectId() == _objectID)
-            return;
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
 
-        if (!player.getAccountChars().containsKey(_objectID))
-            return;
+		// why would sb do such a thing?
+		if (player.getObjectId() == _objectID)
+		{
+			return;
+		}
 
-        ItemContainer warehouse = player.getActiveWarehouse();
-        if (warehouse == null)
-            return;
+		if (!player.getAccountChars().containsKey(_objectID))
+		{
+			return;
+		}
 
-        if (player.getActiveEnchantItem() != null)
-        {
-            Util.handleIllegalPlayerAction(player,"Player "+player.getName()+" tried to use enchant Exploit!", IllegalPlayerAction.PUNISH_KICKBAN);
-            player.setActiveEnchantItem(null);
-            return;
-        }
+		ItemContainer warehouse = player.getActiveWarehouse();
+		if (warehouse == null)
+		{
+			return;
+		}
 
-        PcFreight freight = null;
-        if (warehouse instanceof PcFreight)
-            freight = (PcFreight)warehouse;
+		if (player.getActiveEnchantItem() != null)
+		{
+			Util.handleIllegalPlayerAction(player, "Player " + player.getName() + " tried to use enchant Exploit!", IllegalPlayerAction.PUNISH_KICKBAN);
+			player.setActiveEnchantItem(null);
+			return;
+		}
 
-        if (freight == null)
-            return;
+		PcFreight freight = null;
+		if (warehouse instanceof PcFreight)
+		{
+			freight = (PcFreight) warehouse;
+		}
 
-        freight.doQuickRestore(_objectID);
+		if (freight == null)
+		{
+			return;
+		}
 
-        if (!(player.getLastFolkNPC() instanceof L2WarehouseInstance))
-            return;
+		freight.doQuickRestore(_objectID);
 
-        L2WarehouseInstance manager = ((L2WarehouseInstance)player.getLastFolkNPC());
-        if ((manager == null || !player.isInsideRadius(manager, L2NpcInstance.INTERACTION_DISTANCE, false, false)) && !player.isGM())
-            return;
+		if (!(player.getLastFolkNPC() instanceof L2WarehouseInstance))
+		{
+			return;
+		}
 
-        if (Config.GM_DISABLE_TRANSACTION && player.getAccessLevel() >= Config.GM_TRANSACTION_MIN && player.getAccessLevel() <= Config.GM_TRANSACTION_MAX)
-        {
-            player.sendMessage("Transactions are disabled for your Access Level.");
-            return;
-        }
+		L2WarehouseInstance manager = ((L2WarehouseInstance) player.getLastFolkNPC());
+		if (((manager == null) || !player.isInsideRadius(manager, L2NpcInstance.INTERACTION_DISTANCE, false, false)) && !player.isGM())
+		{
+			return;
+		}
 
-        // Alt game - Karma punishment
-        if (!Config.ALT_GAME_KARMA_PLAYER_CAN_USE_WAREHOUSE && player.getKarma() > 0)
-            return;
+		if (Config.GM_DISABLE_TRANSACTION && (player.getAccessLevel() >= Config.GM_TRANSACTION_MIN) && (player.getAccessLevel() <= Config.GM_TRANSACTION_MAX))
+		{
+			player.sendMessage("Transactions are disabled for your Access Level.");
+			return;
+		}
 
-        // Freight price from config or normal price per item slot (30)
-        int fee = _count * Config.ALT_GAME_FREIGHT_PRICE;
-        int currentAdena = player.getAdena();
-        int slots = 0;
+		// Alt game - Karma punishment
+		if (!Config.ALT_GAME_KARMA_PLAYER_CAN_USE_WAREHOUSE && (player.getKarma() > 0))
+		{
+			return;
+		}
 
-        for (Item i : _items)
-        {
-            int objectId = i.id;
-            int count = i.count;
+		// Freight price from config or normal price per item slot (30)
+		int fee = _count * Config.ALT_GAME_FREIGHT_PRICE;
+		int currentAdena = player.getAdena();
+		int slots = 0;
 
-            // Check validity of requested item
-            L2ItemInstance item = player.checkItemManipulation(objectId, count, "deposit");
-            if (item == null)
-            {
-            	_log.warning("Error depositing a warehouse object for char "+player.getName()+" (validity check)");
-            	i.id = 0;
-            	i.count = 0;
-            	continue;
-            }
+		for (Item i : _items)
+		{
+			int objectId = i.id;
+			int count = i.count;
 
-            // Calculate needed adena and slots
-            if (item.getItemId() == 57)
-                currentAdena -= count;
+			// Check validity of requested item
+			L2ItemInstance item = player.checkItemManipulation(objectId, count, "deposit");
+			if (item == null)
+			{
+				_log.warning("Error depositing a warehouse object for char " + player.getName() + " (validity check)");
+				i.id = 0;
+				i.count = 0;
+				continue;
+			}
 
-            if (!item.isStackable())
-                slots += count;
-            else if (warehouse.getItemByItemId(item.getItemId()) == null)
-                slots++;
-        }
+			// Calculate needed adena and slots
+			if (item.getItemId() == 57)
+			{
+				currentAdena -= count;
+			}
 
-        // Item Max Limit Check 
-        if (!warehouse.validateCapacity(slots))
-        {
-            sendPacket(new SystemMessage(SystemMessage.YOU_HAVE_EXCEEDED_QUANTITY_THAT_CAN_BE_INPUTTED));
-            return;
-        }
+			if (!item.isStackable())
+			{
+				slots += count;
+			}
+			else if (warehouse.getItemByItemId(item.getItemId()) == null)
+			{
+				slots++;
+			}
+		}
 
-        // Check if enough adena and charge the fee
-        if (currentAdena < fee || !player.reduceAdena("Warehouse", fee, player.getLastFolkNPC(), false))
-        {
-            sendPacket(new SystemMessage(SystemMessage.YOU_NOT_ENOUGH_ADENA));
-            return;
-        }
+		// Item Max Limit Check
+		if (!warehouse.validateCapacity(slots))
+		{
+			sendPacket(new SystemMessage(SystemMessage.YOU_HAVE_EXCEEDED_QUANTITY_THAT_CAN_BE_INPUTTED));
+			return;
+		}
 
-        if (!Config.ALT_GAME_FREIGHTS)
-        {
-            int region = 1 + MapRegionTable.getInstance().getClosestTownNumber(player);
-            freight.setActiveLocation(region);
-        }
+		// Check if enough adena and charge the fee
+		if ((currentAdena < fee) || !player.reduceAdena("Warehouse", fee, player.getLastFolkNPC(), false))
+		{
+			sendPacket(new SystemMessage(SystemMessage.YOU_NOT_ENOUGH_ADENA));
+			return;
+		}
 
-        // Proceed to the transfer
-        InventoryUpdate playerIU = Config.FORCE_INVENTORY_UPDATE ? null : new InventoryUpdate();
-        for (Item i : _items)
-        {
-            int objectId = i.id;
-            int count = i.count;
+		if (!Config.ALT_GAME_FREIGHTS)
+		{
+			int region = 1 + MapRegionTable.getInstance().getClosestTownNumber(player);
 
-            // check for an invalid item
-            if (objectId == 0 && count == 0)
-                continue;
+			freight.setActiveLocation(region);
+		}
 
-            L2ItemInstance oldItem = player.getInventory().getItemByObjectId(objectId);
-            if (oldItem == null)
-            {
-                _log.warning("Error depositing a warehouse object for char "+player.getName()+" (olditem == null)");
-                continue;
-            }
+		// Proceed to the transfer
+		InventoryUpdate playerIU = Config.FORCE_INVENTORY_UPDATE ? null : new InventoryUpdate();
+		for (Item i : _items)
+		{
+			int objectId = i.id;
+			int count = i.count;
 
-            if (!oldItem.isAvailable(player, true))
-                continue;
+			// check for an invalid item
+			if ((objectId == 0) && (count == 0))
+			{
+				continue;
+			}
 
-            L2ItemInstance newItem = player.getInventory().transferItem("Warehouse", objectId, count, warehouse, player, player.getLastFolkNPC());
-            if (newItem == null)
-            {
-            	_log.warning("Error depositing a warehouse object for char "+player.getName()+" (newitem == null)");
-            	continue;
-            }
+			L2ItemInstance oldItem = player.getInventory().getItemByObjectId(objectId);
+			if (oldItem == null)
+			{
+				_log.warning("Error depositing a warehouse object for char " + player.getName() + " (olditem == null)");
+				continue;
+			}
 
-            if (playerIU != null)
-            {
-            	if (oldItem.getCount() > 0 && oldItem != newItem)
-                    playerIU.addModifiedItem(oldItem);
-            	else
-                    playerIU.addRemovedItem(oldItem);
-            }
-        }
+			if (!oldItem.isAvailable(player, true))
+			{
+				continue;
+			}
 
-        // Send updated item list to the player
-        if (playerIU != null)
-            player.sendPacket(playerIU);
-        else
-            player.sendPacket(new ItemList(player, false));
+			L2ItemInstance newItem = player.getInventory().transferItem("Warehouse", objectId, count, warehouse, player, player.getLastFolkNPC());
+			if (newItem == null)
+			{
+				_log.warning("Error depositing a warehouse object for char " + player.getName() + " (newitem == null)");
+				continue;
+			}
 
-        // Update current load status on player
-        StatusUpdate su = new StatusUpdate(player.getObjectId());
-        su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
-        player.sendPacket(su);
-    }
+			if (playerIU != null)
+			{
+				if ((oldItem.getCount() > 0) && (oldItem != newItem))
+				{
+					playerIU.addModifiedItem(oldItem);
+				}
+				else
+				{
+					playerIU.addRemovedItem(oldItem);
+				}
+			}
+		}
 
-    private class Item
-    {
-        public int id;
-        public int count;
+		// Send updated item list to the player
+		if (playerIU != null)
+		{
+			player.sendPacket(playerIU);
+		}
+		else
+		{
+			player.sendPacket(new ItemList(player, false));
+		}
 
-        public Item(int i, int c)
-        {
-            id = i;
-            count = c;
-        }
-    }
+		// Update current load status on player
+		StatusUpdate su = new StatusUpdate(player.getObjectId());
+		su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+		player.sendPacket(su);
+	}
 
-    /**
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        return _C_9F_REQUESTPACKAGESEND;
-    }
+	private class Item
+	{
+		public int id;
+		public int count;
+
+		public Item(int i, int c)
+		{
+			id = i;
+			count = c;
+		}
+	}
+
+	/**
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C_9F_REQUESTPACKAGESEND;
+	}
 }

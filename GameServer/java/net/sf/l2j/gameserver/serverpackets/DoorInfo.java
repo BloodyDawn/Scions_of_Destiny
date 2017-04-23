@@ -21,40 +21,34 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.model.actor.instance.L2DoorInstance;
 
 /**
- * 60 
- * d6 6d c0 4b		door id 
- * 8f 14 00 00 		x
- * b7 f1 00 00 		y
- * 60 f2 ff ff 		z
- * 00 00 00 00 		??
- *  
- * format  dddd    rev 377  ID:%d X:%d Y:%d Z:%d
- *         ddddd   rev 419
- *  
+ * 60 d6 6d c0 4b door id 8f 14 00 00 x b7 f1 00 00 y 60 f2 ff ff z 00 00 00 00 ?? format dddd rev 377 ID:%d X:%d Y:%d Z:%d ddddd rev 419
  * @version $Revision: 1.3.2.2.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class DoorInfo extends ServerBasePacket
+public class DoorInfo extends L2GameServerPacket
 {
-    private static final String _S__60_DOORINFO = "[S] 4c DoorInfo";
-    private L2DoorInstance _door;
-
-    public DoorInfo(L2DoorInstance door)
-    {
-        _door = door;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x4c);
-        writeD(_door.getObjectId());
-        writeD(_door.getDoorId());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__60_DOORINFO;
-    }
+	private static final String _S__60_DOORINFO = "[S] 4c DoorInfo";
+	private final L2DoorInstance _door;
+	
+	public DoorInfo(L2DoorInstance door)
+	{
+		_door = door;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x4c);
+		writeD(_door.getObjectId());
+		writeD(_door.getDoorId());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__60_DOORINFO;
+	}
 }

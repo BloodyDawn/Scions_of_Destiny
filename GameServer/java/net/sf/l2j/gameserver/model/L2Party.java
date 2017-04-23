@@ -38,7 +38,7 @@ import net.sf.l2j.gameserver.serverpackets.PartySmallWindowAdd;
 import net.sf.l2j.gameserver.serverpackets.PartySmallWindowAll;
 import net.sf.l2j.gameserver.serverpackets.PartySmallWindowDelete;
 import net.sf.l2j.gameserver.serverpackets.PartySmallWindowDeleteAll;
-import net.sf.l2j.gameserver.serverpackets.ServerBasePacket;
+import net.sf.l2j.gameserver.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.skills.Stats;
 import net.sf.l2j.gameserver.util.Util;
@@ -188,7 +188,7 @@ public class L2Party
 	 * Broadcasts packet to every party member 
 	 * @param msg
 	 */
-	public void broadcastToPartyMembers(ServerBasePacket msg) 
+	public void broadcastToPartyMembers(L2GameServerPacket msg) 
 	{
 		for(L2PcInstance member : getPartyMembers())
 			member.sendPacket(msg);
@@ -197,7 +197,7 @@ public class L2Party
 	/**
 	 * Send a Server->Client packet to all other L2PcInstance of the Party.<BR><BR>
 	 */
-	public void broadcastToPartyMembers(L2PcInstance player, ServerBasePacket msg) 
+	public void broadcastToPartyMembers(L2PcInstance player, L2GameServerPacket msg) 
 	{
 		for(L2PcInstance member : getPartyMembers())
 		{

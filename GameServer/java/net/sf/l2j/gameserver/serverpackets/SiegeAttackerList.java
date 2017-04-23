@@ -46,63 +46,67 @@ import net.sf.l2j.gameserver.model.entity.Castle;
  * S = AllyName<BR>
  * S = AllyLeaderName<BR>
  * d = AllyCrestID<BR>
- * 
  * @author KenM
  */
-public class SiegeAttackerList extends ServerBasePacket
+public class SiegeAttackerList extends L2GameServerPacket
 {
-    private static final String _S__CA_SiegeAttackerList = "[S] ca SiegeAttackerList";
-    //private static Logger _log = Logger.getLogger(SiegeAttackerList.class.getName());
-    private Castle _Castle;
-
-    public SiegeAttackerList(Castle castle)
-    {
-        _Castle = castle;   
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xca);
-        writeD(_Castle.getCastleId());
-        writeD(0x00); //0 
-        writeD(0x01); //1
-        writeD(0x00); //0
-        int size = _Castle.getSiege().getAttackerClans().size();
-        if (size > 0)
-        {
-            L2Clan clan;
-
-            writeD(size);
-            writeD(size);
-            for(L2SiegeClan siegeclan : _Castle.getSiege().getAttackerClans())
-            {
-                clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
-                if (clan == null)
-                    continue;
-
-                writeD(clan.getClanId());
-                writeS(clan.getName());
-                writeS(clan.getLeaderName());
-                writeD(clan.getCrestId());
-                writeD(0x00); //signed time (seconds) (not storated by L2J)
-                writeD(clan.getAllyId());
-                writeS(clan.getAllyName());
-                writeS(""); //AllyLeaderName
-                writeD(clan.getAllyCrestId());
-            }
-        }
-        else
-        {
-            writeD(0x00);
-            writeD(0x00);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__CA_SiegeAttackerList;
-    }
+	private static final String _S__CA_SiegeAttackerList = "[S] ca SiegeAttackerList";
+	// private static Logger _log = Logger.getLogger(SiegeAttackerList.class.getName());
+	private final Castle _Castle;
+	
+	public SiegeAttackerList(Castle castle)
+	{
+		_Castle = castle;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xca);
+		writeD(_Castle.getCastleId());
+		writeD(0x00); // 0
+		writeD(0x01); // 1
+		writeD(0x00); // 0
+		int size = _Castle.getSiege().getAttackerClans().size();
+		if (size > 0)
+		{
+			L2Clan clan;
+			
+			writeD(size);
+			writeD(size);
+			for (L2SiegeClan siegeclan : _Castle.getSiege().getAttackerClans())
+			{
+				clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
+				if (clan == null)
+				{
+					continue;
+				}
+				
+				writeD(clan.getClanId());
+				writeS(clan.getName());
+				writeS(clan.getLeaderName());
+				writeD(clan.getCrestId());
+				writeD(0x00); // signed time (seconds) (not storated by L2J)
+				writeD(clan.getAllyId());
+				writeS(clan.getAllyName());
+				writeS(""); // AllyLeaderName
+				writeD(clan.getAllyCrestId());
+			}
+		}
+		else
+		{
+			writeD(0x00);
+			writeD(0x00);
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__CA_SiegeAttackerList;
+	}
 }

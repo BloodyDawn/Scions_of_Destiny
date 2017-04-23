@@ -21,40 +21,44 @@ package net.sf.l2j.gameserver.serverpackets;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
-public class GMViewSkillInfo extends ServerBasePacket
+public class GMViewSkillInfo extends L2GameServerPacket
 {
-    private static final String _S__91_GMViewSkillInfo = "[S] 91 GMViewSkillInfo";
-    private L2PcInstance _cha;
-    private L2Skill[] _skills;
-
-    public GMViewSkillInfo (L2PcInstance cha)
-    {
-        _cha = cha;
-        _skills = _cha.getAllSkills();
-        if (_skills.length == 0)
-            _skills = new L2Skill[0];
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x91);
-        writeS(_cha.getName());
-        writeD(_skills.length);
-
-        for (int i = 0; i < _skills.length; i++)
-        {
-            L2Skill skill = _skills[i];
-            writeD(skill.isPassive() ? 1 : 0);
-            writeD(skill.getLevel());
-            writeD(skill.getId());
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__91_GMViewSkillInfo;
-    }
+	private static final String _S__91_GMViewSkillInfo = "[S] 91 GMViewSkillInfo";
+	private final L2PcInstance _cha;
+	private L2Skill[] _skills;
+	
+	public GMViewSkillInfo(L2PcInstance cha)
+	{
+		_cha = cha;
+		_skills = _cha.getAllSkills();
+		if (_skills.length == 0)
+		{
+			_skills = new L2Skill[0];
+		}
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x91);
+		writeS(_cha.getName());
+		writeD(_skills.length);
+		
+		for (L2Skill skill : _skills)
+		{
+			writeD(skill.isPassive() ? 1 : 0);
+			writeD(skill.getLevel());
+			writeD(skill.getId());
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__91_GMViewSkillInfo;
+	}
 }

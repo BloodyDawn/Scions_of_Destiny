@@ -19,7 +19,7 @@
 package net.sf.l2j.gameserver.communitybbs;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
+import net.sf.l2j.gameserver.L2GameClient;
 import net.sf.l2j.gameserver.communitybbs.Manager.ClanBBSManager;
 import net.sf.l2j.gameserver.communitybbs.Manager.PostBBSManager;
 import net.sf.l2j.gameserver.communitybbs.Manager.RegionBBSManager;
@@ -40,7 +40,7 @@ public class CommunityBoard
         return _instance;
     }
 
-    public void handleCommands(ClientThread client, String command)
+    public void handleCommands(L2GameClient client, String command)
     {
         L2PcInstance activeChar = client.getActiveChar();
         if (activeChar == null)
@@ -89,7 +89,7 @@ public class CommunityBoard
      * @param arg4
      * @param arg5
      */
-    public void handleWriteCommands(ClientThread client, String url, String arg1, String arg2, String arg3, String arg4, String arg5)
+    public void handleWriteCommands(L2GameClient client, String url, String arg1, String arg2, String arg3, String arg4, String arg5)
     {
         L2PcInstance activeChar = client.getActiveChar();
         if (activeChar == null)

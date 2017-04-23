@@ -18,42 +18,43 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.serverpackets.SiegeAttackerList;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestSiegeAttackerList extends ClientBasePacket{
-    
-    private static final String _C__a2_RequestSiegeAttackerList = "[C] a2 RequestSiegeAttackerList";
-    //private static Logger _log = Logger.getLogger(RequestJoinParty.class.getName());
+public class RequestSiegeAttackerList extends L2GameClientPacket
+{
+	
+	private static final String _C__a2_RequestSiegeAttackerList = "[C] a2 RequestSiegeAttackerList";
+	// private static Logger _log = Logger.getLogger(RequestJoinParty.class.getName());
 
-    private final int _CastleId;
-    
-    public RequestSiegeAttackerList(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _CastleId = readD();
-    }
+	private int _CastleId;
 
-    @Override
-    public void runImpl()
-    {
-        Castle castle = CastleManager.getInstance().getCastleById(_CastleId);
-        if (castle == null) return;
-        SiegeAttackerList sal = new SiegeAttackerList(castle);
-        sendPacket(sal);
-    }
+	@Override
+	protected void readImpl()
+	{
+		_CastleId = readD();
+	}
 
-    public String getType()
-    {
-        return _C__a2_RequestSiegeAttackerList;
-    }
+	@Override
+	public void runImpl()
+	{
+		Castle castle = CastleManager.getInstance().getCastleById(_CastleId);
+		if (castle == null)
+		{
+			return;
+		}
+		SiegeAttackerList sal = new SiegeAttackerList(castle);
+		sendPacket(sal);
+	}
+
+	@Override
+	public String getType()
+	{
+		return _C__a2_RequestSiegeAttackerList;
+	}
 }

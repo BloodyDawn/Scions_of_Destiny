@@ -28,52 +28,61 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * @author Jamaica
- *
  */
 public class AutoRewarder
 {
-    private static List<String> _ips;
-
-    public static void load()
-    {
-        _ips = new ArrayList<>();
-
-        System.out.println("Initializing Auto Rewarder");
-        ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                autoReward();
-            }
+	private static List<String> _ips;
 	
-        }, Config.AUTO_REWARD_DELAY * 1000, Config.AUTO_REWARD_DELAY * 1000);
-    }
-
-    public static void autoReward()
-    {
-        for (L2PcInstance p : L2World.getInstance().getAllPlayers())
-        {
-            if (p == null)
-                continue;
-
-            if (p.inOfflineMode() || p.isInJail())
-                continue;
-
-            if (!p.isConnected())
-                continue;
-
-            if (p.getNetConnection() == null)
-                continue;
-
-            String ip = p.getNetConnection().getIP();
-            if (ip != null && _ips.contains(ip))
-                continue;
-
-            _ips.add(ip);
-
-            p.addItem("autoReward", Config.AUTO_REWARD_ID, Config.AUTO_REWARD_COUNT, p, true);
-        }
-        _ips.clear();
-    }
+	public static void load()
+	{
+		_ips = new ArrayList<>();
+		
+		System.out.println("Initializing Auto Rewarder");
+		ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				autoReward();
+			}
+			
+		}, Config.AUTO_REWARD_DELAY * 1000, Config.AUTO_REWARD_DELAY * 1000);
+	}
+	
+	public static void autoReward()
+	{
+		for (L2PcInstance p : L2World.getInstance().getAllPlayers())
+		{
+			if (p == null)
+			{
+				continue;
+			}
+			
+			if (p.inOfflineMode() || p.isInJail())
+			{
+				continue;
+			}
+			
+			if (p.getClient() == null)
+			{
+				continue;
+			}
+			
+			if (p.getClient().isDetached())
+			{
+				continue;
+			}
+			
+			String ip = p.getClient().getConnection().getInetAddress().getHostAddress();
+			if ((ip != null) && _ips.contains(ip))
+			{
+				continue;
+			}
+			
+			_ips.add(ip);
+			
+			p.addItem("autoReward", Config.AUTO_REWARD_ID, Config.AUTO_REWARD_COUNT, p, true);
+		}
+		_ips.clear();
+	}
 }

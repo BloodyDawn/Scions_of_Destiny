@@ -20,17 +20,17 @@ package net.sf.l2j.loginserver.serverpackets;
 
 public class AccountKicked extends ServerBasePacket
 {
-    public static int REASON_ILLEGAL_USE = 0x01;
-    public static int REASON_GENERAL_VIOLATION = 0x08;
-
-    public AccountKicked(int reason) 
-    {
-        writeC(0x02);
-        writeD(reason);	
-    }
-
-    public byte[] getContent()
-    {
-        return getBytes();
-    }
+	public static int REASON_ILLEGAL_USE = 0x01;
+	public static int REASON_GENERAL_VIOLATION = 0x08;
+	
+	public AccountKicked(int reason)
+	{
+		writeC(0x02);
+		writeD(reason);
+	}
+	
+	public byte[] getContent()
+	{
+		return getBytes();
+	}
 }

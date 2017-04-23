@@ -19,52 +19,60 @@
 package net.sf.l2j.gameserver.serverpackets;
 
 /**
- * 
  * <p>
- * sample  bf 73 5d 30 49 01 00 
+ * sample bf 73 5d 30 49 01 00
  * <p>
- * format dh	(objectid, color)
+ * format dh (objectid, color)
  * <p>
- * color 	-xx -> -9 	red<p>
- * 			-8  -> -6	light-red<p>
- * 			-5	-> -3	yellow<p>
- * 			-2	-> 2    white<p>
- * 			 3	-> 5	green<p>
- * 			 6	-> 8	light-blue<p>
- * 			 9	-> xx	blue<p>	
+ * color -xx -> -9 red
  * <p>
- * usually the color equals the level difference to the selected target 			
- *
+ * -8 -> -6 light-red
+ * <p>
+ * -5 -> -3 yellow
+ * <p>
+ * -2 -> 2 white
+ * <p>
+ * 3 -> 5 green
+ * <p>
+ * 6 -> 8 light-blue
+ * <p>
+ * 9 -> xx blue
+ * <p>
+ * <p>
+ * usually the color equals the level difference to the selected target
  * @version $Revision: 1.3.2.1.2.3 $ $Date: 2005/03/27 15:29:39 $
  */
-public class MyTargetSelected extends ServerBasePacket
+public class MyTargetSelected extends L2GameServerPacket
 {
-    private static final String _S__BF_MYTARGETSELECTED = "[S] a6 MyTargetSelected";
-    private int _objectId;
-    private int _color;
-
-    /**
-     * @param int objectId of the target
-     * @param int level difference to the target. name color is calculated from that
-     */
-    public MyTargetSelected(int objectId, int color)
-    {
-        _objectId = objectId;
-        _color = color;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xa6);
-        writeD(_objectId);
-        writeH(_color);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__BF_MYTARGETSELECTED;
-    }
+	private static final String _S__BF_MYTARGETSELECTED = "[S] a6 MyTargetSelected";
+	private final int _objectId;
+	private final int _color;
+	
+	/**
+	 * @param int objectId of the target
+	 * @param int level difference to the target. name color is calculated from that
+	 */
+	public MyTargetSelected(int objectId, int color)
+	{
+		_objectId = objectId;
+		_color = color;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xa6);
+		writeD(_objectId);
+		writeH(_color);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__BF_MYTARGETSELECTED;
+	}
 }

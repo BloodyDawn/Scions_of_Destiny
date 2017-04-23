@@ -22,7 +22,6 @@ import java.util.Vector;
 
 /**
  * @author -Wooden-
- *
  */
 public class PlayerInGame extends GameServerBasePacket
 {
@@ -34,9 +33,9 @@ public class PlayerInGame extends GameServerBasePacket
 	public PlayerInGame(byte[] decrypt)
 	{
 		super(decrypt);
-		_accounts =  new Vector<>();
+		_accounts = new Vector<>();
 		int size = readH();
-		for(int i = 0; i < size; i++)
+		for (int i = 0; i < size; i++)
 		{
 			_accounts.add(readS());
 		}

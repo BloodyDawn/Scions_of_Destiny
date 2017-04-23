@@ -30,55 +30,59 @@ import net.sf.l2j.gameserver.skills.Stats;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.2.2.1 $ $Date: 2005/03/02 15:38:36 $
  */
 public class ManaHeal implements ISkillHandler
 {
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
-     */
-    private static SkillType[] _skillIds =
-    {
-        SkillType.MANAHEAL, SkillType.MANARECHARGE
-    };
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
-     */
-    public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets)
-    {
-        L2Character target = null;
-
-        for (int index = 0;index < targets.length;index++)
-        {
-            target = (L2Character)targets[index];
-
-            double mp = (skill.getSkillType() == SkillType.MANARECHARGE) ? target.calcStat(Stats.RECHARGE_MP_RATE, skill.getPower(), null, null) : skill.getPower();
-            target.setLastHealAmount((int)mp);
-            target.setCurrentMp(mp+target.getCurrentMp());
-            StatusUpdate sump = new StatusUpdate(target.getObjectId());
-            sump.addAttribute(StatusUpdate.CUR_MP, (int)target.getCurrentMp());
-            target.sendPacket(sump);
-
-            if (activeChar instanceof L2PcInstance && activeChar != target)
-            {
-                SystemMessage sm = new SystemMessage(SystemMessage.S2_MP_RESTORED_BY_S1);
-                sm.addString(activeChar.getName());
-                sm.addNumber((int)mp);
-                target.sendPacket(sm);
-            }
-            else
-            {
-                SystemMessage sm = new SystemMessage(SystemMessage.S1_MP_RESTORED); 
-                sm.addNumber((int)mp); 
-                target.sendPacket(sm); 
-            }
-        }
-    }
-
-    public SkillType[] getSkillIds()
-    {
-        return _skillIds;
-    }
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
+	 */
+	private static SkillType[] _skillIds =
+	{
+		SkillType.MANAHEAL,
+		SkillType.MANARECHARGE
+	};
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
+	 */
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		L2Character target = null;
+		
+		for (L2Object target2 : targets)
+		{
+			target = (L2Character) target2;
+			
+			double mp = (skill.getSkillType() == SkillType.MANARECHARGE) ? target.calcStat(Stats.RECHARGE_MP_RATE, skill.getPower(), null, null) : skill.getPower();
+			target.setLastHealAmount((int) mp);
+			target.setCurrentMp(mp + target.getCurrentMp());
+			StatusUpdate sump = new StatusUpdate(target.getObjectId());
+			sump.addAttribute(StatusUpdate.CUR_MP, (int) target.getCurrentMp());
+			target.sendPacket(sump);
+			
+			if ((activeChar instanceof L2PcInstance) && (activeChar != target))
+			{
+				SystemMessage sm = new SystemMessage(SystemMessage.S2_MP_RESTORED_BY_S1);
+				sm.addString(activeChar.getName());
+				sm.addNumber((int) mp);
+				target.sendPacket(sm);
+			}
+			else
+			{
+				SystemMessage sm = new SystemMessage(SystemMessage.S1_MP_RESTORED);
+				sm.addNumber((int) mp);
+				target.sendPacket(sm);
+			}
+		}
+	}
+	
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return _skillIds;
+	}
 }

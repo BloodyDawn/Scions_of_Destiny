@@ -18,50 +18,50 @@
  */
 package net.sf.l2j.loginserver.clientpackets;
 
-import net.sf.l2j.loginserver.ClientThread;
+import net.sf.l2j.loginserver.L2LoginClient;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.4.1 $ $Date: 2005/03/27 15:30:12 $
  */
 public abstract class ClientBasePacket implements Runnable
 {
-    private ClientThread _client;
-    private byte[] _decrypt;
-    private int _off;
-
-    public ClientBasePacket(byte[] decrypt, ClientThread client)
-    {
-        _decrypt = decrypt;
-        _off = 1;		// skip packet type id
-        _client = client;
-    }
-
-    public abstract void run();
-
-    public ClientThread getClient()
-    {
-        return _client;
-    }
-
-    public byte[] getByteBuffer()
-    {
-        return _decrypt;
-    }
-
-    public int readD()
-    {
-        int result = _decrypt[_off++] &0xff;
-        result |= _decrypt[_off++] << 8 &0xff00;
-        result |= _decrypt[_off++] << 0x10 &0xff0000;
-        result |= _decrypt[_off++] << 0x18 &0xff000000;
-        return result;
-    }
-
-    public int readC()
-    {
-        int result = _decrypt[_off++] &0xff;
-        return result;
-    }
+	private final L2LoginClient _client;
+	private final byte[] _decrypt;
+	private int _off;
+	
+	public ClientBasePacket(byte[] decrypt, L2LoginClient client)
+	{
+		_decrypt = decrypt;
+		_off = 1; // skip packet type id
+		_client = client;
+	}
+	
+	@Override
+	public abstract void run();
+	
+	public L2LoginClient getClient()
+	{
+		return _client;
+	}
+	
+	public byte[] getByteBuffer()
+	{
+		return _decrypt;
+	}
+	
+	public int readD()
+	{
+		int result = _decrypt[_off++] & 0xff;
+		result |= (_decrypt[_off++] << 8) & 0xff00;
+		result |= (_decrypt[_off++] << 0x10) & 0xff0000;
+		result |= (_decrypt[_off++] << 0x18) & 0xff000000;
+		return result;
+	}
+	
+	public int readC()
+	{
+		int result = _decrypt[_off++] & 0xff;
+		return result;
+	}
 }

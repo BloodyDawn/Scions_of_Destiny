@@ -18,41 +18,33 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.serverpackets.QuestList;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.3.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestQuestList extends ClientBasePacket
+public class RequestQuestList extends L2GameClientPacket
 {
 	private static final String _C__63_REQUESTQUESTLIST = "[C] 63 RequestQuestList";
-	//private static Logger _log = Logger.getLogger(RequestQuestList.class.getName());
+	// private static Logger _log = Logger.getLogger(RequestQuestList.class.getName());
 
-	/**
-	 * packet type id 0x63<p>
-	 * format:		c<p>
-	 * @param decrypt
-	 */
-	public RequestQuestList(ByteBuffer buf, ClientThread client)
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 	}
 
-        @Override
+	@Override
 	public void runImpl()
 	{
-		QuestList ql = new QuestList();
-		sendPacket(ql);
+		sendPacket(new QuestList());
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__63_REQUESTQUESTLIST;

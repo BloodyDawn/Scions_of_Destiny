@@ -18,25 +18,31 @@
  */
 package net.sf.l2j.loginserver.serverpackets;
 
-import net.sf.l2j.loginserver.LoginController.SessionKey;
+import net.sf.l2j.loginserver.SessionKey;
 
 /**
- * <p>This packet tells the client that he can enter the selected gameserver and gives him a part of the session key.</p>
- * <p>Format: f<ul>
+ * <p>
+ * This packet tells the client that he can enter the selected gameserver and gives him a part of the session key.
+ * </p>
+ * <p>
+ * Format: f
+ * <ul>
  * <li>f: the loginOk session key</li>
- * </ul></p>
+ * </ul>
+ * </p>
  */
 public class PlayOk extends ServerBasePacket
 {
-    public PlayOk(SessionKey sessionKey) 
-    {
-        writeC(0x07);
-        writeD(sessionKey.playOkID1); 
-        writeD(sessionKey.playOkID2);
-    }
-
-    public byte[] getContent()
-    {
-        return getBytes();
-    }
+	public PlayOk(SessionKey sessionKey)
+	{
+		writeC(0x07);
+		writeD(sessionKey.playOkID1);
+		writeD(sessionKey.playOkID2);
+	}
+	
+	@Override
+	public byte[] getContent()
+	{
+		return getBytes();
+	}
 }

@@ -18,9 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.instancemanager.BoatManager;
 import net.sf.l2j.gameserver.model.actor.instance.L2BoatInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -29,82 +26,82 @@ import net.sf.l2j.gameserver.serverpackets.MoveToLocationInVehicle;
 import net.sf.l2j.gameserver.templates.L2WeaponType;
 import net.sf.l2j.util.Point3D;
 
-public class RequestMoveToLocationInVehicle extends ClientBasePacket
+public class RequestMoveToLocationInVehicle extends L2GameClientPacket
 {
-    private final int _BoatId;
-    private Point3D _pos;
-    private Point3D _origin_pos;
+	private int _BoatId;
+	private Point3D _pos;
+	private Point3D _origin_pos;
 
-    /**
-     * @param buf
-     * @param client
-     */
-    public RequestMoveToLocationInVehicle(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        int _x, _y, _z;
-        _BoatId  = readD();   //objectId of boat
-        _x = readD();
-        _y = readD();
-        _z = readD();
-        _pos = new Point3D(_x, _y, _z);
-        _x = readD();
-        _y = readD();
-        _z = readD();
-        _origin_pos = new Point3D(_x, _y, _z);
-    }
+	@Override
+	protected void readImpl()
+	{
+		int _x, _y, _z;
+		_BoatId = readD(); // objectId of boat
+		_x = readD();
+		_y = readD();
+		_z = readD();
+		_pos = new Point3D(_x, _y, _z);
+		_x = readD();
+		_y = readD();
+		_z = readD();
+		_origin_pos = new Point3D(_x, _y, _z);
+	}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
-     */
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();		
-        if (activeChar == null)
-            return;
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
+	 */
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
 
-        if (activeChar.isSitting() || activeChar.isMovementDisabledByAttack() && activeChar.getActiveWeaponItem() != null && (activeChar.getActiveWeaponItem().getItemType() == L2WeaponType.BOW))
-        {
-            activeChar.sendPacket(new ActionFailed());
-            return;
-        }
+		if (activeChar.isSitting() || (activeChar.isAttackingNow() && (activeChar.getActiveWeaponItem() != null) && (activeChar.getActiveWeaponItem().getItemType() == L2WeaponType.BOW)))
+		{
+			activeChar.sendPacket(new ActionFailed());
+			return;
+		}
 
-        final L2BoatInstance boat;
-        if (activeChar.isInBoat())
-        {
-            boat = activeChar.getBoat();
-            if (boat.getObjectId() != _BoatId)
-            {
-                activeChar.sendPacket(new ActionFailed());
-                return;
-            }
-        }
-        else
-        {
-            boat = BoatManager.getInstance().getBoat(_BoatId);
-            if (boat == null)
-            {
-                activeChar.sendPacket(new ActionFailed());
-                return;
-            }
-            activeChar.setBoat(boat);
-        }
+		final L2BoatInstance boat;
+		if (activeChar.isInBoat())
+		{
+			boat = activeChar.getBoat();
+			if (boat.getObjectId() != _BoatId)
+			{
+				activeChar.sendPacket(new ActionFailed());
+				return;
+			}
+		}
+		else
+		{
+			boat = BoatManager.getInstance().getBoat(_BoatId);
+			if (boat == null)
+			{
+				activeChar.sendPacket(new ActionFailed());
+				return;
+			}
+			activeChar.setBoat(boat);
+		}
 
-        if (activeChar.getAI().moveInBoat())
-        {
-            activeChar.setInBoatPosition(_pos);
-            activeChar.broadcastPacket(new MoveToLocationInVehicle(activeChar, _pos, _origin_pos));
-        }
-    }
+		if (activeChar.getAI().moveInBoat())
+		{
+			activeChar.setInBoatPosition(_pos);
+			activeChar.broadcastPacket(new MoveToLocationInVehicle(activeChar, _pos, _origin_pos));
+		}
+	}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.BasePacket#getType()
-     */
-    @Override
-    public String getType()
-    {
-        // TODO Auto-generated method stub
-        return "[C] 5C RequestMoveToLocationInVehicle";
-    }
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.BasePacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		// TODO Auto-generated method stub
+		return "[C] 5C RequestMoveToLocationInVehicle";
+	}
 }

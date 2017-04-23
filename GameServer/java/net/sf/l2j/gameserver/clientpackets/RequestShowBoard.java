@@ -18,49 +18,37 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.communitybbs.CommunityBoard;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.4.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestShowBoard extends ClientBasePacket
+public class RequestShowBoard extends L2GameClientPacket
 {
 	private static final String _C__57_REQUESTSHOWBOARD = "[C] 57 RequestShowBoard";
-
+	
 	@SuppressWarnings("unused")
-    private final int _unknown;
-	/**
-	 * packet type id 0x57
-	 * 
-	 * sample
-	 * 
-	 * 57
-	 * 01 00 00 00		// unknown (always 1?)
-	 * 
-	 * format:		cd
-	 * @param decrypt
-	 */
-	public RequestShowBoard(ByteBuffer buf, ClientThread client)
+	private int _unknown;
+	
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_unknown = readD();
 	}
-
-        @Override
+	
+	@Override
 	public void runImpl()
 	{
 		CommunityBoard.getInstance().handleCommands(getClient(), Config.BBS_DEFAULT);
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__57_REQUESTSHOWBOARD;

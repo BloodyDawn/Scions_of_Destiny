@@ -18,26 +18,25 @@
  */
 package net.sf.l2j.gameserver.serverpackets;
 
-public class ExOlympiadMatchEnd extends ServerBasePacket
+public class ExOlympiadMatchEnd extends L2GameServerPacket
 {
-    private static final String _S__FE_2C_OLYMPIADMATCHEND = "[S] FE:2C ExOlympiadMatchEnd";
-    private static int _mode;
-
-    public ExOlympiadMatchEnd()
-    {
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xfe);
-        writeH(0x2c);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__FE_2C_OLYMPIADMATCHEND;
-    }
+	private static final String _S__FE_2C_OLYMPIADMATCHEND = "[S] FE:2C ExOlympiadMatchEnd";
+	private static int _mode;
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xfe);
+		writeH(0x2c);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__FE_2C_OLYMPIADMATCHEND;
+	}
 }

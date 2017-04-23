@@ -18,52 +18,60 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
- * @author Dezmond_snz
- * Format: cddd
+ * @author Dezmond_snz Format: cddd
  */
-public class DlgAnswer extends ClientBasePacket
+public class DlgAnswer extends L2GameClientPacket
 {
 	private static final String _C__C5_DLGANSWER = "[C] C5 DlgAnswer";
 	private static Logger _log = Logger.getLogger(DlgAnswer.class.getName());
-	
+
 	private int _messageId;
 	private int _answer, _unk;
-	
-	public DlgAnswer(ByteBuffer buf, ClientThread client)
+
+	@Override
+	protected void readImpl()
 	{
-		super(buf,client);
 		_messageId = readD();
 		_answer = readD();
 		_unk = readD();
 	}
-
-        @Override
+	
+	@Override
 	public void runImpl()
 	{
 		if (Config.DEBUG)
-			_log.fine(getType()+": Answer acepted. Message ID "+_messageId+", asnwer "+_answer+", unknown field "+_unk);
-
-                L2PcInstance activeChar = getClient().getActiveChar();
-                if (activeChar == null)
-                    return;
-
+		{
+			_log.fine(getType() + ": Answer acepted. Message ID " + _messageId + ", asnwer " + _answer + ", unknown field " + _unk);
+		}
+		
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
 		if (_messageId == SystemMessage.RESSURECTION_REQUEST)
-			activeChar.ReviveAnswer(_answer);
-                else if (_messageId == 1140)
-                        activeChar.gatesAnswer(_answer, 1);
-                else if (_messageId == 1141)
-                        activeChar.gatesAnswer(_answer, 0);
+		{
+			activeChar.ReviveAnswer(_answer);
+		}
+		else if (_messageId == 1140)
+		{
+			activeChar.gatesAnswer(_answer, 1);
+		}
+		else if (_messageId == 1141)
+		{
+			activeChar.gatesAnswer(_answer, 0);
+		}
 	}
-
+	
+	@Override
 	public String getType()
 	{
 		return _C__C5_DLGANSWER;

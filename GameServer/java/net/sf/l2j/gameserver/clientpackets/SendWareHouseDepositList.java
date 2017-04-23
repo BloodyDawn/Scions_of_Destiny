@@ -18,11 +18,9 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.ClanWarehouse;
 import net.sf.l2j.gameserver.model.ItemContainer;
 import net.sf.l2j.gameserver.model.L2ItemInstance;
@@ -33,175 +31,205 @@ import net.sf.l2j.gameserver.serverpackets.InventoryUpdate;
 import net.sf.l2j.gameserver.serverpackets.ItemList;
 import net.sf.l2j.gameserver.serverpackets.StatusUpdate;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.templates.L2EtcItemType;
 import net.sf.l2j.gameserver.util.IllegalPlayerAction;
 import net.sf.l2j.gameserver.util.Util;
 
 /**
- * This class ...
- *
- * 31  SendWareHouseDepositList  cd (dd)
- *  
+ * This class ... 31 SendWareHouseDepositList cd (dd)
  * @version $Revision: 1.3.4.5 $ $Date: 2005/04/11 10:06:09 $
  */
-public class SendWareHouseDepositList extends ClientBasePacket
+public class SendWareHouseDepositList extends L2GameClientPacket
 {
-    private static final String _C__31_SENDWAREHOUSEDEPOSITLIST = "[C] 31 SendWareHouseDepositList";
-    private static Logger _log = Logger.getLogger(SendWareHouseDepositList.class.getName());
+	private static final String _C__31_SENDWAREHOUSEDEPOSITLIST = "[C] 31 SendWareHouseDepositList";
+	private static Logger _log = Logger.getLogger(SendWareHouseDepositList.class.getName());
 
-    private int _count;
-    private int[] _items;
+	private int _count;
+	private int[] _items;
 
-    public SendWareHouseDepositList(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _count = readD();
-        if (_count < 0 || _count > Config.MAX_ITEM_IN_PACKET)
-            _count = 0;
+	@Override
+	protected void readImpl()
+	{
+		_count = readD();
+		if ((_count < 0) || ((_count * 8) > _buf.remaining()) || (_count > Config.MAX_ITEM_IN_PACKET))
+		{
+			_count = 0;
+		}
 
-        _items = new int[_count * 2];
-        for (int i=0; i < _count; i++)
-        {
-            int objectId = readD(); _items[i * 2 + 0] = objectId;
-            long cnt    = readD(); 
-            if (cnt > Integer.MAX_VALUE || cnt < 0)
-            {
-                _count = 0;
-                _items = null;
-                return;
-            }
-            _items[i * 2 + 1] = (int)cnt;
-        }
-    }
+		_items = new int[_count * 2];
+		for (int i = 0; i < _count; i++)
+		{
+			int objectId = readD();
+			_items[(i * 2) + 0] = objectId;
+			long cnt = readD();
+			if ((cnt > Integer.MAX_VALUE) || (cnt < 0))
+			{
+				_count = 0;
+				_items = null;
+				return;
+			}
+			_items[(i * 2) + 1] = (int) cnt;
+		}
+	}
 
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
 
-        ItemContainer warehouse = player.getActiveWarehouse();
-        if (warehouse == null)
-            return;
+		ItemContainer warehouse = player.getActiveWarehouse();
+		if (warehouse == null)
+		{
+			return;
+		}
 
-        L2FolkInstance manager = player.getLastFolkNPC();
-        if ((manager == null || !player.isInsideRadius(manager, L2NpcInstance.INTERACTION_DISTANCE, false, false)) && !player.isGM())
-            return;
+		L2FolkInstance manager = player.getLastFolkNPC();
+		if (((manager == null) || !player.isInsideRadius(manager, L2NpcInstance.INTERACTION_DISTANCE, false, false)) && !player.isGM())
+		{
+			return;
+		}
 
-        if (warehouse instanceof ClanWarehouse && Config.GM_DISABLE_TRANSACTION && player.getAccessLevel() >= Config.GM_TRANSACTION_MIN && player.getAccessLevel() <= Config.GM_TRANSACTION_MAX)
-        {
-            player.sendMessage("Transactions are disabled for your Access Level.");
-            return;
-        }
+		if ((warehouse instanceof ClanWarehouse) && Config.GM_DISABLE_TRANSACTION && (player.getAccessLevel() >= Config.GM_TRANSACTION_MIN) && (player.getAccessLevel() <= Config.GM_TRANSACTION_MAX))
+		{
+			player.sendMessage("Transactions are disabled for your Access Level.");
+			return;
+		}
 
-        if (player.getActiveEnchantItem() != null)
-        {
-            Util.handleIllegalPlayerAction(player,"Player "+player.getName()+" tried to use enchant Exploit!", IllegalPlayerAction.PUNISH_KICKBAN);
-            player.setActiveEnchantItem(null);
-            return;
-        }
+		if (player.getActiveEnchantItem() != null)
+		{
+			Util.handleIllegalPlayerAction(player, "Player " + player.getName() + " tried to use enchant Exploit!", IllegalPlayerAction.PUNISH_KICKBAN);
+			player.setActiveEnchantItem(null);
+			return;
+		}
 
-        // Alt game - Karma punishment
-        if (!Config.ALT_GAME_KARMA_PLAYER_CAN_USE_WAREHOUSE && player.getKarma() > 0)
-            return;
+		// Alt game - Karma punishment
+		if (!Config.ALT_GAME_KARMA_PLAYER_CAN_USE_WAREHOUSE && (player.getKarma() > 0))
+		{
+			return;
+		}
 
-        // Freight price from config or normal price per item slot (30)
-        int fee = _count * 30;
-        int currentAdena = player.getAdena(); 
-        int slots = 0;
+		// Freight price from config or normal price per item slot (30)
+		int fee = _count * 30;
+		int currentAdena = player.getAdena();
 
-        for (int i = 0; i < _count; i++)
-        {
-            int objectId = _items[i * 2 + 0];
-            int count = _items[i * 2 + 1];
+		int slots = 0;
 
-            // Check validity of requested item
-            L2ItemInstance item = player.checkItemManipulation(objectId, count, "deposit");
-            if (item == null)
-            {
-            	_log.warning("Error depositing a warehouse object for char " + player.getName());
-            	_items[i * 2 + 0] = 0;
-            	_items[i * 2 + 1] = 0;
-            	continue;
-            }
+		for (int i = 0; i < _count; i++)
+		{
+			int objectId = _items[(i * 2) + 0];
+			int count = _items[(i * 2) + 1];
 
-            // Calculate needed adena and slots
-            if (item.getItemId() == 57)
-                currentAdena -= count;
+			// Check validity of requested item
+			L2ItemInstance item = player.checkItemManipulation(objectId, count, "deposit");
+			if (item == null)
+			{
+				_log.warning("Error depositing a warehouse object for char " + player.getName());
+				_items[(i * 2) + 0] = 0;
+				_items[(i * 2) + 1] = 0;
+				continue;
+			}
 
-            if (!item.isStackable())
-                slots += count;
-            else if (warehouse.getItemByItemId(item.getItemId()) == null)
-                slots++;
-        }
+			// Calculate needed adena and slots
+			if (item.getItemId() == 57)
+			{
+				currentAdena -= count;
+			}
 
-        // Item Max Limit Check 
-        if (!warehouse.validateCapacity(slots))
-        {
-            sendPacket(new SystemMessage(SystemMessage.YOU_HAVE_EXCEEDED_QUANTITY_THAT_CAN_BE_INPUTTED));
-            return;
-        }
+			if (!item.isStackable())
+			{
+				slots += count;
+			}
+			else if (warehouse.getItemByItemId(item.getItemId()) == null)
+			{
+				slots++;
+			}
+		}
 
-        // Check if enough adena and charge the fee
-        if (currentAdena < fee || !player.reduceAdena("Warehouse", fee, player.getLastFolkNPC(), false))
-        {
-            sendPacket(new SystemMessage(SystemMessage.YOU_NOT_ENOUGH_ADENA));
-            return;
-        }
+		// Item Max Limit Check
+		if (!warehouse.validateCapacity(slots))
+		{
+			sendPacket(new SystemMessage(SystemMessage.YOU_HAVE_EXCEEDED_QUANTITY_THAT_CAN_BE_INPUTTED));
+			return;
+		}
 
-        // Proceed to the transfer
-        InventoryUpdate playerIU = Config.FORCE_INVENTORY_UPDATE ? null : new InventoryUpdate();
-        for (int i = 0; i < _count; i++)
-        {
-            int objectId = _items[i * 2 + 0];
-            int count = _items[i * 2 + 1];
+		// Check if enough adena and charge the fee
+		if ((currentAdena < fee) || !player.reduceAdena("Warehouse", fee, player.getLastFolkNPC(), false))
+		{
+			sendPacket(new SystemMessage(SystemMessage.YOU_NOT_ENOUGH_ADENA));
+			return;
+		}
 
-            // check for an invalid item
-            if (objectId == 0 && count == 0)
-                continue;
+		// Proceed to the transfer
+		InventoryUpdate playerIU = Config.FORCE_INVENTORY_UPDATE ? null : new InventoryUpdate();
+		for (int i = 0; i < _count; i++)
+		{
+			int objectId = _items[(i * 2) + 0];
+			int count = _items[(i * 2) + 1];
 
-            L2ItemInstance oldItem = player.getInventory().getItemByObjectId(objectId);
-            if (oldItem == null)
-            {
-                _log.warning("Error depositing a warehouse object for char " + player.getName());
-                continue;
-            }
+			// check for an invalid item
+			if ((objectId == 0) && (count == 0))
+			{
+				continue;
+			}
 
-            if (!oldItem.isAvailable(player, true))
-                continue;
+			L2ItemInstance oldItem = player.getInventory().getItemByObjectId(objectId);
+			if (oldItem == null)
+			{
+				_log.warning("Error depositing a warehouse object for char " + player.getName());
+				continue;
+			}
 
-            L2ItemInstance newItem = player.getInventory().transferItem("Warehouse", objectId, count, warehouse, player, player.getLastFolkNPC());
-            if (newItem == null)
-            {
-            	_log.warning("Error depositing a warehouse object for char " + player.getName());
-            	continue;
-            }
+			if (!oldItem.isAvailable(player, true))
+			{
+				continue;
+			}
 
-            if (playerIU != null)
-            {
-            	if (oldItem.getCount() > 0 && oldItem != newItem) playerIU.addModifiedItem(oldItem);
-            	else playerIU.addRemovedItem(oldItem);
-            }
-        }
+			L2ItemInstance newItem = player.getInventory().transferItem("Warehouse", objectId, count, warehouse, player, player.getLastFolkNPC());
+			if (newItem == null)
+			{
+				_log.warning("Error depositing a warehouse object for char " + player.getName());
+				continue;
+			}
 
-        // Send updated item list to the player
-        if (playerIU != null)
-            player.sendPacket(playerIU);
-        else
-            player.sendPacket(new ItemList(player, false));
+			if (playerIU != null)
+			{
+				if ((oldItem.getCount() > 0) && (oldItem != newItem))
+				{
+					playerIU.addModifiedItem(oldItem);
+				}
+				else
+				{
+					playerIU.addRemovedItem(oldItem);
+				}
+			}
+		}
 
-        // Update current load status on player
-        StatusUpdate su = new StatusUpdate(player.getObjectId());
-        su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
-        player.sendPacket(su);
-    }
+		// Send updated item list to the player
+		if (playerIU != null)
+		{
+			player.sendPacket(playerIU);
+		}
+		else
+		{
+			player.sendPacket(new ItemList(player, false));
+		}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__31_SENDWAREHOUSEDEPOSITLIST;
-    }
+		// Update current load status on player
+		StatusUpdate su = new StatusUpdate(player.getObjectId());
+		su.addAttribute(StatusUpdate.CUR_LOAD, player.getCurrentLoad());
+		player.sendPacket(su);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__31_SENDWAREHOUSEDEPOSITLIST;
+	}
 }

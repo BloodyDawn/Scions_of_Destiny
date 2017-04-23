@@ -16,7 +16,7 @@
  *
  * http://www.gnu.org/copyleft/gpl.html
  */
-package net.sf.l2j.gameserver.handler.skillhandlers; 
+package net.sf.l2j.gameserver.handler.skillhandlers;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.handler.ISkillHandler;
@@ -31,91 +31,110 @@ import net.sf.l2j.gameserver.serverpackets.InventoryUpdate;
 import net.sf.l2j.gameserver.serverpackets.ItemList;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
-/** 
- * @author _drunk_ 
- * 
- * TODO To change the template for this generated type comment go to 
- * Window - Preferences - Java - Code Style - Code Templates 
- */ 
-public class Sweep implements ISkillHandler 
-{ 
-    //private static Logger _log = Logger.getLogger(Sweep.class.getName()); 
-    protected SkillType[] _skillIds = {SkillType.SWEEP}; 
-    
-    public void useSkill(L2Character activeChar, @SuppressWarnings("unused") L2Skill skill, L2Object[] targets) 
-    { 
-        if (!(activeChar instanceof L2PcInstance))
-            return;
-
-        L2PcInstance player = (L2PcInstance)activeChar;
-        InventoryUpdate iu = Config.FORCE_INVENTORY_UPDATE ? null : new InventoryUpdate();
-        boolean send = false;
-
-        for(int index = 0;index < targets.length;index++) 
-        { 
-            if (!(targets[index] instanceof L2Attackable)) 
-            	continue;
-
-            L2Attackable target = (L2Attackable)targets[index];
-            L2Attackable.RewardItem[] items = null;
-
-            boolean isSweeping = false;
-
-            synchronized (target)
-            {
-                if (target.isSweepActive())
-                {
-                    items = target.takeSweep();
-                    isSweeping = true;
-                }
-            }
-
-            if (isSweeping)
-            {
-                if (items == null || items.length == 0) 
-                    continue;
-
-                for (L2Attackable.RewardItem ritem : items)
-                {
-                    if (player.isInParty())
-                        player.getParty().distributeItem(player, ritem, true, target);
-                    else
-                    {
-                        L2ItemInstance item = player.getInventory().addItem("Sweep", ritem.getItemId(), ritem.getCount(), player, target);
-                        if (iu != null)
-                            iu.addItem(item);
-                        send = true;
-
-                        SystemMessage smsg;
-                        if (ritem.getCount() > 1)
-                        {
-                            smsg = new SystemMessage(SystemMessage.EARNED_S2_S1_s); // earned $s2$s1
-                            smsg.addItemName(ritem.getItemId());
-                            smsg.addNumber(ritem.getCount());
-                        }
-                        else
-                        {
-                            smsg = new SystemMessage(SystemMessage.EARNED_ITEM); // earned $s1
-                            smsg.addItemName(ritem.getItemId());
-                        }
-                        player.sendPacket(smsg);
-                    }
-                }
-            }
-            target.setSpoil(false);
-
-            if (send)
-            {
-                if (iu != null) 
-                    player.sendPacket(iu);
-                else 
-                    player.sendPacket(new ItemList(player, false));
-            }
-        }
-    } 
-
-    public SkillType[] getSkillIds() 
-    { 
-        return _skillIds; 
-    } 
+/**
+ * @author _drunk_ TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code Templates
+ */
+public class Sweep implements ISkillHandler
+{
+	// private static Logger _log = Logger.getLogger(Sweep.class.getName());
+	protected SkillType[] _skillIds =
+	{
+		SkillType.SWEEP
+	};
+	
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		if (!(activeChar instanceof L2PcInstance))
+		{
+			return;
+		}
+		
+		L2PcInstance player = (L2PcInstance) activeChar;
+		InventoryUpdate iu = Config.FORCE_INVENTORY_UPDATE ? null : new InventoryUpdate();
+		boolean send = false;
+		
+		for (int index = 0; index < targets.length; index++)
+		{
+			if (!(targets[index] instanceof L2Attackable))
+			{
+				continue;
+			}
+			
+			L2Attackable target = (L2Attackable) targets[index];
+			L2Attackable.RewardItem[] items = null;
+			
+			boolean isSweeping = false;
+			
+			synchronized (target)
+			{
+				if (target.isSweepActive())
+				{
+					items = target.takeSweep();
+					isSweeping = true;
+				}
+			}
+			
+			if (isSweeping)
+			{
+				
+				if ((items == null) || (items.length == 0))
+				{
+					continue;
+				}
+				
+				for (L2Attackable.RewardItem ritem : items)
+				{
+					if (player.isInParty())
+					{
+						player.getParty().distributeItem(player, ritem, true, target);
+					}
+					else
+					{
+						L2ItemInstance item = player.getInventory().addItem("Sweep", ritem.getItemId(), ritem.getCount(), player, target);
+						if (iu != null)
+						{
+							iu.addItem(item);
+						}
+						send = true;
+						
+						SystemMessage smsg;
+						if (ritem.getCount() > 1)
+						{
+							smsg = new SystemMessage(SystemMessage.EARNED_S2_S1_s); // earned $s2$s1
+							smsg.addItemName(ritem.getItemId());
+							smsg.addNumber(ritem.getCount());
+						}
+						else
+						{
+							smsg = new SystemMessage(SystemMessage.EARNED_ITEM); // earned $s1
+							smsg.addItemName(ritem.getItemId());
+						}
+						player.sendPacket(smsg);
+					}
+				}
+				
+			}
+			
+			target.setSpoil(false);
+			
+			if (send)
+			{
+				if (iu != null)
+				{
+					player.sendPacket(iu);
+				}
+				else
+				{
+					player.sendPacket(new ItemList(player, false));
+				}
+			}
+		}
+	}
+	
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return _skillIds;
+	}
 }

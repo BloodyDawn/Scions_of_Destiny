@@ -18,21 +18,65 @@
  */
 package net.sf.l2j.loginserver.clientpackets;
 
-import net.sf.l2j.loginserver.ClientThread;
-import net.sf.l2j.loginserver.ClientThread.LoginClientState;
+import net.sf.l2j.loginserver.L2LoginClient;
+import net.sf.l2j.loginserver.L2LoginClient.LoginClientState;
 import net.sf.l2j.loginserver.serverpackets.GGAuth;
+import net.sf.l2j.loginserver.serverpackets.LoginFail;
 
 public class RequestAuthGG extends ClientBasePacket
-{
-    public RequestAuthGG(byte[] rawPacket, ClientThread client)
-    {
-        super(rawPacket, client);
-    }
+{
+	private int _sessionId = 0;
+	private final int _data1;
+	private final int _data2;
+	private final int _data3;
+	private final int _data4;
 
-    @Override
-    public void run()
-    {
-        getClient().setState(LoginClientState.AUTHED_GG);
-        getClient().sendPacket(new GGAuth(GGAuth.SKIP_GG_AUTH_REQUEST));
-    }
+	public int getSessionId()
+	{
+		return _sessionId;
+	}
+
+	public int getData1()
+	{
+		return _data1;
+	}
+
+	public int getData2()
+	{
+		return _data2;
+	}
+
+	public int getData3()
+	{
+		return _data3;
+	}
+
+	public int getData4()
+	{
+		return _data4;
+	}
+
+	public RequestAuthGG(byte[] rawPacket, L2LoginClient client)
+	{
+		super(rawPacket, client);
+		_sessionId = readD();
+		_data1 = readD();
+		_data2 = readD();
+		_data3 = readD();
+		_data4 = readD();
+	}
+	
+	@Override
+	public void run()
+	{
+		if (_sessionId == getClient().getSessionId())
+		{
+			getClient().setState(LoginClientState.AUTHED_GG);
+			getClient().sendPacket(new GGAuth(_sessionId));
+		}
+		else
+		{
+			getClient().sendPacket(new LoginFail(LoginFail.REASON_ACCESS_FAILED));
+		}
+	}
 }

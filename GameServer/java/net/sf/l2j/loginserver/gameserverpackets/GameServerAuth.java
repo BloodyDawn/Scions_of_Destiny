@@ -21,29 +21,20 @@ package net.sf.l2j.loginserver.gameserverpackets;
 import java.util.logging.Logger;
 
 /**
- * Format: cccddb
- * c desired ID
- * c accept alternative ID
- * c reserve Host
- * s ExternalHostName
- * s InetranlHostName
- * d max players
- * d hexid size
- * b hexid
+ * Format: cccddb c desired ID c accept alternative ID c reserve Host s ExternalHostName s InetranlHostName d max players d hexid size b hexid
  * @author -Wooden-
- *
  */
 public class GameServerAuth extends GameServerBasePacket
 {
 	protected static Logger _log = Logger.getLogger(GameServerAuth.class.getName());
-	private byte[] _hexID;
-	private int _desiredID;
-	private boolean _hostReserved;
-	private boolean _acceptAlternativeID;
-	private int _max_palyers;
-	private int _port;
-	private String _externalHost;
-	private String _internalHost;
+	private final byte[] _hexID;
+	private final int _desiredID;
+	private final boolean _hostReserved;
+	private final boolean _acceptAlternativeID;
+	private final int _max_palyers;
+	private final int _port;
+	private final String _externalHost;
+	private final String _internalHost;
 	
 	/**
 	 * @param decrypt
@@ -52,7 +43,7 @@ public class GameServerAuth extends GameServerBasePacket
 	{
 		super(decrypt);
 		_desiredID = readC();
-		_acceptAlternativeID = (readC() == 0 ? false : true); 
+		_acceptAlternativeID = (readC() == 0 ? false : true);
 		_hostReserved = (readC() == 0 ? false : true);
 		_externalHost = readS();
 		_internalHost = readS();

@@ -18,40 +18,41 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.3 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestPrivateStoreQuitSell extends ClientBasePacket
+public class RequestPrivateStoreQuitSell extends L2GameClientPacket
 {
 	private static final String _C__76_REQUESTPRIVATESTOREQUITSELL = "[C] 76 RequestPrivateStoreQuitSell";
-	//private static Logger _log = Logger.getLogger(RequestPrivateStoreQuitSell.class.getName());
-	
-	public RequestPrivateStoreQuitSell(ByteBuffer buf, ClientThread client)
-	{
-		super(buf, client);
-	}
+	// private static Logger _log = Logger.getLogger(RequestPrivateStoreQuitSell.class.getName());
 
-        @Override
+	@Override
+	protected void readImpl()
+	{
+	}
+	
+	@Override
 	public void runImpl()
 	{
 		L2PcInstance player = getClient().getActiveChar();
-		if (player == null) return;
-
+		if (player == null)
+		{
+			return;
+		}
+		
 		player.setPrivateStoreType(L2PcInstance.STORE_PRIVATE_NONE);
 		player.standUp();
 		player.broadcastUserInfo();
-        }
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
 	 */
+	@Override
 	public String getType()
 	{
 		return _C__76_REQUESTPRIVATESTOREQUITSELL;

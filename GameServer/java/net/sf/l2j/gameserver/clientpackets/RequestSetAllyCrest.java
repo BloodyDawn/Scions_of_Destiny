@@ -18,7 +18,6 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.l2j.L2DatabaseFactory;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.cache.CrestCache;
 import net.sf.l2j.gameserver.datatables.ClanTable;
 import net.sf.l2j.gameserver.idfactory.BitSetIDFactory;
@@ -35,96 +33,107 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.4 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestSetAllyCrest extends ClientBasePacket
+public class RequestSetAllyCrest extends L2GameClientPacket
 {
-    private static final String _C__87_REQUESTSETALLYCREST = "[C] 87 RequestSetAllyCrest";
-    static Logger _log = Logger.getLogger(RequestSetAllyCrest.class.getName());
-            
-    private final int _length;
-    private final byte[] _data;
-    
-    public RequestSetAllyCrest(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _length = readD();
-        _data = readB(_length);
-    }
+	private static final String _C__87_REQUESTSETALLYCREST = "[C] 87 RequestSetAllyCrest";
+	static Logger _log = Logger.getLogger(RequestSetAllyCrest.class.getName());
 
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-        	return;
+	private int _length;
+	private byte[] _data;
 
-        if (_length < 0)
-        {
-            activeChar.sendMessage("File transfer error.");
-            return;
-        }
+	@Override
+	protected void readImpl()
+	{
+		_length = readD();
+		if (_length > 192)
+		{
+			return;
+		}
 
-        if (_length > 192)
-        {
-            activeChar.sendMessage("The file size is more than 192 bytes.");
-            return;
-        }
-        
-        if (activeChar.getAllyId() != 0)
-        {   
-            L2Clan leaderclan = ClanTable.getInstance().getClan(activeChar.getAllyId());
-            
-            if (activeChar.getClanId() != leaderclan.getClanId() || !activeChar.isClanLeader())
-            {   
-                return;
-            }
-            
-            CrestCache crestCache = CrestCache.getInstance();
-            
-            int newId = BitSetIDFactory.getInstance().getNextId();
-            
-            if (!crestCache.saveAllyCrest(newId,_data))
-            {
-                _log.log(Level.INFO, "Error loading crest of ally:" + leaderclan.getAllyName());
-                return;
-            }
-            
-            if (leaderclan.getAllyCrestId() != 0)
-            {
-                crestCache.removeAllyCrest(leaderclan.getAllyCrestId());
-            }
+		_data = new byte[_length];
+		readB(_data);
+	}
 
-            try (Connection con = L2DatabaseFactory.getInstance().getConnection();
-                PreparedStatement statement = con.prepareStatement("UPDATE clan_data SET ally_crest_id = ? WHERE ally_id = ?"))
-            {
-                statement.setInt(1, newId);
-                statement.setInt(2, leaderclan.getAllyId());
-                statement.executeUpdate();
-            }
-            catch (SQLException e)
-            {
-                _log.warning("could not update the ally crest id:"+e.getMessage());
-            }
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
 
-            for (L2Clan clan : ClanTable.getInstance().getClans())
-            {
-                if (clan.getAllyId() == activeChar.getAllyId())
-                {
-                    clan.setAllyCrestId(newId);
-                    for (L2PcInstance member : clan.getOnlineMembers(0))
-                        member.broadcastUserInfo();
-                }
-            }
-        }
-    }
+		if (_length < 0)
+		{
+			activeChar.sendMessage("File transfer error.");
+			return;
+		}
 
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__87_REQUESTSETALLYCREST;
-    }
+		if (_length > 192)
+		{
+			activeChar.sendMessage("The file size is more than 192 bytes.");
+			return;
+		}
+
+		if (activeChar.getAllyId() != 0)
+		{
+			L2Clan leaderclan = ClanTable.getInstance().getClan(activeChar.getAllyId());
+
+			if ((activeChar.getClanId() != leaderclan.getClanId()) || !activeChar.isClanLeader())
+			{
+				return;
+			}
+
+			CrestCache crestCache = CrestCache.getInstance();
+
+			int newId = BitSetIDFactory.getInstance().getNextId();
+
+			if (!crestCache.saveAllyCrest(newId, _data))
+			{
+				_log.log(Level.INFO, "Error loading crest of ally:" + leaderclan.getAllyName());
+				return;
+			}
+
+			if (leaderclan.getAllyCrestId() != 0)
+			{
+				crestCache.removeAllyCrest(leaderclan.getAllyCrestId());
+			}
+
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection();
+				PreparedStatement statement = con.prepareStatement("UPDATE clan_data SET ally_crest_id = ? WHERE ally_id = ?"))
+			{
+				statement.setInt(1, newId);
+				statement.setInt(2, leaderclan.getAllyId());
+				statement.executeUpdate();
+			}
+			catch (SQLException e)
+			{
+				_log.warning("could not update the ally crest id:" + e.getMessage());
+			}
+
+			for (L2Clan clan : ClanTable.getInstance().getClans())
+			{
+				if (clan.getAllyId() == activeChar.getAllyId())
+				{
+					clan.setAllyCrestId(newId);
+					for (L2PcInstance member : clan.getOnlineMembers(0))
+					{
+						member.broadcastUserInfo();
+					}
+				}
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__87_REQUESTSETALLYCREST;
+	}
 }

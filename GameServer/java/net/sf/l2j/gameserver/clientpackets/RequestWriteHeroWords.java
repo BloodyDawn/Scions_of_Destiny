@@ -18,43 +18,34 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 /**
- * Format chS
- * c (id) 0xD0
- * h (subid) 0x0C
- * S the hero's words :)
+ * Format chS c (id) 0xD0 h (subid) 0x0C S the hero's words :)
  * @author -Wooden-
- *
  */
-public class RequestWriteHeroWords extends ClientBasePacket
+public class RequestWriteHeroWords extends L2GameClientPacket
 {
 	private static final String _C__FE_0C_REQUESTWRITEHEROWORDS = "[C] D0:0C RequestWriteHeroWords";
 	@SuppressWarnings("unused")
 	private String _heroWords;
-
-	/**
-	 * @param buf
-	 * @param client
-	 */
-	public RequestWriteHeroWords(ByteBuffer buf, ClientThread client)
+	
+	@Override
+	protected void readImpl()
 	{
-		super(buf, client);
 		_heroWords = readS();
 	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#runImpl()
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#runImpl()
 	 */
 	@Override
 	public void runImpl()
 	{
 		// TODO Auto-generated method stub
 	}
-
-	/* (non-Javadoc)
+	
+	/*
+	 * (non-Javadoc)
 	 * @see net.sf.l2j.gameserver.BasePacket#getType()
 	 */
 	@Override

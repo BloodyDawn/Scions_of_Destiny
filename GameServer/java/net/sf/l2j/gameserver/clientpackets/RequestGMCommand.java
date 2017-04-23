@@ -18,10 +18,8 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.GMViewCharacterInfo;
@@ -33,87 +31,90 @@ import net.sf.l2j.gameserver.serverpackets.GMViewWarehouseWithdrawList;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.1.2.2.2.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestGMCommand extends ClientBasePacket
+public class RequestGMCommand extends L2GameClientPacket
 {
-    private static final String _C__6E_REQUESTGMCOMMAND = "[C] 6e RequestGMCommand";
-    private static Logger _log = Logger.getLogger(RequestGMCommand.class.getName());
-
-    private final String _targetName;
-    private final int _command;
-
-    /**
-     * packet type id 0x00
-     * format:	cd
-     *  
-     * @param rawPacket
-     */
-    public RequestGMCommand(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _targetName = readS();
-        _command    = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance activeChar = getClient().getActiveChar();
-        if (activeChar == null)
-            return;
-
-        if (!activeChar.isGM())
-            return;
-
-        L2PcInstance player = L2World.getInstance().getPlayer(_targetName);
-        if (player == null)
-            return;
-
-        switch(_command)
-        {
-            case 1: // player status
-            {
-                sendPacket(new GMViewCharacterInfo(player));
-                break;
-            }
-            case 2: // player clan
-            {
-                if (player.getClan() != null)
-                    sendPacket(new GMViewPledgeInfo(player.getClan(),player));
-
-                break;
-            }
-            case 3: // player skills
-            {
-                sendPacket(new GMViewSkillInfo(player));
-                break;
-            }
-            case 4: // player quests
-            {
-                sendPacket(new GMViewQuestList(player));
-                break;
-            }
-            case 5: // player inventory
-            {
-                sendPacket(new GMViewItemList(player));
-                break;
-            }
-            case 6: // player warehouse
-            {
-                // defective packet
-                sendPacket(new GMViewWarehouseWithdrawList(player));
-                break;
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__6E_REQUESTGMCOMMAND;
-    }
+	private static final String _C__6E_REQUESTGMCOMMAND = "[C] 6e RequestGMCommand";
+	private static Logger _log = Logger.getLogger(RequestGMCommand.class.getName());
+	
+	private String _targetName;
+	private int _command;
+	
+	@Override
+	protected void readImpl()
+	{
+		_targetName = readS();
+		_command = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance activeChar = getClient().getActiveChar();
+		if (activeChar == null)
+		{
+			return;
+		}
+		
+		if (!activeChar.isGM())
+		{
+			return;
+		}
+		
+		L2PcInstance player = L2World.getInstance().getPlayer(_targetName);
+		if (player == null)
+		{
+			return;
+		}
+		
+		switch (_command)
+		{
+			case 1: // player status
+			{
+				sendPacket(new GMViewCharacterInfo(player));
+				break;
+			}
+			case 2: // player clan
+			{
+				if (player.getClan() != null)
+				{
+					sendPacket(new GMViewPledgeInfo(player.getClan(), player));
+				}
+				
+				break;
+			}
+			case 3: // player skills
+			{
+				sendPacket(new GMViewSkillInfo(player));
+				break;
+			}
+			case 4: // player quests
+			{
+				sendPacket(new GMViewQuestList(player));
+				break;
+			}
+			case 5: // player inventory
+			{
+				sendPacket(new GMViewItemList(player));
+				break;
+			}
+			case 6: // player warehouse
+			{
+				// defective packet
+				sendPacket(new GMViewWarehouseWithdrawList(player));
+				break;
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__6E_REQUESTGMCOMMAND;
+	}
 }

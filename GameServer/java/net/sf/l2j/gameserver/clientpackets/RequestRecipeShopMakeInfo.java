@@ -18,45 +18,45 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
-
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.RecipeShopItemInfo;
 
 /**
- * This class ...
- * cdd
+ * This class ... cdd
  * @version $Revision: 1.1.2.1.2.2 $ $Date: 2005/03/27 15:29:30 $
  */
-public class RequestRecipeShopMakeInfo extends ClientBasePacket
+public class RequestRecipeShopMakeInfo extends L2GameClientPacket
 {
-    private static final String _C__B5_RequestRecipeShopMakeInfo = "[C] b5 RequestRecipeShopMakeInfo";
-    //private static Logger _log = Logger.getLogger(RequestRecipeShopMakeInfo.class.getName());
-    
-    @SuppressWarnings("unused")
-    private final int _playerObjectId;
-    private final int _recipeId;
-    
-    public RequestRecipeShopMakeInfo(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        _playerObjectId = readD();
-        _recipeId = readD();
-    }
-
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-	if (player == null)
-            return;
-
-        player.sendPacket(new RecipeShopItemInfo(_playerObjectId,_recipeId));
-    }
-
-    public String getType()
-    {
-        return _C__B5_RequestRecipeShopMakeInfo;
-    }
+	private static final String _C__B5_RequestRecipeShopMakeInfo = "[C] b5 RequestRecipeShopMakeInfo";
+	// private static Logger _log = Logger.getLogger(RequestRecipeShopMakeInfo.class.getName());
+	
+	@SuppressWarnings("unused")
+	private int _playerObjectId;
+	private int _recipeId;
+	
+	@Override
+	protected void readImpl()
+	{
+		_playerObjectId = readD();
+		_recipeId = readD();
+	}
+	
+	@Override
+	public void runImpl()
+	{
+		L2PcInstance player = getClient().getActiveChar();
+		if (player == null)
+		{
+			return;
+		}
+		
+		player.sendPacket(new RecipeShopItemInfo(_playerObjectId, _recipeId));
+		
+	}
+	
+	@Override
+	public String getType()
+	{
+		return _C__B5_RequestRecipeShopMakeInfo;
+	}
 }

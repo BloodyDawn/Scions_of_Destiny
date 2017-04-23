@@ -16,91 +16,116 @@
  *
  * http://www.gnu.org/copyleft/gpl.html
  */
-package net.sf.l2j.gameserver.handler.itemhandlers; 
+package net.sf.l2j.gameserver.handler.itemhandlers;
 
 import net.sf.l2j.gameserver.handler.IItemHandler;
 import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PlayableInstance;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.templates.L2Item;
 import net.sf.l2j.gameserver.templates.L2Weapon;
 import net.sf.l2j.gameserver.util.Broadcast;
 
-/** 
- * This class ... 
- *  
- * @version $Revision: 1.1.2.1.2.5 $ $Date: 2005/03/27 15:30:07 $ 
- */ 
+/**
+ * This class ...
+ * @version $Revision: 1.1.2.1.2.5 $ $Date: 2005/03/27 15:30:07 $
+ */
 
-public class BlessedSpiritShot implements IItemHandler 
-{ 
-	// all the items ids that this handler knowns 
-	private static int[] _itemIds = { 3947, 3948, 3949, 3950, 3951, 3952 };
-	private static int[] _skillIds = { 2061, 2160, 2161, 2162, 2163, 2164 };
+public class BlessedSpiritShot implements IItemHandler
+{
+	// all the items ids that this handler knowns
+	private static int[] _itemIds =
+	{
+		3947,
+		3948,
+		3949,
+		3950,
+		3951,
+		3952
+	};
+	private static int[] _skillIds =
+	{
+		2061,
+		2160,
+		2161,
+		2162,
+		2163,
+		2164
+	};
 
-	/* (non-Javadoc) 
-	 * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance) 
-	 */ 
-	public synchronized void useItem(L2PlayableInstance playable, L2ItemInstance item) 
-	{ 
-        if (!(playable instanceof L2PcInstance)) return;
-        
-        L2PcInstance activeChar = (L2PcInstance)playable;
-        L2ItemInstance weaponInst = activeChar.getActiveWeaponInstance();
-        L2Weapon weaponItem = activeChar.getActiveWeaponItem(); 
-        int itemId = item.getItemId();  
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.handler.IItemHandler#useItem(net.sf.l2j.gameserver.model.L2PcInstance, net.sf.l2j.gameserver.model.L2ItemInstance)
+	 */
+	@Override
+	public synchronized void useItem(L2PlayableInstance playable, L2ItemInstance item)
+	{
+		if (!(playable instanceof L2PcInstance))
+		{
+			return;
+		}
 
-        if (activeChar.isInOlympiadMode())
-        {
-            activeChar.sendPacket(new SystemMessage(SystemMessage.THIS_ITEM_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT));
-            return;
-        }
+		L2PcInstance activeChar = (L2PcInstance) playable;
+		L2ItemInstance weaponInst = activeChar.getActiveWeaponInstance();
+		L2Weapon weaponItem = activeChar.getActiveWeaponItem();
+		int itemId = item.getItemId();
 
-        // Check if Blessed Spiritshot can be used
-        if (weaponInst == null || weaponItem.getSpiritShotCount() == 0)
-        {
-            if(!activeChar.getAutoSoulShot().contains(itemId)) 
-                activeChar.sendPacket(new SystemMessage(SystemMessage.CANNOT_USE_SPIRITSHOTS));
-            return;
-        }
+		if (activeChar.isInOlympiadMode())
+		{
+			activeChar.sendPacket(new SystemMessage(SystemMessage.THIS_ITEM_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT));
+			return;
+		}
 
-        // Check if Blessed Spiritshot is already active (it can be charged over Spiritshot)
-        if (weaponInst.getChargedSpiritshot() != L2ItemInstance.CHARGED_NONE) return;
+		// Check if Blessed Spiritshot can be used
+		if ((weaponInst == null) || (weaponItem.getSpiritShotCount() == 0))
+		{
+			if (!activeChar.getAutoSoulShot().contains(itemId))
+			{
+				activeChar.sendPacket(new SystemMessage(SystemMessage.CANNOT_USE_SPIRITSHOTS));
+			}
+			return;
+		}
 
-        // Check for correct grade
-        int weaponGrade = weaponItem.getCrystalType(); 
-        if ((weaponGrade == L2Item.CRYSTAL_NONE && itemId != 3947) ||  
-    		(weaponGrade == L2Item.CRYSTAL_D && itemId != 3948) ||  
-    		(weaponGrade == L2Item.CRYSTAL_C && itemId != 3949) ||  
-    		(weaponGrade == L2Item.CRYSTAL_B && itemId != 3950) ||  
-    		(weaponGrade == L2Item.CRYSTAL_A && itemId != 3951) ||  
-    		(weaponGrade == L2Item.CRYSTAL_S && itemId != 3952)) 
-        { 
-            if(!activeChar.getAutoSoulShot().contains(itemId)) 
-                activeChar.sendPacket(new SystemMessage(SystemMessage.SPIRITSHOTS_GRADE_MISMATCH));
-            return; 
-        } 
+		// Check if Blessed Spiritshot is already active (it can be charged over Spiritshot)
+		if (weaponInst.getChargedSpiritshot() != L2ItemInstance.CHARGED_NONE)
+		{
+			return;
+		}
 
-        // Consume Blessed Spiritshot if player has enough of them 
-        if (!activeChar.destroyItemWithoutTrace("Consume", item.getObjectId(), weaponItem.getSpiritShotCount(), null, false))
-        { 
-            if (!activeChar.disableAutoShot(itemId))
-                activeChar.sendPacket(new SystemMessage(SystemMessage.NOT_ENOUGH_SPIRITSHOTS));
-            return; 
-        } 
+		// Check for correct grade
+		int weaponGrade = weaponItem.getCrystalType();
+		if (((weaponGrade == L2Item.CRYSTAL_NONE) && (itemId != 3947)) || ((weaponGrade == L2Item.CRYSTAL_D) && (itemId != 3948)) || ((weaponGrade == L2Item.CRYSTAL_C) && (itemId != 3949)) || ((weaponGrade == L2Item.CRYSTAL_B) && (itemId != 3950)) || ((weaponGrade == L2Item.CRYSTAL_A) && (itemId != 3951)) || ((weaponGrade == L2Item.CRYSTAL_S) && (itemId != 3952)))
+		{
+			if (!activeChar.getAutoSoulShot().contains(itemId))
+			{
+				activeChar.sendPacket(new SystemMessage(SystemMessage.SPIRITSHOTS_GRADE_MISMATCH));
+			}
+			return;
+		}
 
-        // Charge Blessed Spiritshot
-        weaponInst.setChargedSpiritshot(L2ItemInstance.CHARGED_BLESSED_SPIRITSHOT);
+		// Consume Blessed Spiritshot if player has enough of them
+		if (!activeChar.destroyItemWithoutTrace("Consume", item.getObjectId(), weaponItem.getSpiritShotCount(), null, false))
+		{
+			if (!activeChar.disableAutoShot(itemId))
+			{
+				activeChar.sendPacket(new SystemMessage(SystemMessage.NOT_ENOUGH_SPIRITSHOTS));
+			}
+			return;
+		}
 
-        // Send message to client
-        activeChar.sendPacket(new SystemMessage(SystemMessage.ENABLED_SPIRITSHOT));
-        Broadcast.toSelfAndKnownPlayersInRadius(activeChar, new MagicSkillUser(activeChar, activeChar, _skillIds[weaponGrade], 1, 0, 0), 360000/*600*/);
-	} 
+		// Charge Blessed Spiritshot
+		weaponInst.setChargedSpiritshot(L2ItemInstance.CHARGED_BLESSED_SPIRITSHOT);
 
-	public int[] getItemIds() 
-	{ 
-		return _itemIds; 
-	} 
+		// Send message to client
+		activeChar.sendPacket(new SystemMessage(SystemMessage.ENABLED_SPIRITSHOT));
+		Broadcast.toSelfAndKnownPlayersInRadius(activeChar, new MagicSkillUse(activeChar, activeChar, _skillIds[weaponGrade], 1, 0, 0), 360000/* 600 */);
+	}
+
+	@Override
+	public int[] getItemIds()
+	{
+		return _itemIds;
+	}
 }

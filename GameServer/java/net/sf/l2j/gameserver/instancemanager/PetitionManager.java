@@ -35,7 +35,7 @@ import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.CreatureSay;
 import net.sf.l2j.gameserver.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.serverpackets.ServerBasePacket;
+import net.sf.l2j.gameserver.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
 /**
@@ -204,7 +204,7 @@ public final class PetitionManager
 			return _type.toString().replace("_", " ");
 		}
 		
-		public void sendPetitionerPacket(ServerBasePacket responsePacket)
+		public void sendPetitionerPacket(L2GameServerPacket responsePacket)
 		{
 			if (getPetitioner() == null || getPetitioner().isOnline() == 0)
 			{
@@ -218,7 +218,7 @@ public final class PetitionManager
 			getPetitioner().sendPacket(responsePacket);
 		}
 		
-		public void sendResponderPacket(ServerBasePacket responsePacket)
+		public void sendResponderPacket(L2GameServerPacket responsePacket)
 		{
 			if (getResponder() == null || getResponder().isOnline() == 0)
 			{

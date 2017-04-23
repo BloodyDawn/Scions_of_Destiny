@@ -18,123 +18,120 @@
  */
 package net.sf.l2j.gameserver.clientpackets;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.ClientThread;
 import net.sf.l2j.gameserver.SevenSignsFestival;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.model.L2Party;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.ActionFailed;
-import net.sf.l2j.gameserver.serverpackets.LeaveWorld;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.9.4.3 $ $Date: 2005/03/27 15:29:30 $
  */
-public class Logout extends ClientBasePacket
+public class Logout extends L2GameClientPacket
 {
-    private static final String _C__09_LOGOUT = "[C] 09 Logout";
-    private static Logger _log = Logger.getLogger(Logout.class.getName());
-    
-    // c
+	private static final String _C__09_LOGOUT = "[C] 09 Logout";
+	private static Logger _log = Logger.getLogger(Logout.class.getName());
+	
+	@Override
+	protected void readImpl()
+	{
+	}
+	
+	@Override
+	public void runImpl()
+	{
 
-    /**
-     * @param decrypt
-     */
-    public Logout(ByteBuffer buf, ClientThread client)
-    {
-        super(buf, client);
-        // this is just a trigger packet. it has no content
-    }
+		L2PcInstance player = getClient().getActiveChar();
+		
+		if (player == null)
+		{
+			return;
+		}
+		
+		if (player.getActiveEnchantItem() != null)
+		{
+			player.sendPacket(new ActionFailed());
+			return;
+		}
+		
+		if (player.isLocked())
+		{
+			_log.warning("Player " + player.getName() + " tried to logout during class change.");
+			player.sendPacket(new ActionFailed());
+			return;
+		}
+		
+		// Don't allow leaving if player is fighting
+		if (AttackStanceTaskManager.getInstance().getAttackStanceTask(player))
+		{
+			if (Config.DEBUG)
+			{
+				_log.fine("Player " + player.getName() + " tried to logout while fighting");
+			}
+			
+			player.sendPacket(new SystemMessage(SystemMessage.CANT_LOGOUT_WHILE_FIGHTING));
+			player.sendPacket(new ActionFailed());
+			return;
+		}
+		
+		if (player.atEvent)
+		{
+			player.sendMessage("A superior power doesn't allow you to leave the event.");
+			player.sendPacket(new ActionFailed());
+			return;
+		}
+		
+		// Prevent player from logging out if they are a festival participant
+		// and it is in progress, otherwise notify party members that the player
+		// is not longer a participant.
+		if (player.isFestivalParticipant())
+		{
+			if (SevenSignsFestival.getInstance().isFestivalInitialized())
+			{
+				player.sendMessage("You cannot log out while you are a participant in a festival.");
+				player.sendPacket(new ActionFailed());
+				return;
+			}
+			
+			L2Party playerParty = player.getParty();
+			if (playerParty != null)
+			{
+				player.getParty().broadcastToPartyMembers(SystemMessage.sendString(player.getName() + " has been removed from the upcoming festival."));
+			}
+		}
+		
+		if (player.isFlying())
+		{
+			player.removeSkill(SkillTable.getInstance().getInfo(4289, 1));
+		}
+		
+		if ((Config.OFFLINE_TRADE_ENABLE && ((player.getPrivateStoreType() == L2PcInstance.STORE_PRIVATE_SELL) || (player.getPrivateStoreType() == L2PcInstance.STORE_PRIVATE_PACKAGE_SELL) || (player.getPrivateStoreType() == L2PcInstance.STORE_PRIVATE_BUY))) || (Config.OFFLINE_CRAFT_ENABLE && (player.isInCraftMode() || (player.getPrivateStoreType() == L2PcInstance.STORE_PRIVATE_MANUFACTURE))))
+		{
+			player.getInventory().updateDatabase();
+			player.closeNetConnection(true);
+			if (player.getOfflineStartTime() == 0)
+			{
+				player.setOfflineStartTime(System.currentTimeMillis());
+			}
+			return;
+		}
 
-    @Override
-    public void runImpl()
-    {
-        L2PcInstance player = getClient().getActiveChar();
-        if (player == null)
-            return;
-
-        if (player.getActiveEnchantItem() != null)
-        {
-            player.sendPacket(new ActionFailed());
-            return;
-        }
-
-        if (player.isLocked())
-        {
-            _log.warning("Player " + player.getName() + " tried to logout during class change.");
-            player.sendPacket(new ActionFailed());
-            return;
-        }
-
-        // Dont allow leaving if player is fighting
-        if (AttackStanceTaskManager.getInstance().getAttackStanceTask(player))
-        {
-            if (Config.DEBUG)
-                _log.fine("Player " + player.getName() + " tried to logout while fighting");
-
-            player.sendPacket(new SystemMessage(SystemMessage.CANT_LOGOUT_WHILE_FIGHTING));
-            player.sendPacket(new ActionFailed());
-            return;
-        }
-
-        if (player.atEvent)
-        {
-            player.sendMessage("A superior power doesn't allow you to leave the event.");
-            player.sendPacket(new ActionFailed());
-            return;
-        }
-
-        // Prevent player from logging out if they are a festival participant
-        // and it is in progress, otherwise notify party members that the player
-        // is not longer a participant.
-        if (player.isFestivalParticipant())
-        {
-            if (SevenSignsFestival.getInstance().isFestivalInitialized()) 
-            {
-                player.sendMessage("You cannot log out while you are a participant in a festival.");
-                player.sendPacket(new ActionFailed());
-                return;
-            }
-
-            L2Party playerParty = player.getParty();
-            if (playerParty != null)
-                player.getParty().broadcastToPartyMembers(SystemMessage.sendString(player.getName() + " has been removed from the upcoming festival."));
-        }
-
-        if (player.isFlying())
-            player.removeSkill(SkillTable.getInstance().getInfo(4289, 1));
-
-        if ((Config.OFFLINE_TRADE_ENABLE && (player.getPrivateStoreType() == L2PcInstance.STORE_PRIVATE_SELL || player.getPrivateStoreType() == L2PcInstance.STORE_PRIVATE_PACKAGE_SELL || player.getPrivateStoreType() == L2PcInstance.STORE_PRIVATE_BUY)) || (Config.OFFLINE_CRAFT_ENABLE && (player.isInCraftMode() || player.getPrivateStoreType() == L2PcInstance.STORE_PRIVATE_MANUFACTURE)))
-        {
-            player.getInventory().updateDatabase();
-            if (player.getOfflineStartTime() == 0)
-                player.setOfflineStartTime(System.currentTimeMillis());
-        }
-        else
-        {
-            player.deleteMe();
-            // save character
-            ClientThread.saveCharToDisk(player);
-        }
-
-        // normally the server would send serveral "delete object" before "leaveWorld"
-        // we skip that for now
-
-        sendPacket(new LeaveWorld());
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.clientpackets.ClientBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _C__09_LOGOUT;
-    }
+		player.logout();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.clientpackets.L2GameClientPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _C__09_LOGOUT;
+	}
 }

@@ -23,36 +23,39 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
 /**
  * @author zabbix
- *
  */
-public class PartyMemberPosition extends ServerBasePacket
+public class PartyMemberPosition extends L2GameServerPacket
 {
-    L2Party _party;
-
-    public PartyMemberPosition(L2PcInstance actor)
-    {
-        _party = actor.getParty();
-    }
-
-    final void writeImpl()
-    {
-        writeC(0xa7);
-        writeD(_party.getMemberCount());
-
-        for(L2PcInstance pm : _party.getPartyMembers())
-        {
-            if (pm == null)
-                continue;
-
-            writeD(pm.getObjectId());
-            writeD(pm.getX());
-            writeD(pm.getY());
-            writeD(pm.getZ());
-        }
-    }
-
-    public String getType()
-    {
-        return null;
-    }
+	L2Party _party;
+	
+	public PartyMemberPosition(L2PcInstance actor)
+	{
+		_party = actor.getParty();
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xa7);
+		writeD(_party.getMemberCount());
+		
+		for (L2PcInstance pm : _party.getPartyMembers())
+		{
+			if (pm == null)
+			{
+				continue;
+			}
+			
+			writeD(pm.getObjectId());
+			writeD(pm.getX());
+			writeD(pm.getY());
+			writeD(pm.getZ());
+		}
+	}
+	
+	@Override
+	public String getType()
+	{
+		return null;
+	}
 }

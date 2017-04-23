@@ -20,34 +20,36 @@ package net.sf.l2j.gameserver.serverpackets;
 
 /**
  * This class ...
- * 
  * @version $Revision: 1.2.2.1.2.3 $ $Date: 2005/03/27 15:29:57 $
  */
-public class AskJoinPledge extends ServerBasePacket
+public class AskJoinPledge extends L2GameServerPacket
 {
-    private static final String _S__44_ASKJOINPLEDGE = "[S] 32 AskJoinPledge";
-
-    private int _requestorId;
-    private String _pledgeName;
-
-    public AskJoinPledge(int requestorId, String pledgeName)
-    {
-        _requestorId = requestorId;
-        _pledgeName = pledgeName;
-    }
-
-    final void writeImpl()
-    {
-        writeC(0x32);
-        writeD(_requestorId);
-        writeS(_pledgeName);
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.l2j.gameserver.serverpackets.ServerBasePacket#getType()
-     */
-    public String getType()
-    {
-        return _S__44_ASKJOINPLEDGE;
-    }
+	private static final String _S__44_ASKJOINPLEDGE = "[S] 32 AskJoinPledge";
+	
+	private final int _requestorId;
+	private final String _pledgeName;
+	
+	public AskJoinPledge(int requestorId, String pledgeName)
+	{
+		_requestorId = requestorId;
+		_pledgeName = pledgeName;
+	}
+	
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0x32);
+		writeD(_requestorId);
+		writeS(_pledgeName);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.sf.l2j.gameserver.serverpackets.L2GameServerPacket#getType()
+	 */
+	@Override
+	public String getType()
+	{
+		return _S__44_ASKJOINPLEDGE;
+	}
 }

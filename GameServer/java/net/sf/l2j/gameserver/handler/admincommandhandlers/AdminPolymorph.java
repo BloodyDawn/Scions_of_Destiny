@@ -25,7 +25,7 @@ import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
 import net.sf.l2j.gameserver.model.L2Character;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.serverpackets.MagicSkillUser;
+import net.sf.l2j.gameserver.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.serverpackets.SetupGauge;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 
@@ -86,7 +86,7 @@ public class AdminPolymorph implements IAdminCommandHandler
             //animation
             if(obj instanceof L2Character){
             L2Character Char = (L2Character) obj;
-            MagicSkillUser msk = new MagicSkillUser(Char, 1008, 1, 4000, 0);
+            MagicSkillUse msk = new MagicSkillUse(Char, 1008, 1, 4000, 0);
             Char.broadcastPacket(msk);
             SetupGauge sg = new SetupGauge(0, 4000);
             Char.sendPacket(sg);

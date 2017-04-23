@@ -16,7 +16,7 @@
  *
  * http://www.gnu.org/copyleft/gpl.html
  */
-package net.sf.l2j.gameserver.handler.skillhandlers; 
+package net.sf.l2j.gameserver.handler.skillhandlers;
 
 import net.sf.l2j.gameserver.ai.CtrlEvent;
 import net.sf.l2j.gameserver.handler.ISkillHandler;
@@ -29,64 +29,72 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.skills.Formulas;
 
-/** 
- * @author _drunk_ 
- * 
- * TODO To change the template for this generated type comment go to 
- * Window - Preferences - Java - Code Style - Code Templates 
- */ 
-public class Spoil implements ISkillHandler 
-{ 
-    //private static Logger _log = Logger.getLogger(Spoil.class.getName()); 
-    protected SkillType[] _skillIds = {SkillType.SPOIL};
-
-    public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets)
-    { 
-        if (!(activeChar instanceof L2PcInstance))
-            return;
-
-        if (targets == null)
-            return;
-
-	for (int index = 0; index < targets.length; index++) 
+/**
+ * @author _drunk_ TODO To change the template for this generated type comment go to Window - Preferences - Java - Code Style - Code Templates
+ */
+public class Spoil implements ISkillHandler
+{
+	// private static Logger _log = Logger.getLogger(Spoil.class.getName());
+	protected SkillType[] _skillIds =
 	{
-            if (!(targets[index] instanceof L2MonsterInstance))
-                continue;
-
-            L2MonsterInstance target = (L2MonsterInstance) targets[index];
-
-            if (target.isSpoil())
-            {
-                activeChar.sendPacket(new SystemMessage(SystemMessage.ALREADY_SPOILED));
-                continue;
-            }
-
-            // SPOIL SYSTEM by Lbaldi
-            boolean spoil = false;
-            if (target.isDead() == false) 
-            {
-                spoil = Formulas.getInstance().calcMagicSuccess(activeChar, (L2Character)targets[index], skill);
-
-                if (spoil)
-                {
-                    target.setSpoil(true);
-                    target.setIsSpoiledBy(activeChar.getObjectId());
-                    activeChar.sendPacket(new SystemMessage(SystemMessage.SPOIL_SUCCESS));
-                }
-                else
-                {
-                    SystemMessage sm = new SystemMessage(SystemMessage.S1_WAS_UNAFFECTED_BY_S2);
-                    sm.addString(target.getName());
-                    sm.addSkillName(skill.getDisplayId());
-                    activeChar.sendPacket(sm);
-                }
-                target.getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, activeChar);
-            }
-        }
-    } 
-
-    public SkillType[] getSkillIds()
-    {
-        return _skillIds;
-    }
+		SkillType.SPOIL
+	};
+	
+	@Override
+	public void useSkill(L2Character activeChar, L2Skill skill, L2Object[] targets, boolean crit)
+	{
+		if (!(activeChar instanceof L2PcInstance))
+		{
+			return;
+		}
+		
+		if (targets == null)
+		{
+			return;
+		}
+		
+		for (int index = 0; index < targets.length; index++)
+		{
+			if (!(targets[index] instanceof L2MonsterInstance))
+			{
+				continue;
+			}
+			
+			L2MonsterInstance target = (L2MonsterInstance) targets[index];
+			
+			if (target.isSpoil())
+			{
+				activeChar.sendPacket(new SystemMessage(SystemMessage.ALREADY_SPOILED));
+				continue;
+			}
+			
+			// SPOIL SYSTEM by Lbaldi
+			boolean spoil = false;
+			if (target.isDead() == false)
+			{
+				spoil = Formulas.getInstance().calcMagicSuccess(activeChar, (L2Character) targets[index], skill);
+				
+				if (spoil)
+				{
+					target.setSpoil(true);
+					target.setIsSpoiledBy(activeChar.getObjectId());
+					activeChar.sendPacket(new SystemMessage(SystemMessage.SPOIL_SUCCESS));
+				}
+				else
+				{
+					SystemMessage sm = new SystemMessage(SystemMessage.S1_WAS_UNAFFECTED_BY_S2);
+					sm.addString(target.getName());
+					sm.addSkillName(skill.getDisplayId());
+					activeChar.sendPacket(sm);
+				}
+				target.getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, activeChar);
+			}
+		}
+	}
+	
+	@Override
+	public SkillType[] getSkillIds()
+	{
+		return _skillIds;
+	}
 }

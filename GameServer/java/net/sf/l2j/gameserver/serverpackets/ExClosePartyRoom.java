@@ -21,16 +21,18 @@ package net.sf.l2j.gameserver.serverpackets;
 /**
  * @author Gnacik
  */
-public class ExClosePartyRoom extends ServerBasePacket
+public class ExClosePartyRoom extends L2GameServerPacket
 {
-    final void writeImpl()
-    {
-        writeC(0xfe);
-        writeH(0x0f);
-    }
-
-    public String getType()
-    {
-        return "[S] FE:0f ExClosePartyRoom";
-    }
+	@Override
+	protected final void writeImpl()
+	{
+		writeC(0xfe);
+		writeH(0x0f);
+	}
+	
+	@Override
+	public String getType()
+	{
+		return "[S] FE:0f ExClosePartyRoom";
+	}
 }
