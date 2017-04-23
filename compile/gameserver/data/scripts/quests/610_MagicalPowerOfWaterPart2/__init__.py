@@ -1,4 +1,4 @@
-#Made by Emperorc (adapted for L2Jserver by roko91)
+#Made by Emperorc (adapted for L2JLisvus by roko91)
 
 import sys
 from java.lang import System

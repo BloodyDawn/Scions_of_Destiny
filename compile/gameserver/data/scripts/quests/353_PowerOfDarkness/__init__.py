@@ -1,4 +1,4 @@
-# Power of Darkness - Version 0.1 by DrLecter (adapted for L2Jserver by roko91)
+# Power of Darkness - Version 0.1 by DrLecter (adapted for L2JLisvus by roko91)
 import sys
 from net.sf.l2j.gameserver.model.quest import State
 from net.sf.l2j.gameserver.model.quest import QuestState
@@ -34,7 +34,7 @@ class Quest (JQuest) :
 
  def onTalk (self,npc,st):
    npcId = npc.getNpcId()
-   htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+   htmltext = "no-quest.htm"
    id = st.getState()
    level = st.getPlayer().getLevel()
    cond=st.getInt("cond")

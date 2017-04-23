@@ -1,4 +1,4 @@
-#  Created by Kerberos (adapted for L2Jserver by roko91)
+#  Created by Kerberos (adapted for L2JLisvus by roko91)
 
 import sys
 from net.sf.l2j.gameserver.model.quest import State

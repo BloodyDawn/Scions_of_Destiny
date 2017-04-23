@@ -1,5 +1,5 @@
 # Arrogant Search version 0.2
-# Done by Fulminus and updated by DnR (L2Jserver)
+# Done by Fulminus and updated by DnR (L2JLisvus)
 import sys
 from net.sf.l2j.gameserver.model.quest import State
 from net.sf.l2j.gameserver.model.quest import QuestState

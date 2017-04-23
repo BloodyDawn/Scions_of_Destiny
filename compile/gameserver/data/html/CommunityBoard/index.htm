@@ -1,19 +1,79 @@
-<html><body><br>
-<br>
-<center>Welcome to your new community board !<br>
-<br>
-Admin, you can customize this file by editing the file index.htm, in directory 'data/html/ComunityBoard' of your DataPack.<br>
-<br>
-<br>
-You can also make links like : <a action="bypass _bbstop;1">My link</a><br>
-The link must be bypass _bbstop;X with X a integer like bypass _bbstop;1<br>
-The link bypass _bbstop;1 shows the file 1.htm of your 'data/html/ComunityBoard',bypass _bbstop;2 the file 2.html etc...<br>
-<br>
-<br>
-Community Board can support html 3 times longer than a classical npc dialog html !<br>
-<br>
-<br>
-<br>
-<br>
-Be Careful : client crashes if the html is not valid for it !</center>
-</body></html>
+<html>
+<body>
+<center>
+<table>
+        <tr>
+    <td><button value="Home" action="bypass _bbshome" width=115 height=32 back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2"></td>
+	<td><button value="Server News" action="bypass _bbstop;1" width=115 height=32 back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2"></td>
+	<td><button value="Player Panel" action="bypass _bbscustom;playerPanel" width=115 height=32 back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2"></td>
+	<td><button value="Events" action="bypass _bbscustom;currentEvent" width=115 height=32 back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2"></td>
+	<td><button value="Events" action="bypass _bbscustom;currentEvent" width=115 height=32 back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2"></td>
+        </tr>
+</table>
+</center>	
+<br><img src="l2ui.squaregray" width="625" height="2"><br>	
+<center>
+    <img src="baner.pledge_crest_1_12" width=512 height=128><br>
+    <br>
+    <table>
+        <tr>
+            <td><img src="icon.etc_alphabet_i_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_n_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_f_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_o_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_r_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_m_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_a_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_t_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_i_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_o_i00" width=32 height=32></td>
+            <td><img src="icon.etc_alphabet_n_i00" width=32 height=32></td>
+        </tr>
+    </table>
+    <br><br>
+    <img src="L2UI_CH3.onscrmsg_pattern01_1" width=300 height=32><br>
+    <table width=300 border=0 cellspacing=0 cellpadding=5 bgcolor=000000>
+        <tr>
+            <td align=center width="300">Server Info
+                <br1>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table border=0 cellpadding=0 cellspacing=10>
+        <tr>
+            <td align=center>
+                <button action="bypass _bbstop;3" value="Server Rules" width=115 height=32
+                        back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2">
+            </td>
+            <td align=center>
+                <button action="bypass _bbstop;2" value="Staff Info" width=115 height=32
+                        back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2">
+            </td>
+            <td align=center>
+                <button action="bypass _bbscustom;info;info" value="General Info" width=115 height=32
+                        back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2">
+            </td>
+            <td align=center>
+                <button action="bypass _bbscustom;info;olysiege" value="Olympiad & Sieges" width=115 height=32
+                        back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2">
+            </td>
+        </tr>
+        <tr>
+            <td align=center>
+                <button action="bypass _bbscustom;info;commands" value="Server Commands" width=115 height=32
+                        back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2">
+            </td>
+            <td align=center>
+                <button action="bypass _bbscustom;info;serverCoins" value="Server Currencies" width=115 height=32
+                        back="L2UI_CH3.bigbutton2_over" fore="L2UI_CH3.bigbutton2">
+            </td>
+        </tr>
+    </table>
+
+    <br><img src="L2UI_CH3.onscrmsg_pattern01_2" width=300 height=32>
+
+</center>
+<br><br>
+</body>
+</html>

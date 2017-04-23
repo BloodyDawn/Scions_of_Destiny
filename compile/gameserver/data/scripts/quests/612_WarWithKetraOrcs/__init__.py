@@ -1,4 +1,4 @@
-# Created by Emperorc (adapted for L2Jserver by roko91)
+# Created by Emperorc (adapted for L2JLisvus by roko91)
 
 import sys
 from net.sf.l2j import Config
@@ -74,7 +74,7 @@ class Quest (JQuest) :
      return htmltext
 
  def onTalk (self,npc,st):
-     htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+     htmltext = "no-quest.htm"
      if st :
          npcId = npc.getNpcId()
          id = st.getInt("id")

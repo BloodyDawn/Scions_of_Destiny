@@ -133,7 +133,7 @@ public class AdminShutdown implements IAdminCommandHandler
         replyMSG.append("<button value=\"Zone Check\" action=\"bypass -h admin_zone_check\" width=60 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\">");
 		replyMSG.append("<br>");
 		replyMSG.append("</td></tr></table></center>");
-		replyMSG.append("<tr><td><center>Created by ZOOmby</center></td></tr>");
+		replyMSG.append("<tr><td><center>Created by ZOOmbi</center></td></tr>");
 		replyMSG.append("</body></html>");
 			
 		adminReply.setHtml(replyMSG.toString());

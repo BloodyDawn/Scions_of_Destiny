@@ -101,7 +101,7 @@ class Quest (JQuest) :
      return
 
  def onTalk (self,npc,st):
-    htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+    htmltext = "no-quest.htm"
     npcId = npc.getNpcId()
     cond = st.getInt("cond")
     id = st.getState()

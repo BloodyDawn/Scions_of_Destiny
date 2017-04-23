@@ -1,4 +1,4 @@
-# Made by Kerberos v1.0 on 2009/05/10 (adapted for L2Jserver by roko91)
+# Made by Kerberos v1.0 on 2009/05/10 (adapted for L2JLisvus by roko91)
 # this script is part of the Official L2J Datapack Project.
 # Visit http://www.l2jdp.com/forum for more details.
 
