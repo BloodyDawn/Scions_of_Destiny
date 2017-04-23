@@ -1,5 +1,5 @@
 # Made with contributions from :
-# disKret, Skeleton & DrLecter (adapted for L2Jserver by roko91).
+# disKret, Skeleton & DrLecter (adapted for L2JLisvus by roko91).
 # this script is part of the Official L2J Datapack Project.
 # Visit http://forum.l2jdp.com for more details.
 
@@ -60,7 +60,7 @@ class Quest (JQuest) :
    return htmltext
 
  def onTalk (self,npc,st):
-   htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+   htmltext = "no-quest.htm"
    npcId = npc.getNpcId()
    cond = st.getInt("cond")
    blood = st.getQuestItemsCount(BLOOD_OF_SAINT)

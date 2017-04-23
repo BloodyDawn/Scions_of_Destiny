@@ -1,4 +1,4 @@
-# Hunting Leto Lizardman - Version 0.1 by DrLecter (adapted for L2Jserver by roko91)
+# Hunting Leto Lizardman - Version 0.1 by DrLecter (adapted for L2JLisvus by roko91)
 
 import sys
 from net.sf.l2j.gameserver.model.quest import State
@@ -41,7 +41,7 @@ class Quest (JQuest) :
    return htmltext
 
  def onTalk (self,npc,st):
-   htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+   htmltext = "no-quest.htm"
    npcId = npc.getNpcId()
    id = st.getState()
    cond=st.getInt("cond")

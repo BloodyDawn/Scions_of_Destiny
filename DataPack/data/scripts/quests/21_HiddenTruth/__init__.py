@@ -1,4 +1,4 @@
-# Made by Kerberos (adapted for L2Jserver by roko91) - based on a L2Fortress script
+# Made by Kerberos (adapted for L2JLisvus by roko91) - based on a L2Fortress script
 # this script is part of the Official L2J Datapack Project.
 # Visit http://forum.l2jdp.com for more details.
 
@@ -96,7 +96,7 @@ class Quest (JQuest) :
         return htmltext
 
  def onTalk (self,npc,st):
-   htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+   htmltext = "no-quest.htm"
    npcId = npc.getNpcId()
    cond = st.getInt("cond")
    onlyone = st.getInt("onlyone")

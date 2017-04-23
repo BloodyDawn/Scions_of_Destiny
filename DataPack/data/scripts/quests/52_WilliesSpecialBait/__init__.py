@@ -1,5 +1,5 @@
 # This is essentially a DrLecter's copy&paste from
-# a Kilkenny's contribution to the Official L2J Datapack Project(adapted for L2Jserver by roko91).
+# a Kilkenny's contribution to the Official L2J Datapack Project(adapted for L2JLisvus by roko91).
 # Visit http://www.l2jdp.com/trac if you find a bug.
 
 import sys
@@ -41,7 +41,7 @@ class Quest (JQuest) :
    return htmltext
 
  def onTalk (self,npc,st):
-   htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+   htmltext = "no-quest.htm"
    npcId = npc.getNpcId()
    id = st.getState()
    cond = st.getInt("cond")

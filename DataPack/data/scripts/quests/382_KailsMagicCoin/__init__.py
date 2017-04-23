@@ -1,4 +1,4 @@
-# Kail's Magic Coin ver. 0.1 by DrLecter (adapted for L2Jserver by roko91)
+# Kail's Magic Coin ver. 0.1 by DrLecter (adapted for L2JLisvus by roko91)
 
 import sys
 from net.sf.l2j import Config
@@ -9,7 +9,7 @@ from net.sf.l2j.gameserver.model.quest.jython import QuestJython as JQuest
 qn = "382_KailsMagicCoin"
 
 #Messages
-default = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+default = "no-quest.htm"
 #Quest items
 ROYAL_MEMBERSHIP = 5898
 #NPCs

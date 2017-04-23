@@ -1,4 +1,4 @@
-# Created by t0rm3nt0r (adapted for L2Jserver by roko91)
+# Created by t0rm3nt0r (adapted for L2JLisvus by roko91)
 # Drop rates and last reorganization by DrLecter
 # for the Official L2J Datapack Project.
 # Visit http://forum.l2jdp.com for more details.
@@ -56,7 +56,7 @@ class Quest (JQuest) :
      return htmltext    
 
  def onTalk (self,npc,st):
-     htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+     htmltext = "no-quest.htm"
      id = st.getState()
      cond = st.getInt("cond")
      torches = st.getQuestItemsCount(TORCH)

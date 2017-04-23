@@ -64,7 +64,7 @@ class Quest (JQuest) :
     return htmltext
 
  def onFirstTalk (self,npc,player):
-    htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+    htmltext = "no-quest.htm"
     st = player.getQuestState(qn)
     if not st :
         st = self.newQuestState(player)

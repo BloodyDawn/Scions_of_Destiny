@@ -1,4 +1,4 @@
-# Contributed by t0rm3nt0r to the Official L2J Datapack Project (adapted for L2Jserver by roko91).
+# Contributed by t0rm3nt0r to the Official L2J Datapack Project (adapted for L2JLisvus by roko91).
 
 import sys
 from net.sf.l2j.gameserver.model.quest import State
@@ -74,7 +74,7 @@ class Quest (JQuest) :
 
  def onTalk (self,npc,st):
      npcId = npc.getNpcId()
-     htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+     htmltext = "no-quest.htm"
      id = st.getState()
      cond = st.getInt("cond")
      urn = st.getQuestItemsCount(URN)

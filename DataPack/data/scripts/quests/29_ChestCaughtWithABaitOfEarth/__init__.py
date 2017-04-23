@@ -1,5 +1,5 @@
 ### ---------------------------------------------------------------------------
-###  Create by Skeleton!!! (adapted for L2Jserver by roko91)
+###  Create by Skeleton!!! (adapted for L2JLisvus by roko91)
 ### ---------------------------------------------------------------------------
 
 import sys
@@ -47,7 +47,7 @@ class Quest (JQuest) :
         return htmltext
 
     def onTalk (self,npc,st):
-        htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+        htmltext = "no-quest.htm"
         npcId = npc.getNpcId()
         id = st.getState()
         if id==CREATED :

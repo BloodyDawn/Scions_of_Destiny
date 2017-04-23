@@ -21,7 +21,7 @@ import net.sf.l2j.gameserver.serverpackets.CreatureSay;
 import net.sf.l2j.util.Rnd;
 
 /**
- * @by Karakan for L2Jserver
+ * @by Karakan for L2JLisvus
  */
 public class HoneyBear extends Quest
 {

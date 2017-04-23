@@ -1,4 +1,4 @@
-# Linnaeus Special Bait - a seamless merge from Next and DooMita contributions(adapted for L2Jserver by roko91)
+# Linnaeus Special Bait - a seamless merge from Next and DooMita contributions(adapted for L2JLisvus by roko91)
 
 import sys
 from net.sf.l2j import Config
@@ -55,7 +55,7 @@ class Quest (JQuest):
      return htmltext
 
  def onTalk (self,npc,st):
-     htmltext="<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+     htmltext="no-quest.htm"
      id = st.getState()
      if id == COMPLETED:
         htmltext = "<html><body>This quest has already been completed.</body></html>"           

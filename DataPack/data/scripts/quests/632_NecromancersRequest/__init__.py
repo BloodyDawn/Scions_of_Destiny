@@ -1,4 +1,4 @@
-# Made by Next - cleanup by Kerberos (adapted for L2Jserver by roko91)
+# Made by Next - cleanup by Kerberos (adapted for L2JLisvus by roko91)
 # this script is part of the Official L2J Datapack Project.
 # Visit http://forum.l2jdp.com for more details.
 
@@ -92,7 +92,7 @@ class Quest (JQuest):
         return
 
     def onTalk (self,npc,st):
-        htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+        htmltext = "no-quest.htm"
         if st:
            npcId = npc.getNpcId()
            id = st.getState()

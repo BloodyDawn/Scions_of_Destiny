@@ -1,4 +1,4 @@
-# Made by DooMIta (ethernaly@email.it) and DrLecter (adapted for L2Jserver by roko91).
+# Made by DooMIta (ethernaly@email.it) and DrLecter (adapted for L2JLisvus by roko91).
 # Visit http://www.l2jdp.com/trac if you find a bug and wish to report it.
 # Visit http://forum.l2jdp.com for more details about our community and the project.
 
@@ -45,7 +45,7 @@ class Quest (JQuest) :
     return htmltext
 
   def onTalk(self,npc,st):
-    htmltext="<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+    htmltext="no-quest.htm"
     npcId=npc.getNpcId()
     id = st.getState()
     if id == CREATED :

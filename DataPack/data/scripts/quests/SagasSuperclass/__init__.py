@@ -7,7 +7,7 @@ from net.sf.l2j.gameserver.model.quest import State
 from net.sf.l2j.gameserver.model.quest import QuestState
 from net.sf.l2j.gameserver.model.quest.jython import QuestJython as JQuest
 from net.sf.l2j.gameserver.serverpackets import CreatureSay
-from net.sf.l2j.gameserver.serverpackets import MagicSkillUser
+from net.sf.l2j.gameserver.serverpackets import MagicSkillUse
 from net.sf.l2j.util import Rnd
 
 qn = "SagasSuperclass"
@@ -86,8 +86,8 @@ class Quest (JQuest) :
      self.questItemIds = self.Items
 
  def Cast(self, npc,target,skillId,level):
-    target.broadcastPacket(MagicSkillUser(target,target,skillId,level,6000,1))
-    target.broadcastPacket(MagicSkillUser(npc,npc,skillId,level,6000,1))
+    target.broadcastPacket(MagicSkillUse(target,target,skillId,level,6000,1))
+    target.broadcastPacket(MagicSkillUse(npc,npc,skillId,level,6000,1))
 
  def AutoChat(self, npc,text) :
     chars = npc.getKnownList().getKnownPlayers().values().toArray()
@@ -383,7 +383,7 @@ class Quest (JQuest) :
    return htmltext
 
  def onTalk (self,npc,st):
-    htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+    htmltext = "no-quest.htm"
     npcId = npc.getNpcId()
     cond = st.getInt("cond")
     if st.getState() == self.COMPLETED and npcId == self.NPC[0] :

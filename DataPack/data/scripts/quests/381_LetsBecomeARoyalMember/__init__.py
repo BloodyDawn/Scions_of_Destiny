@@ -1,4 +1,4 @@
-# Lets Become A Royal Member ver. 0.1 by DrLecter (adapted for L2Jserver by roko91)
+# Lets Become A Royal Member ver. 0.1 by DrLecter (adapted for L2JLisvus by roko91)
 
 import sys
 from net.sf.l2j import Config
@@ -12,7 +12,7 @@ QuestDescription = "Let's become a Royal Member"
 qn = "381_LetsBecomeARoyalMember"
 
 #Messages
-default = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+default = "no-quest.htm"
 #Quest items
 KAILS_COIN, COIN_ALBUM, MEMBERSHIP_1, CLOVER_COIN, ROYAL_MEMBERSHIP = 5899, 5900, 3813, 7569, 5898
 #NPCs

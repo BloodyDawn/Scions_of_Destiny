@@ -1,4 +1,4 @@
-# Made by KilKenny & DrLecter (adapted for L2Jserver by roko91)
+# Made by KilKenny & DrLecter (adapted for L2JLisvus by roko91)
 
 import sys
 from net.sf.l2j import Config
@@ -24,7 +24,7 @@ ORVEN = 7857
 KAIEN = 7623
 GARVARENTZ = 7704
 
-default = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+default = "no-quest.htm"
 
 def rewards(st,npcId):
     state=False
@@ -126,7 +126,7 @@ class Quest (JQuest) :
      return htmltext
 
  def onTalk (self,npc,st):
-     htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+     htmltext = "no-quest.htm"
      npcId = npc.getNpcId()
      id = st.getState()
      if npcId != GILMORE and id != STARTED : return htmltext

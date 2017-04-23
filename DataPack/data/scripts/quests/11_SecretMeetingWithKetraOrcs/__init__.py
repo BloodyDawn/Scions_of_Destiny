@@ -1,4 +1,4 @@
-#made by Emperorc (adapted for L2Jserver by roko91)
+#made by Emperorc (adapted for L2JLisvus by roko91)
 import sys
 from net.sf.l2j.gameserver.model.quest import State
 from net.sf.l2j.gameserver.model.quest import QuestState
@@ -45,7 +45,7 @@ class Quest (JQuest) :
 
  def onTalk (self,npc,st):
      npcId = npc.getNpcId()
-     htmltext = "<html><body>You are either not carrying out your quest or don't meet the criteria.</body></html>"
+     htmltext = "no-quest.htm"
      cond = st.getInt("cond")
      onlyone = st.getInt("onlyone")
      if st.getState() == CREATED :

@@ -20676,6 +20676,7 @@ INSERT INTO npcskills VALUES
 -- Siege Golem
 (12251, 4290, 1), -- Race
 (12251, 4332, 1), -- Mental Aegis
+(12251, 4079, 1), -- Siege Hammer
 -- Sayres 
 (12252, 4290, 1), -- Race
 (12252, 4045, 1), -- Resist Full Magic Attack
